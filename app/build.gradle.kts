@@ -54,6 +54,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.play.services)
     implementation (libs.material.android)
     implementation (libs.core.splashscreen)
+    implementation (libs.lottie)
 
     // Firebase
     implementation(platform(libs.firebase.bom))
@@ -66,6 +67,9 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.viewmodel.compose)
     implementation(libs.navigation.compose)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
 
 
     testImplementation(libs.junit)
