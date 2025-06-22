@@ -2,102 +2,113 @@ package com.example.futboldata.auth
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Patterns
 import android.view.View
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.example.futboldata.databinding.ActivityLoginBinding
 import com.example.futboldata.equipos.list.EquiposActivity
-import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.launch
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
-    private val viewModel: LoginViewModel by viewModels {
-        LoginViewModelFactory(AuthRepository())
-    }
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        if (viewModel.isUserLoggedIn) {
-            navigateToMain()
-            return
-        }
+        auth = Firebase.auth
 
-        setupListeners()
-        observeState()
+        setupLoginButton()
+        setupForgotPasswordButton()
     }
 
-    private fun setupListeners() {
+    private fun setupLoginButton() {
         binding.btnLogin.setOnClickListener {
             val email = binding.etEmail.text.toString().trim()
-            val password = binding.etPassword.text.toString()
+            val password = binding.etPassword.text.toString().trim()
 
-            if (validateInputs(email, password)) {
-                viewModel.login(email, password)
+            if (!validateForm(email, password)) {
+                return@setOnClickListener
             }
-        }
 
-        binding.btnForgotPassword.setOnClickListener {
-            navigateToForgotPassword(it)
-        }
-    }
+            // Credenciales hardcodeadas solo para desarrollo
+            if (email == "oscarj.rierav@gmail.com" && password == "12345678") {
+                navigateToEquipos()
+            } else {
+                showLoginError("Credenciales incorrectas")
+            }
 
-    fun navigateToForgotPassword(view: View) {
-        Toast.makeText(this, "Función de recuperación de contraseña", Toast.LENGTH_SHORT).show()
-        // startActivity(Intent(this, ForgotPasswordActivity::class.java))
-    }
+            binding.progressBar.visibility = View.VISIBLE
+            binding.btnLogin.isEnabled = false
 
-    private fun observeState() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.loginState.collect { state ->
-                    when (state) {
-                        is LoginViewModel.LoginState.Loading -> showLoading(true)
-                        is LoginViewModel.LoginState.Success -> {
-                            showLoading(false)
-                            navigateToMain()
-                        }
-                        is LoginViewModel.LoginState.Error -> {
-                            showLoading(false)
-                            showError(state.message)
-                        }
-                        LoginViewModel.LoginState.Idle -> showLoading(false)
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this) { task ->
+                    binding.progressBar.visibility = View.GONE
+                    binding.btnLogin.isEnabled = true
+
+                    if (task.isSuccessful) {
+                        navigateToEquipos()
+                    } else {
+                        showLoginError(task.exception?.message ?: "Error desconocido")
                     }
                 }
-            }
         }
     }
 
-    private fun validateInputs(email: String, password: String): Boolean {
+    private fun validateForm(email: String, password: String): Boolean {
+        var isValid = true
+
+        // Validación de email
         if (email.isEmpty()) {
             binding.tilEmail.error = "Email requerido"
-            return false
+            isValid = false
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            binding.tilEmail.error = "Email no válido"
+            isValid = false
+        } else {
+            binding.tilEmail.error = null
         }
+
+        // Validación de contraseña
         if (password.isEmpty()) {
             binding.tilPassword.error = "Contraseña requerida"
-            return false
+            isValid = false
+        } else if (password.length < 6) {
+            binding.tilPassword.error = "Mínimo 6 caracteres"
+            isValid = false
+        } else {
+            binding.tilPassword.error = null
         }
-        return true
+
+        return isValid
     }
 
-    private fun showLoading(loading: Boolean) {
-        binding.progressBar.visibility = if (loading) View.VISIBLE else View.GONE
-        binding.btnLogin.isEnabled = !loading
+    private fun showLoginError(errorMessage: String) {
+        Toast.makeText(
+            this,
+            "Error en login: $errorMessage",
+            Toast.LENGTH_LONG
+        ).show()
     }
 
-    private fun showError(message: String) {
-        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
-    }
-
-    private fun navigateToMain() {
+    private fun navigateToEquipos() {
         startActivity(Intent(this, EquiposActivity::class.java))
         finish()
+    }
+
+    private fun setupForgotPasswordButton() {
+        binding.btnForgotPassword.setOnClickListener {
+            // Implementa recuperación de contraseña si es necesario
+            Toast.makeText(
+                this,
+                "Función de recuperación de contraseña",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 }
