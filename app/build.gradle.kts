@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.futboldata"
-        minSdk = 24
+        minSdk = 27
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -37,6 +37,7 @@ android {
     }
     buildFeatures {
         compose = true
+        viewBinding = true
     }
 }
 
