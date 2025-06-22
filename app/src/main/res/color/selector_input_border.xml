@@ -1,0 +1,6 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Estado enfocado -->
+    <item android:color="@color/silver" android:state_focused="true"/>
+    <!-- Estado normal (default) -->
+    <item android:color="@color/white"/> <!-- Usa el blanco actual o define uno nuevo -->
+</selector>
