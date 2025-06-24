@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.partidos.AddPartidoActivity">
+
+    <EditText
+        android:id="@+id/etRival"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Rival"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp" />
+
+    <EditText
+        android:id="@+id/etGolesFavor"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Goles a favor"
+        android:inputType="number"
+        app:layout_constraintTop_toBottomOf="@id/etRival"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp" />
+
+    <EditText
+        android:id="@+id/etGolesContra"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Goles en contra"
+        android:inputType="number"
+        app:layout_constraintTop_toBottomOf="@id/etGolesFavor"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp" />
+
+    <EditText
+        android:id="@+id/etCompeticion"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Competición"
+        app:layout_constraintTop_toBottomOf="@id/etGolesContra"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp" />
+
+    <EditText
+        android:id="@+id/etJornada"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Jornada"
+        android:inputType="number"
+        app:layout_constraintTop_toBottomOf="@id/etCompeticion"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvJugadores"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/etJornada"
+        app:layout_constraintBottom_toTopOf="@id/btnGuardar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp" />
+
+    <Button
+        android:id="@+id/btnGuardar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Guardar Partido"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="16dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

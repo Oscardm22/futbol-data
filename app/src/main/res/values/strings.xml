@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">Fútbol Data</string>
     <string name="forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="add_team">Agregar equipo</string>
+
+    //Formatos
+    <string name="avg_goals_format">Promedio de goles: %.1f</string>
+    <string name="win_rate_format">Porcentaje de victorias: %.1f%%</string>
 
     //Descripciones
     <string name="desc_logo">Logo de la aplicación</string>

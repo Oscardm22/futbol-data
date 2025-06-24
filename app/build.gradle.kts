@@ -57,6 +57,13 @@ dependencies {
     implementation (libs.core.splashscreen)
     implementation (libs.lottie)
 
+    // ViewModel y viewModels()
+    implementation(libs.androidx.fragment.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+
+    // Gráficos MPAndroidChart
+    implementation(libs.mpandroidchart)
+
     // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)

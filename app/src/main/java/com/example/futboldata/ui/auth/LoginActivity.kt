@@ -1,4 +1,4 @@
-package com.example.futboldata.auth
+package com.example.futboldata.ui.auth
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,7 +7,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.futboldata.databinding.ActivityLoginBinding
-import com.example.futboldata.equipos.list.EquiposActivity
+import com.example.futboldata.ui.equipos.EquiposActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase

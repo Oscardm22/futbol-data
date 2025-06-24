@@ -14,4 +14,7 @@
     <color name="Estadísticas">#2C78B1</color>
     <color name="Goles">#F0B420</color>
     <color name="Texto_sobre_fondo_claro">#222222</color>
+    <color name="team_primary">#3F51B5</color>
+    <color name="rival_primary">#FF4081</color>
+    <color name="goal_color">#4CAF50</color>
 </resources>

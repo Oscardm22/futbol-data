@@ -24,6 +24,8 @@ activity = "1.10.1"
 constraintlayout = "2.2.1"
 lottie = "6.4.0"
 lifecycle = "2.6.2"
+androidxFragment = "1.6.2"
+mpAndroidChart = "v3.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -43,7 +45,11 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 material-android = { group = "com.google.android.material", name = "material", version.ref = "material" }
 core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
 lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie" }
-androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle" }
+androidx-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "androidxFragment" }
+androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+
+# Gráficos
+mpandroidchart = { group = "com.github.PhilJay", name = "MPAndroidChart", version.ref = "mpAndroidChart" }
 
 # Firebase
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebase-auth" }

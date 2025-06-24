@@ -8,7 +8,7 @@ import android.os.Looper
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.airbnb.lottie.LottieAnimationView
-import com.example.futboldata.auth.LoginActivity
+import com.example.futboldata.ui.auth.LoginActivity
 
 class SplashActivity : AppCompatActivity() {
     private val SPLASH_DELAY = 3000L // 3 segundos

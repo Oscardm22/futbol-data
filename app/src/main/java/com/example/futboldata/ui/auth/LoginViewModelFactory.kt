@@ -1,4 +1,4 @@
-package com.example.futboldata.auth
+package com.example.futboldata.ui.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

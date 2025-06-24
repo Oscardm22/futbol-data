@@ -1,4 +1,4 @@
-package com.example.futboldata.auth
+package com.example.futboldata.ui.auth
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser

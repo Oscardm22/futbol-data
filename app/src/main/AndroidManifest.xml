@@ -12,27 +12,35 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FutbolData"
         tools:targetApi="31">
-
-        <!-- SplashActivity como actividad principal -->
+        <activity
+            android:name=".ui.jugadores.AddJugadorActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.competiciones.CompeticionesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.partidos.AddPartidoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.equipos.EquipoDetailActivity"
+            android:exported="false" /> <!-- SplashActivity como actividad principal -->
         <activity
             android:name=".SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.App.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!-- LoginActivity -->
+        </activity> <!-- LoginActivity -->
         <activity
-            android:name=".auth.LoginActivity"
+            android:name=".ui.auth.LoginActivity"
             android:exported="false"
-            android:theme="@style/Theme.FutbolData"/>
-
-        <!-- Otras actividades -->
+            android:theme="@style/Theme.FutbolData" /> <!-- Otras actividades -->
         <activity
-            android:name=".equipos.list.EquiposActivity"
+            android:name=".ui.equipos.EquiposActivity"
             android:exported="false" />
     </application>
+
 </manifest>
