@@ -1,7 +1,8 @@
-package com.example.futboldata.ui.auth
+package com.example.futboldata.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.futboldata.data.repository.AuthRepository
 
 class LoginViewModelFactory(
     private val authRepository: AuthRepository

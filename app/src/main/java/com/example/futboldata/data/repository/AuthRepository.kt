@@ -1,4 +1,4 @@
-package com.example.futboldata.ui.auth
+package com.example.futboldata.data.repository
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -19,14 +19,7 @@ class AuthRepository {
         }
     }
 
-    suspend fun register(email: String, password: String): Result<FirebaseUser> {
-        return try {
-            val authResult = auth.createUserWithEmailAndPassword(email, password).await()
-            Result.success(authResult.user!!)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
+    fun sendPasswordResetEmail(email: String) = auth.sendPasswordResetEmail(email)
 
     fun logout() {
         auth.signOut()
