@@ -7,22 +7,21 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.example.futboldata.FutbolDataApp
 import com.example.futboldata.databinding.ActivityLoginBinding
-import com.example.futboldata.data.repository.AuthRepository
 import com.example.futboldata.ui.equipos.EquiposActivity
 import com.example.futboldata.viewmodel.LoginViewModel
-import com.example.futboldata.viewmodel.LoginViewModelFactory
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
-
     private val viewModel: LoginViewModel by viewModels {
-        LoginViewModelFactory(AuthRepository())
+        (application as FutbolDataApp).viewModelFactory
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -89,23 +88,24 @@ class LoginActivity : AppCompatActivity() {
             showLoading(true)
             binding.btnForgotPassword.isEnabled = false
 
-            viewModel.sendPasswordResetEmail(email).addOnCompleteListener { task ->
-                showLoading(false)
-                binding.btnForgotPassword.isEnabled = true
-
-                if (task.isSuccessful) {
+            lifecycleScope.launch {
+                try {
+                    viewModel.sendPasswordResetEmail(email)
                     Toast.makeText(
-                        this,
+                        this@LoginActivity,
                         "Email de recuperación enviado a tu correo.",
                         Toast.LENGTH_LONG
                     ).show()
-                } else {
-                    val errorMessage = when (task.exception) {
+                } catch (e: Exception) {
+                    val errorMessage = when (e) {
                         is FirebaseAuthInvalidUserException -> "Este email no está registrado"
                         is FirebaseAuthInvalidCredentialsException -> "Formato de email inválido"
-                        else -> "Error: ${task.exception?.message}"
+                        else -> "Error: ${e.message}"
                     }
-                    Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@LoginActivity, errorMessage, Toast.LENGTH_LONG).show()
+                } finally {
+                    showLoading(false)
+                    binding.btnForgotPassword.isEnabled = true
                 }
             }
         }

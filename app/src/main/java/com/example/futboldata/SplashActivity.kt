@@ -1,6 +1,7 @@
 package com.example.futboldata
 
 import android.animation.Animator
+import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -11,7 +12,7 @@ import com.airbnb.lottie.LottieAnimationView
 import com.example.futboldata.ui.auth.LoginActivity
 
 class SplashActivity : AppCompatActivity() {
-    private val SPLASH_DELAY = 3000L // 3 segundos
+    private val splashDelay = 3000L
     private var animationCompleted = false
     private val handler = Handler(Looper.getMainLooper())
 
@@ -50,14 +51,22 @@ class SplashActivity : AppCompatActivity() {
             if (!animationCompleted) {
                 proceedToLogin()
             }
-        }, SPLASH_DELAY)
+        }, splashDelay)
     }
 
     private fun proceedToLogin() {
         if (!isFinishing) {
-            handler.removeCallbacksAndMessages(null) // Cancelar cualquier handler pendiente
-            startActivity(Intent(this, LoginActivity::class.java))
-            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+            handler.removeCallbacksAndMessages(null)
+            val intent = Intent(this, LoginActivity::class.java)
+
+
+            val options = ActivityOptions.makeCustomAnimation(
+                this,
+                android.R.anim.fade_in,
+                android.R.anim.fade_out
+            )
+
+            startActivity(intent, options.toBundle())
             finish()
         }
     }

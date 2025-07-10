@@ -41,6 +41,10 @@ class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
 
     fun sendPasswordResetEmail(email: String) = authRepository.sendPasswordResetEmail(email)
 
+    fun logout() {
+        authRepository.logout()
+    }
+
     val isUserLoggedIn: Boolean
         get() = authRepository.currentUser != null
 }

@@ -1,11 +1,11 @@
-package com.example.futboldata.data.managers
+package com.example.futboldata.utils
 
 import com.example.futboldata.data.model.Estadisticas
 import com.example.futboldata.data.model.Partido
 
 class StatsCalculator {
     fun calculate(partidos: List<Partido>): Estadisticas {
-        if (partidos.isEmpty()) return Estadisticas.empty()
+        if (partidos.isEmpty()) return Estadisticas.Companion.empty()
 
         return Estadisticas(
             promedioGoles = partidos.map { it.getGolesAFavor().toDouble() }.average(),

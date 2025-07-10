@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
+        android:name=".FutbolDataApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -37,7 +38,7 @@
         <activity
             android:name=".ui.auth.LoginActivity"
             android:exported="false"
-            android:theme="@style/Theme.FutbolData" /> <!-- Otras actividades -->
+            android:theme="@style/Theme.FutbolData" />
         <activity
             android:name=".ui.equipos.EquiposActivity"
             android:exported="false" />

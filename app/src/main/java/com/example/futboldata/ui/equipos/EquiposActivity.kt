@@ -2,32 +2,30 @@ package com.example.futboldata.ui.equipos
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
-import com.example.futboldata.R
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.example.futboldata.R
 import com.example.futboldata.adapter.EquiposAdapter
-import com.example.futboldata.data.managers.FirebaseDataManager
-import com.example.futboldata.data.managers.StatsCalculator
-import com.example.futboldata.data.repository.impl.EquipoRepositoryImpl
 import com.example.futboldata.databinding.ActivityEquiposBinding
+import com.example.futboldata.ui.auth.LoginActivity
 import com.example.futboldata.viewmodel.EquipoViewModel
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.futboldata.FutbolDataApp
 import com.example.futboldata.data.model.Equipo
-import com.example.futboldata.viewmodel.EquipoViewModelFactory
-import kotlin.jvm.java
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 class EquiposActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEquiposBinding
+    private lateinit var auth: FirebaseAuth
     private val viewModel: EquipoViewModel by viewModels {
-        EquipoViewModelFactory(
-            EquipoRepositoryImpl(
-                FirebaseDataManager(),
-                StatsCalculator()
-            )
-        )
+        (application as FutbolDataApp).viewModelFactory
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,9 +33,35 @@ class EquiposActivity : AppCompatActivity() {
         binding = ActivityEquiposBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setSupportActionBar(binding.toolbar)
+        auth = Firebase.auth
+
         setupRecyclerView()
         setupObservers()
         setupFAB()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_logout -> {
+                logout()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun logout() {
+        auth.signOut()
+        startActivity(Intent(this, LoginActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        })
+        finish()
     }
 
     private fun setupRecyclerView() {
