@@ -7,7 +7,7 @@ import com.example.futboldata.data.model.Partido
 
 interface EquipoRepository {
     // Equipos
-    suspend fun getEquipos(): List<Equipo>
+    suspend fun getEquipos(): Map<String, Equipo>
     suspend fun getEquipoById(equipoId: String): Equipo
     suspend fun saveEquipo(equipo: Equipo): String
     suspend fun deleteEquipo(equipoId: String)

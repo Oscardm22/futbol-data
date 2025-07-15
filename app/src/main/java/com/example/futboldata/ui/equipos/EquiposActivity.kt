@@ -17,9 +17,11 @@ import com.example.futboldata.viewmodel.EquipoViewModel
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.futboldata.FutbolDataApp
 import com.example.futboldata.data.model.Equipo
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import java.util.Date
 
 class EquiposActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEquiposBinding
@@ -67,13 +69,10 @@ class EquiposActivity : AppCompatActivity() {
     private fun setupRecyclerView() {
         binding.rvEquipos.apply {
             layoutManager = LinearLayoutManager(this@EquiposActivity)
-            adapter = EquiposAdapter(emptyList(), { equipo ->
-                // Click en equipo
-                abrirDetalleEquipo(equipo.id)
-            }, { equipo ->
-                // Click en eliminar
-                mostrarDialogoEliminacion(equipo)
-            })
+            adapter = EquiposAdapter(emptyList(),
+                { equipoId -> abrirDetalleEquipo(equipoId) },
+                { equipoId -> mostrarDialogoEliminacion(equipoId) }
+            )
         }
     }
 
@@ -85,7 +84,9 @@ class EquiposActivity : AppCompatActivity() {
                 }
                 is EquipoViewModel.EquipoState.Success -> {
                     binding.progressBar.visibility = View.GONE
-                    (binding.rvEquipos.adapter as EquiposAdapter).updateList(state.equipos)
+                    // Convertimos el Map a List<Pair<String, Equipo>>
+                    val equiposList = state.equipos.entries.map { it.toPair() }
+                    (binding.rvEquipos.adapter as EquiposAdapter).updateList(equiposList)
                 }
                 is EquipoViewModel.EquipoState.Error -> {
                     binding.progressBar.visibility = View.GONE
@@ -116,16 +117,27 @@ class EquiposActivity : AppCompatActivity() {
     }
 
     private fun abrirDialogoCreacionEquipo() {
-        val dialog = AlertDialog.Builder(this)
+        val dialogView = layoutInflater.inflate(R.layout.dialog_nuevo_equipo, null)
+        val editTextNombre = dialogView.findViewById<TextInputEditText>(R.id.etNombreEquipo) // ID corregido
+
+        AlertDialog.Builder(this)
             .setTitle("Nuevo Equipo")
-            .setView(R.layout.dialog_nuevo_equipo)
+            .setView(dialogView)
             .setPositiveButton("Guardar") { _, _ ->
-                // Lógica para guardar
+                val nombre = editTextNombre.text.toString().trim()
+                if (nombre.isNotEmpty()) {
+                    val nuevoEquipo = Equipo(
+                        nombre = nombre,
+                        fechaCreacion = Date()
+                    )
+                    viewModel.guardarEquipo(nuevoEquipo)
+                } else {
+                    Toast.makeText(this, "Ingresa un nombre válido", Toast.LENGTH_SHORT).show()
+                }
             }
             .setNegativeButton("Cancelar", null)
             .create()
-
-        dialog.show()
+            .show()
     }
 
     private fun abrirDetalleEquipo(equipoId: String) {
@@ -135,12 +147,12 @@ class EquiposActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun mostrarDialogoEliminacion(equipo: Equipo) {
+    private fun mostrarDialogoEliminacion(equipoId: String) {
         AlertDialog.Builder(this)
             .setTitle("Eliminar equipo")
-            .setMessage("¿Seguro que quieres eliminar a ${equipo.nombre}?")
+            .setMessage("¿Seguro que quieres eliminar este equipo?")
             .setPositiveButton("Eliminar") { _, _ ->
-                viewModel.eliminarEquipo(equipo.id)
+                viewModel.eliminarEquipo(equipoId)
             }
             .setNegativeButton("Cancelar", null)
             .show()

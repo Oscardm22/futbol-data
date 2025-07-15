@@ -15,11 +15,14 @@ class EquipoRepositoryImpl(
 ) : EquipoRepository {
 
     // --- Equipos ---
-    override suspend fun getEquipos(): List<Equipo> {
+    override suspend fun getEquipos(): Map<String, Equipo> {
         return db.collection("equipos")
             .get()
             .await()
-            .toObjects(Equipo::class.java)
+            .documents
+            .associate { document ->
+                document.id to (document.toObject(Equipo::class.java))!!
+            }
     }
 
     override suspend fun getEquipoById(equipoId: String): Equipo {

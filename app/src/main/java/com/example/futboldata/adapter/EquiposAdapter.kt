@@ -8,9 +8,9 @@ import com.example.futboldata.data.model.Equipo
 import com.example.futboldata.databinding.ItemEquipoBinding
 
 class EquiposAdapter(
-    private var equipos: List<Equipo>,
-    private val onItemClick: (Equipo) -> Unit,
-    private val onDeleteClick: (Equipo) -> Unit
+    private var equipos: List<Pair<String, Equipo>>,
+    private val onItemClick: (String) -> Unit,
+    private val onDeleteClick: (String) -> Unit
 ) : RecyclerView.Adapter<EquiposAdapter.EquipoViewHolder>() {
 
     inner class EquipoViewHolder(val binding: ItemEquipoBinding) :
@@ -26,18 +26,18 @@ class EquiposAdapter(
     }
 
     override fun onBindViewHolder(holder: EquipoViewHolder, position: Int) {
-        val equipo = equipos[position]
+        val (id, equipo) = equipos[position]
         holder.binding.apply {
             tvNombre.text = equipo.nombre
-            root.setOnClickListener { onItemClick(equipo) }
-            btnDelete.setOnClickListener { onDeleteClick(equipo) }
+            root.setOnClickListener { onItemClick(id) }
+            btnDelete.setOnClickListener { onDeleteClick(id) }
         }
     }
 
     override fun getItemCount() = equipos.size
 
     @SuppressLint("NotifyDataSetChanged")
-    fun updateList(newEquipos: List<Equipo>) {
+    fun updateList(newEquipos: List<Pair<String, Equipo>>) {
         equipos = newEquipos
         notifyDataSetChanged()
     }

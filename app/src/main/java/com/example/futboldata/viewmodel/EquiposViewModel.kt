@@ -90,7 +90,7 @@ class EquipoViewModel(
     // Estados para la UI
     sealed class EquipoState {
         object Loading : EquipoState()
-        data class Success(val equipos: List<Equipo>) : EquipoState()
+        data class Success(val equipos: Map<String, Equipo>) : EquipoState()
         data class Error(val mensaje: String) : EquipoState()
     }
 
