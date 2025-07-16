@@ -37,4 +37,9 @@
         <!-- Asegúrate de que el cornerRadius coincida con tu drawable -->
         <item name="cornerRadius">8dp</item>
     </style>
+
+    <style name="CursorColor" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="colorControlActivated">@color/white</item> <!-- Color del cursor -->
+        <item name="colorPrimary">@color/white</item> <!-- Color del texto seleccionado -->
+    </style>
 </resources>

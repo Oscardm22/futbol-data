@@ -33,6 +33,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/tilPassword"
+        android:theme="@style/CursorColor"
         android:layout_marginTop="160dp">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -56,6 +57,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:passwordToggleEnabled="true"
         app:passwordToggleTint="@color/white"
+        android:theme="@style/CursorColor"
         android:layout_marginTop="16dp">
 
         <com.google.android.material.textfield.TextInputEditText
