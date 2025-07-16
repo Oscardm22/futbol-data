@@ -61,13 +61,16 @@ class LoginActivity : AppCompatActivity() {
             val email = binding.etEmail.text.toString().trim()
             val password = binding.etPassword.text.toString().trim()
 
+            binding.tilEmail.error = null
+            binding.tilPassword.error = null
+
             when {
                 email.isEmpty() -> {
-                    binding.etEmail.error = "Ingresa tu email"
+                    binding.tilEmail.error = "Ingresa tu email"
                     binding.etEmail.requestFocus()
                 }
                 password.isEmpty() -> {
-                    binding.etPassword.error = "Ingresa tu contraseña"
+                    binding.tilPassword.error = "Ingresa tu contraseña"
                     binding.etPassword.requestFocus()
                 }
                 else -> viewModel.login(email, password)
