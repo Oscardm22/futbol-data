@@ -5,10 +5,12 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.example.futboldata.R
 import com.example.futboldata.adapter.EquiposAdapter
 import com.example.futboldata.databinding.ActivityEquiposBinding
@@ -18,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.futboldata.FutbolDataApp
 import com.example.futboldata.data.model.Equipo
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -118,26 +121,59 @@ class EquiposActivity : AppCompatActivity() {
 
     private fun abrirDialogoCreacionEquipo() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_nuevo_equipo, null)
-        val editTextNombre = dialogView.findViewById<TextInputEditText>(R.id.etNombreEquipo) // ID corregido
+        val textInputLayout = dialogView.findViewById<TextInputLayout>(R.id.tilNombreEquipo)
+        val editText = dialogView.findViewById<TextInputEditText>(R.id.etNombreEquipo)
 
-        AlertDialog.Builder(this)
+        val dialog = AlertDialog.Builder(this)
             .setTitle("Nuevo Equipo")
             .setView(dialogView)
-            .setPositiveButton("Guardar") { _, _ ->
-                val nombre = editTextNombre.text.toString().trim()
-                if (nombre.isNotEmpty()) {
+            .setPositiveButton("Guardar", null)
+            .setNegativeButton("Cancelar", null)
+            .create()
+
+        // Configura el color de los botones y título
+        dialog.setOnShowListener {
+            val textView = dialog.findViewById<TextView>(android.R.id.title)
+            textView?.setTextColor(ContextCompat.getColor(this, R.color.Fondo))
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(ContextCompat.getColor(this, R.color.Fondo))
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(ContextCompat.getColor(this, R.color.Fondo))
+
+            // Manejo manual del botón positivo
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setOnClickListener {
+                val nombre = editText.text.toString().trim()
+                val (esValido, mensajeError) = validarNombreEquipo(nombre)
+
+                if (esValido) {
                     val nuevoEquipo = Equipo(
                         nombre = nombre,
                         fechaCreacion = Date()
                     )
                     viewModel.guardarEquipo(nuevoEquipo)
+                    dialog.dismiss() // Solo cerramos si es válido
                 } else {
-                    Toast.makeText(this, "Ingresa un nombre válido", Toast.LENGTH_SHORT).show()
+                    textInputLayout.error = mensajeError
+                    // Mantenemos el diálogo abierto para que corrija el error
                 }
             }
-            .setNegativeButton("Cancelar", null)
-            .create()
-            .show()
+        }
+
+        // Limpiar error cuando el usuario empieza a editar
+        editText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                textInputLayout.error = null
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun validarNombreEquipo(nombre: String): Pair<Boolean, String> {
+        return when {
+            nombre.isEmpty() -> false to "El nombre no puede estar vacío"
+            nombre.length < 3 -> false to "El nombre debe tener al menos 3 caracteres"
+            nombre.length > 30 -> false to "El nombre no puede exceder 30 caracteres"
+            else -> true to ""
+        }
     }
 
     private fun abrirDetalleEquipo(equipoId: String) {

@@ -1,19 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="16dp">
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilNombreEquipo"
+        style="@style/RoundedTextInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Nombre del equipo">
+        android:hint="@string/hint_equipo"
+        android:textColorHint="@color/Fondo"
+        app:errorEnabled="true"
+        app:counterEnabled="true"
+        app:counterMaxLength="30"
+        app:errorTextColor="@color/fire_brick"
+        app:boxStrokeColor="@color/Fondo"
+        app:hintTextColor="@color/Fondo"
+        app:boxStrokeWidth="1dp"
+        app:boxStrokeWidthFocused="1.5dp"
+        app:boxStrokeErrorColor="@color/fire_brick">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etNombreEquipo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/etNombreEquipo"
+        style="@style/TextInputEditTextStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLength="30"
+        android:textColor="@color/Fondo"
+        android:inputType="textCapWords"
+        android:textCursorDrawable="@null"/>
+</com.google.android.material.textfield.TextInputLayout>
 
 </LinearLayout>
