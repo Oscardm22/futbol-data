@@ -6,6 +6,34 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <!-- Contenedor de imagen -->
+    <FrameLayout
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp">
+
+        <ImageView
+            android:id="@+id/ivTeamPhoto"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_default_team_placeholder"
+            android:contentDescription="@string/team_photo_desc"
+            android:background="@drawable/circle_background"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabAddPhoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:contentDescription="@string/desc_fabAddPhoto"
+            android:src="@drawable/ic_add_a_photo"
+            app:backgroundTint="@color/Fondo"
+            app:tint="@android:color/white"
+            app:elevation="4dp"/>
+    </FrameLayout>
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilNombreEquipo"
         style="@style/RoundedTextInputLayout"
@@ -21,17 +49,17 @@
         app:hintTextColor="@color/Fondo"
         app:boxStrokeWidth="1dp"
         app:boxStrokeWidthFocused="1.5dp"
+        android:theme="@style/CursorColor"
         app:boxStrokeErrorColor="@color/fire_brick">
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/etNombreEquipo"
-        style="@style/TextInputEditTextStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:maxLength="30"
-        android:textColor="@color/Fondo"
-        android:inputType="textCapWords"
-        android:textCursorDrawable="@null"/>
-</com.google.android.material.textfield.TextInputLayout>
-
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etNombreEquipo"
+            style="@style/TextInputEditTextStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLength="30"
+            android:textColor="@color/Fondo"
+            android:inputType="textCapWords"
+            android:textCursorDrawable="@null"/>
+    </com.google.android.material.textfield.TextInputLayout>
 </LinearLayout>

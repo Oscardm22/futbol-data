@@ -1,6 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Permisos para fotos -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
+
+    <!-- Para versiones anteriores a Android 13 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
 
     <application
         android:name=".FutbolDataApp"
@@ -12,7 +19,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FutbolData"
-        tools:targetApi="31">
+        tools:targetApi="34">
+
+
+        <!-- Actividades -->
         <activity
             android:name=".ui.jugadores.AddJugadorActivity"
             android:exported="false" />
@@ -24,21 +34,25 @@
             android:exported="false" />
         <activity
             android:name=".ui.equipos.EquipoDetailActivity"
-            android:exported="false" /> <!-- SplashActivity como actividad principal -->
+            android:exported="false" />
+
+        <!-- Splash Screen -->
         <activity
             android:name=".SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.App.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity> <!-- LoginActivity -->
+        </activity>
+
+        <!-- Login -->
         <activity
             android:name=".ui.auth.LoginActivity"
-            android:exported="false"
-            android:theme="@style/Theme.FutbolData" />
+            android:exported="false" />
+
+        <!-- Equipos -->
         <activity
             android:name=".ui.equipos.EquiposActivity"
             android:exported="false" />

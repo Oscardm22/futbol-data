@@ -5,7 +5,7 @@ import java.util.Date
 data class Equipo(
     val nombre: String = "",
     val fechaCreacion: Date = Date(),
-    val imagenUrl: String = ""
+    val imagenBase64: String = ""
 ) {
     fun getIniciales(): String {
         return nombre.split(" ")

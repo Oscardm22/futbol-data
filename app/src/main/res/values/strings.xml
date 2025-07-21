@@ -8,6 +8,10 @@
     //Descripciones
     <string name="desc_logo">Logo de la aplicación</string>
     <string name="add_team">Agregar equipo</string>
+    <string name="desc_btnDelete">Botón eliminar</string>
+    <string name="desc_team_logo">Logo del equipo %s</string>
+    <string name="team_photo_desc">Foto del equipo</string>
+    <string name="desc_fabAddPhoto">Botón para agregar foto</string>
 
     //Hints
     <string name="hint_password">Contraseña</string>

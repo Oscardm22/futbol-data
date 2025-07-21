@@ -2,32 +2,103 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="4dp">
+    android:layout_height="80dp"
+    android:layout_marginHorizontal="10dp"
+    android:layout_marginVertical="3dp"
+    app:cardCornerRadius="14dp"
+    app:cardElevation="1dp"
+    app:cardBackgroundColor="@color/card_background"
+    app:cardUseCompatPadding="true">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:gravity="center_vertical"
+        android:baselineAligned="false">
 
-        <TextView
-            android:id="@+id/tvNombre"
-            android:layout_width="match_parent"
+        <!-- Contenedor del logo con forma circular -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginEnd="16dp">
+
+            <ImageView
+                android:id="@+id/ivTeamLogo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:contentDescription="@string/desc_team_logo"
+                tools:src="@drawable/ic_default_team_placeholder"
+                android:adjustViewBounds="true"
+                android:padding="6dp"/>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Contenedor del texto -->
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textStyle="bold"/>
+            android:layout_weight="1"
+            android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/tvNombre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/Fondo"
+                android:ellipsize="end"
+                android:maxLines="1"
+                tools:text="Real Madrid"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="6dp">
+
+                <TextView
+                    android:id="@+id/tvPartidos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:textColor="@color/secondary_text"
+                    android:drawablePadding="4dp"
+                    app:drawableStartCompat="@drawable/ic_match"
+                    android:minHeight="20dp"
+                    android:gravity="center_vertical"
+                    tools:text="25 PJ"
+                    android:layout_marginEnd="8dp"/>
+
+                <TextView
+                    android:id="@+id/tvVictorias"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:textColor="@color/secondary_text"
+                    android:drawablePadding="5dp"
+                    app:drawableStartCompat="@drawable/ic_win"
+                    android:minHeight="20dp"
+                    android:gravity="center_vertical"
+                    app:drawableTint="@color/Goles"
+                    tools:text="18 V"
+                    android:layout_marginEnd="8dp"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Botón de eliminar -->
         <ImageButton
             android:id="@+id/btnDelete"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:src="@android:drawable/ic_delete"
-            android:background="?attr/selectableItemBackgroundBorderless"/>
-
-    </RelativeLayout>
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_delete"
+            android:contentDescription="@string/desc_btnDelete"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp"
+            app:tint="@color/error_color"/>
+    </LinearLayout>
 </androidx.cardview.widget.CardView>

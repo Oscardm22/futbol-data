@@ -1,0 +1,22 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="@color/team_icon_tint">
+
+    <!-- Base del escudo -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M12,1L3,5v6c0,5.55 3.84,10.74 9,12 5.16,-1.26 9,-6.45 9,-12V5L12,1z"/>
+
+    <!-- Detalle superior -->
+    <path
+        android:fillColor="#B3FFFFFF"
+        android:pathData="M12,7.3l5.76,2.85 -1.59,0.87 -4.17,-2.07 -4.17,2.07 -1.59,-0.87L12,7.3z"/>
+
+    <!-- Detalle inferior -->
+    <path
+        android:fillColor="#80FFFFFF"
+        android:pathData="M12,12.39l5.76,-2.85 -1.59,-0.87L12,10.81l-4.17,-2.07 -1.59,0.87L12,12.39z"/>
+</vector>

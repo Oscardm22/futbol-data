@@ -21,4 +21,10 @@
     <color name="Timberwolf">#dbd7d2</color>
     <color name="errorTextColor_login">#F94E65</color>
     <color name="boxStrokeErrorColor_login">#F94E65</color>
+    <color name="card_background">#FFFFFFFF</color>
+    <color name="card_stroke">#1F000000</color>
+    <color name="primary_text">#DE000000</color>
+    <color name="secondary_text">#8A000000</color>
+    <color name="error_color">#FF5252</color>
+    <color name="team_icon_tint">#B8A3AF</color>
 </resources>
