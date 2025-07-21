@@ -315,18 +315,49 @@ class EquiposActivity : AppCompatActivity() {
     private fun updateCurrentDialogWithImage(uri: Uri) {
         currentDialog?.findViewById<ImageView>(R.id.ivTeamPhoto)?.let { imageView ->
             try {
+                // First decode with inJustDecodeBounds=true to check dimensions
                 val inputStream = contentResolver.openInputStream(uri)
-                val options = BitmapFactory.Options()
-                options.inSampleSize = 2
-                val bitmap = BitmapFactory.decodeStream(inputStream, null, options)
+                val options = BitmapFactory.Options().apply {
+                    inJustDecodeBounds = true
+                }
+                BitmapFactory.decodeStream(inputStream, null, options)
                 inputStream?.close()
 
-                imageView.setImageBitmap(bitmap) // Eliminado el getCircularBitmap
+                // Calculate inSampleSize
+                options.inSampleSize = calculateInSampleSize(options, 400, 400)
+
+                // Decode bitmap with inSampleSize set
+                options.inJustDecodeBounds = false
+                val newInputStream = contentResolver.openInputStream(uri)
+                val bitmap = BitmapFactory.decodeStream(newInputStream, null, options)
+                newInputStream?.close()
+
+                imageView.setImageBitmap(bitmap)
             } catch (e: Exception) {
                 e.printStackTrace()
                 imageView.setImageResource(R.drawable.ic_default_team_placeholder)
             }
         }
+    }
+
+    private fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
+        // Raw height and width of image
+        val height = options.outHeight
+        val width = options.outWidth
+        var inSampleSize = 1
+
+        if (height > reqHeight || width > reqWidth) {
+            val halfHeight = height / 2
+            val halfWidth = width / 2
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
+                inSampleSize *= 2
+            }
+        }
+
+        return inSampleSize
     }
 
     private fun validarNombreEquipo(nombre: String): Pair<Boolean, String> {

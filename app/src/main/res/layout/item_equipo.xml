@@ -30,11 +30,11 @@
                 android:id="@+id/ivTeamLogo"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="centerCrop"
+                android:scaleType="fitCenter"
                 android:contentDescription="@string/desc_team_logo"
                 tools:src="@drawable/ic_default_team_placeholder"
                 android:adjustViewBounds="true"
-                android:padding="6dp"/>
+                android:padding="8dp"/>
         </com.google.android.material.card.MaterialCardView>
 
         <!-- Contenedor del texto -->

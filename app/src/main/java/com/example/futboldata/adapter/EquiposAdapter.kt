@@ -54,12 +54,40 @@ class EquiposAdapter(
     private fun loadImageFromBase64(base64: String, imageView: ImageView) {
         try {
             val decodedBytes = android.util.Base64.decode(base64, android.util.Base64.DEFAULT)
-            val bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+
+            // Calcular el tamaño de muestra óptimo para reducir memoria
+            val options = BitmapFactory.Options().apply {
+                inJustDecodeBounds = true
+            }
+            BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size, options)
+
+            // Calcular inSampleSize
+            options.inSampleSize = calculateInSampleSize(options, 200, 200) // Tamaño objetivo 200x200
+
+            // Decodificar con las nuevas opciones
+            options.inJustDecodeBounds = false
+            val bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size, options)
+
             imageView.setImageBitmap(bitmap)
         } catch (e: Exception) {
             Log.e("EquiposAdapter", "Error al cargar imagen Base64", e)
             imageView.setImageResource(R.drawable.ic_default_team_placeholder)
         }
+    }
+
+    private fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
+        val (height: Int, width: Int) = options.run { outHeight to outWidth }
+        var inSampleSize = 1
+
+        if (height > reqHeight || width > reqWidth) {
+            val halfHeight: Int = height / 2
+            val halfWidth: Int = width / 2
+
+            while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
+                inSampleSize *= 2
+            }
+        }
+        return inSampleSize
     }
 
     override fun onViewRecycled(holder: EquipoViewHolder) {
