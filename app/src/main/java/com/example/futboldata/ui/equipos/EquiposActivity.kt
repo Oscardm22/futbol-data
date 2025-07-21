@@ -36,6 +36,7 @@ import java.util.*
 import android.Manifest
 import android.os.Build
 import android.util.Base64
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class EquiposActivity : AppCompatActivity() {
 
@@ -162,7 +163,7 @@ class EquiposActivity : AppCompatActivity() {
             checkAndRequestPhotoPermissions()
         }
 
-        val dialog = AlertDialog.Builder(this)
+        val dialog = MaterialAlertDialogBuilder(this)
             .setTitle("Nuevo Equipo")
             .setView(dialogView)
             .setPositiveButton("Guardar", null)
@@ -172,15 +173,16 @@ class EquiposActivity : AppCompatActivity() {
         currentDialog = dialog
 
         dialog.setOnShowListener {
+            // Personalizar color del título
             val textView = dialog.findViewById<TextView>(android.R.id.title)
             textView?.setTextColor(ContextCompat.getColor(this, R.color.Fondo))
 
+            // Personalizar botones
             dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(
-                ContextCompat.getColor(this, R.color.Fondo)
-            )
+                ContextCompat.getColor(this, R.color.botones_positivos))
+
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(
-                ContextCompat.getColor(this, R.color.Fondo)
-            )
+                ContextCompat.getColor(this, R.color.Fondo))
 
             dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setOnClickListener {
                 val nombre = editText.text.toString().trim()
@@ -188,9 +190,9 @@ class EquiposActivity : AppCompatActivity() {
 
                 if (esValido) {
                     val imagenBase64 = if (teamPhotoUri != null) {
-                        convertImageToBase64(teamPhotoUri!!) // Convierte la imagen
+                        convertImageToBase64(teamPhotoUri!!)
                     } else {
-                        "" // Si no hay imagen, guarda un string vacío
+                        ""
                     }
 
                     val nuevoEquipo = Equipo(
@@ -199,7 +201,7 @@ class EquiposActivity : AppCompatActivity() {
                         imagenBase64 = imagenBase64 ?: ""
                     )
 
-                    viewModel.guardarEquipo(nuevoEquipo) // Guarda en Firestore
+                    viewModel.guardarEquipo(nuevoEquipo)
                     dialog.dismiss()
                 } else {
                     textInputLayout.error = mensajeError
@@ -377,16 +379,27 @@ class EquiposActivity : AppCompatActivity() {
     }
 
     private fun mostrarDialogoEliminacion(equipoId: String) {
-        AlertDialog.Builder(this)
+        val dialog = MaterialAlertDialogBuilder(this)
             .setTitle("Eliminar equipo")
             .setMessage("¿Seguro que quieres eliminar este equipo? Se eliminará también su foto.")
             .setPositiveButton("Eliminar") { _, _ ->
                 viewModel.eliminarEquipo(equipoId)
-                // Opcional: También eliminar la foto de Storage
                 deleteTeamPhotoFromStorage(equipoId)
             }
             .setNegativeButton("Cancelar", null)
-            .show()
+            .create()
+
+        dialog.setOnShowListener {
+            // Botón Eliminar (positivo) - Rojo o color de error
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(
+                ContextCompat.getColor(this, R.color.error_color))
+
+            // Botón Cancelar (negativo) - Color principal
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(
+                ContextCompat.getColor(this, R.color.Fondo))
+        }
+
+        dialog.show()
     }
 
     private fun deleteTeamPhotoFromStorage(equipoId: String) {
