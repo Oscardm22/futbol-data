@@ -20,6 +20,9 @@ class SharedViewModelFactory(
             modelClass.isAssignableFrom(EquipoViewModel::class.java) -> {
                 EquipoViewModel(equipoRepository) as T
             }
+            modelClass.isAssignableFrom(EquipoDetailViewModel::class.java) -> {
+                EquipoDetailViewModel(equipoRepository, jugadorRepository, partidoRepository) as T
+            }
             modelClass.isAssignableFrom(StatsViewModel::class.java) -> {
                 StatsViewModel(equipoRepository) as T
             }

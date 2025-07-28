@@ -1,30 +1,32 @@
 package com.example.futboldata.utils
 
-import com.example.futboldata.data.model.Estadisticas
 import com.example.futboldata.data.model.Partido
+import com.example.futboldata.data.model.Estadisticas
 
-class StatsCalculator {
+object StatsCalculator {
     fun calculate(partidos: List<Partido>): Estadisticas {
-        if (partidos.isEmpty()) return Estadisticas.Companion.empty()
+        val partidosJugados = partidos.size
+        val victorias = partidos.count { it.fueVictoria() }
+        val empates = partidos.count { it.obtenerEstadoPartido() == "Empate" }
+        val derrotas = partidosJugados - victorias - empates
+
+        val golesFavor = partidos.sumOf { it.getGolesEquipo() }
+        val golesContra = partidos.sumOf { it.getGolesRival() }
+
+        val promedioGoles = if (partidosJugados > 0) golesFavor.toDouble() / partidosJugados else 0.0
+        val porcentajeVictorias = if (partidosJugados > 0) victorias.toDouble() / partidosJugados * 100 else 0.0
 
         return Estadisticas(
-            promedioGoles = partidos.map { it.getGolesAFavor().toDouble() }.average(),
-            porcentajeVictorias = calcularPorcentajeVictorias(partidos),
+            promedioGoles = promedioGoles,
+            porcentajeVictorias = porcentajeVictorias,
             posesionPromedio = 0.0,
-            golesPorPartido = partidos.associate {
-                it.fecha.toString() to it.getGolesAFavor()
-            }
+            golesPorPartido = emptyMap(),
+            partidosJugados = partidosJugados,
+            victorias = victorias,
+            empates = empates,
+            derrotas = derrotas,
+            golesFavor = golesFavor,
+            golesContra = golesContra
         )
-    }
-
-    private fun calcularPorcentajeVictorias(partidos: List<Partido>): Double {
-        val victorias = partidos.count {
-            it.obtenerEstadoPartido() == "Victoria" // Usamos el método getResultado()
-        }
-        return if (partidos.isNotEmpty()) {
-            (victorias.toDouble() / partidos.size) * 100
-        } else {
-            0.0
-        }
     }
 }

@@ -7,8 +7,8 @@ import com.example.futboldata.data.model.Partido
 
 interface EquipoRepository {
     // Equipos
-    suspend fun getEquipos(): Map<String, Equipo>
-    suspend fun getEquipoById(equipoId: String): Equipo
+    suspend fun getEquipos(): List<Equipo>
+    suspend fun getEquipoById(equipoId: String): Equipo?
     suspend fun saveEquipo(equipo: Equipo): String
     suspend fun deleteEquipo(equipoId: String)
 
@@ -21,5 +21,5 @@ interface EquipoRepository {
     suspend fun getCompeticiones(): List<Competicion>
 
     // Stats
-    suspend fun getEquipoWithStats(equipoId: String): Pair<Equipo, Estadisticas>
+    suspend fun getEquipoWithStats(equipoId: String): Pair<Equipo?, Estadisticas>
 }

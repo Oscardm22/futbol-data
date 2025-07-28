@@ -6,14 +6,23 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
 class JugadorRepositoryImpl(
-    private val firestore: FirebaseFirestore
+    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 ) : JugadorRepository {
 
-    override suspend fun getJugadoresByEquipo(equipoId: String): List<Jugador> {
-        return firestore.collection("jugadores")
+    override suspend fun addJugador(jugador: Jugador) {
+        db.collection("jugadores")
+            .add(jugador.toMap())
+            .await()
+    }
+
+    override suspend fun getJugadoresPorEquipo(equipoId: String): List<Jugador> {
+        return db.collection("jugadores")
             .whereEqualTo("equipoId", equipoId)
             .get()
             .await()
-            .toObjects(Jugador::class.java)
+            .documents
+            .mapNotNull { document ->
+                document.toObject(Jugador::class.java)
+            }
     }
 }

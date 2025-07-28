@@ -19,7 +19,7 @@ class JugadoresPartidoAdapter(
         fun bind(jugador: Jugador) {
             binding.apply {
                 tvNombre.text = jugador.nombre
-                tvPosicion.text = jugador.posicion.name
+                tvPosicion.text = jugador.posicion.displayName
 
                 swTitular.setOnCheckedChangeListener { _, isChecked ->
                     onParticipacionChange(jugador, ParticipacionJugador(
@@ -54,10 +54,12 @@ class JugadoresPartidoAdapter(
     }
 
     class DiffCallback : DiffUtil.ItemCallback<Jugador>() {
-        override fun areItemsTheSame(oldItem: Jugador, newItem: Jugador) =
-            oldItem.id == newItem.id
+        override fun areItemsTheSame(oldItem: Jugador, newItem: Jugador): Boolean {
+            return oldItem.id == newItem.id
+        }
 
-        override fun areContentsTheSame(oldItem: Jugador, newItem: Jugador) =
-            oldItem == newItem
+        override fun areContentsTheSame(oldItem: Jugador, newItem: Jugador): Boolean {
+            return oldItem == newItem
+        }
     }
 }

@@ -1,31 +1,100 @@
 package com.example.futboldata.viewmodel
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.futboldata.data.model.Equipo
 import com.example.futboldata.data.model.Estadisticas
+import com.example.futboldata.data.model.Jugador
+import com.example.futboldata.data.model.Partido
 import com.example.futboldata.data.repository.EquipoRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import com.example.futboldata.data.repository.JugadorRepository
+import com.example.futboldata.data.repository.PartidoRepository
 import kotlinx.coroutines.launch
 
 class EquipoDetailViewModel(
-    private val equipoRepository: EquipoRepository
+    private val repository: EquipoRepository,
+    private val jugadorRepository: JugadorRepository,
+    private val partidoRepository: PartidoRepository
 ) : ViewModel() {
 
-    private val _equipoWithStats = MutableStateFlow<Pair<Equipo, Estadisticas>?>(null)
-    val equipoWithStats = _equipoWithStats.asStateFlow()
+    private val _equipo = MutableLiveData<Equipo>()
+    val equipo: LiveData<Equipo> = _equipo
 
-    private val _errorMessage = MutableStateFlow<String?>(null)
-    val errorMessage = _errorMessage.asStateFlow()
+    private val _estadisticas = MutableLiveData<Estadisticas>()
+    val estadisticas: LiveData<Estadisticas> = _estadisticas
 
-    fun loadEquipoData(equipoId: String) {
+    private val _jugadores = MutableLiveData<List<Jugador>>()
+    val jugadores: LiveData<List<Jugador>> = _jugadores
+
+    private val _partidos = MutableLiveData<List<Partido>>()
+    val partidos: LiveData<List<Partido>> = _partidos
+
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
+    fun cargarEquipo(equipoId: String) {
+        _isLoading.value = true
         viewModelScope.launch {
             try {
-                val data = equipoRepository.getEquipoWithStats(equipoId)
-                _equipoWithStats.value = data
+                // Cargar equipo y estadísticas
+                val (equipoData, statsData) = repository.getEquipoWithStats(equipoId)
+                _equipo.value = equipoData
+                _estadisticas.value = statsData
+
+                cargarJugadores(equipoId)
+                cargarPartidos(equipoId)
             } catch (e: Exception) {
-                _errorMessage.value = "Error al cargar equipo: ${e.message}"
+                // Manejo de errores
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun cargarJugadores(equipoId: String) {
+        viewModelScope.launch {
+            try {
+                _isLoading.value = true
+                val listaJugadores = jugadorRepository.getJugadoresPorEquipo(equipoId)
+                _jugadores.value = listaJugadores
+            } catch (e: Exception) {
+                // Manejo de errores
+                _jugadores.value = emptyList()
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun addJugador(jugador: Jugador) {
+        viewModelScope.launch {
+            try {
+                jugadorRepository.addJugador(jugador)
+                // Actualizar la lista después de añadir
+                cargarJugadores(jugador.equipoId)
+            } catch (e: Exception) {
+                // Manejo de errores
+            }
+        }
+    }
+
+    fun addPartido(partido: Partido) {
+        viewModelScope.launch {
+            repository.addPartido(partido)
+        }
+    }
+
+    fun cargarPartidos(equipoId: String) {
+        viewModelScope.launch {
+            try {
+                _isLoading.value = true
+                _partidos.value = partidoRepository.getPartidos(equipoId)
+            } catch (e: Exception) {
+                _partidos.value = emptyList()
+            } finally {
+                _isLoading.value = false
             }
         }
     }

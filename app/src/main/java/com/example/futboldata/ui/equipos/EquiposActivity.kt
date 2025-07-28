@@ -116,8 +116,7 @@ class EquiposActivity : AppCompatActivity() {
                 }
                 is EquipoViewModel.EquipoState.Success -> {
                     binding.progressBar.visibility = View.GONE
-                    val equiposList = state.equipos.entries.map { it.toPair() }
-                    (binding.rvEquipos.adapter as EquiposAdapter).updateList(equiposList)
+                    (binding.rvEquipos.adapter as EquiposAdapter).updateList(state.equipos)
                 }
                 is EquipoViewModel.EquipoState.Error -> {
                     binding.progressBar.visibility = View.GONE

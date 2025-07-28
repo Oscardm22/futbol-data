@@ -1,9 +1,32 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Fútbol Data</string>
+    <string name="matches">Partidos</string>
+    <string name="wins">Victorias</string>
+    <string name="draws">Empates</string>
+    <string name="losses">Derrotas</string>
+    <string name="tab_estadisticas">Estadísticas</string>
+    <string name="tab_partidos">Partidos</string>
+    <string name="tab_jugadores">Jugadores</string>
+    <string name="zero">0</string>
+    <string name="dash">-</string>
+    <string name="error_required">Este campo es obligatorio</string>
+    <string name="Fecha">Fecha</string>
+    <string name="Rival">Rival</string>
+    <string name="Resultado">Resultado</string>
+    <string name="Nombre_Jugador">Nombre Jugador</string>
+    <string name="Posición">Posición</string>
+    <string name="error_campo_obligatorio">Este campo es obligatorio</string>
+    <string name="error_competicion_invalida">Seleccione una competición válida</string>
+    <string name="error_generico">Error al guardar los datos</string>
+    <string name="error_formato_resultado" tools:ignore="TypographyDashes">Formato de resultado inválido (ej: 2-1)</string>
 
     //Formatos
     <string name="avg_goals_format">Promedio de goles: %.1f</string>
     <string name="win_rate_format">Porcentaje de victorias: %.1f%%</string>
+    <string name="stats_matches_played">Partidos jugados: %d</string>
+    <string name="stats_win_percentage">%1$d%% victorias</string>
+    <string name="stats_avg_goals">Promedio goles: %1$.1f</string>
+    <string name="stats_possession">%1$d%% posesión</string>
 
     //Descripciones
     <string name="desc_logo">Logo de la aplicación</string>
@@ -12,15 +35,34 @@
     <string name="desc_team_logo">Logo del equipo %s</string>
     <string name="team_photo_desc">Foto del equipo</string>
     <string name="desc_fabAddPhoto">Botón para agregar foto</string>
+    <string name="add_match">Añadir partido</string>
+    <string name="ivTeamBackground">Imagen de fondo del equipo</string>
 
     //Hints
     <string name="hint_password">Contraseña</string>
     <string name="hint_email">Correo electrónico</string>
     <string name="hint_equipo">Nombre del equipo</string>
+    <string name="local_goals_hint">Goles local</string>
+    <string name="visitor_goals_hint">Goles visitante</string>
+    <string name="match_date_hint">Fecha del partido</string>
+    <string name="phase_hint">Fase</string>
+    <string name="round_hint">Jornada</string>
+    <string name="hint_rival">Rival</string>
+    <string name="hint_resultado" tools:ignore="TypographyDashes">Resultado (ej: 2-1)</string>
+    <string name="hint_competicion">Competición</string>
+    <string name="hint_temporada">Temporada</string>
+    <string name="hint_fase">Fase</string>
+    <string name="hint_jornada">Jornada</string>
+    <string name="hint_nombre">Nombre completo</string>
+    <string name="hint_posicion">Posición</string>
 
     //Botones
     <string name="btn_login">Iniciar Sesión</string>
     <string name="menu_logout">Cerrar sesión</string>
     <string name="forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="local">Local</string>
+    <string name="visitor">Visitante</string>
+    <string name="es_local">Partido en casa</string>
+    <string name="guardar">Guardar</string>
 
 </resources>

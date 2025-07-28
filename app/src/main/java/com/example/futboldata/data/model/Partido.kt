@@ -12,17 +12,17 @@ data class Partido(
     val competicionId: String = "",
     val competicionNombre: String = "",
     val temporada: String = "",
-    val fase: String = "",
+    val fase: String? = null,
     val jornada: Int? = null,
+    val esLocal: Boolean = true,
     val goleadores: List<Gol> = emptyList(),
     val asistentes: List<Asistencia> = emptyList(),
     val jugadorDelPartido: String? = null,
-    // Nuevo campo para la alineación completa
     val alineacion: List<ParticipacionJugador> = emptyList()
 ) {
     // Constructor sin argumentos para Firestore
     constructor() : this("", "", Date(), "", "0-0", "", "", "", "",
-        null, emptyList(), emptyList(), null)
+        null, true, emptyList(), emptyList(), null, emptyList())
 
     @Exclude
     fun getGolesAFavor(): Int = resultado.split("-")[0].toIntOrNull() ?: 0
@@ -35,5 +35,35 @@ data class Partido(
         getGolesAFavor() > getGolesEnContra() -> "Victoria"
         getGolesAFavor() < getGolesEnContra() -> "Derrota"
         else -> "Empate"
+    }
+
+    @Exclude
+    fun fueVictoria(): Boolean {
+        return if (esLocal) {
+            getGolesAFavor() > getGolesEnContra()
+        } else {
+            getGolesEnContra() > getGolesAFavor()
         }
+    }
+
+    @Exclude
+    fun getGolesRival(): Int = if (esLocal) getGolesEnContra() else getGolesAFavor()
+
+    @Exclude
+    fun resultadoValido(): Boolean {
+        return try {
+            val partes = resultado.split("-")
+            partes.size == 2 && partes[0].toIntOrNull() != null && partes[1].toIntOrNull() != null
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    @Exclude
+    fun getGolesEquipo(): Int {
+        return if (!resultadoValido()) 0 else {
+            val partes = resultado.split("-")
+            if (esLocal) partes[0].toInt() else partes[1].toInt()
+        }
+    }
 }

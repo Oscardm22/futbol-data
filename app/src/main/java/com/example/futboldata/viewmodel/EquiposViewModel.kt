@@ -48,7 +48,11 @@ class EquipoViewModel(
             _operacionState.value = OperacionState.Loading
             try {
                 val equipoId = repository.saveEquipo(equipo)
-                _operacionState.value = OperacionState.Success("Equipo guardado con ID: $equipoId")
+                // Mensaje más descriptivo
+                _operacionState.value = OperacionState.Success(
+                    if (equipo.id.isEmpty()) "Equipo creado con ID: $equipoId"
+                    else "Equipo actualizado correctamente"
+                )
                 cargarEquipos() // Refrescar lista
             } catch (e: Exception) {
                 _operacionState.value = OperacionState.Error(
@@ -90,7 +94,7 @@ class EquipoViewModel(
     // Estados para la UI
     sealed class EquipoState {
         object Loading : EquipoState()
-        data class Success(val equipos: Map<String, Equipo>) : EquipoState()
+        data class Success(val equipos: List<Equipo>) : EquipoState()
         data class Error(val mensaje: String) : EquipoState()
     }
 
@@ -102,7 +106,7 @@ class EquipoViewModel(
 
     sealed class EquipoStatsState {
         object Loading : EquipoStatsState()
-        data class Success(val equipo: Equipo, val stats: Estadisticas) : EquipoStatsState()
+        data class Success(val equipo: Equipo?, val stats: Estadisticas) : EquipoStatsState()
         data class Error(val mensaje: String) : EquipoStatsState()
     }
 }

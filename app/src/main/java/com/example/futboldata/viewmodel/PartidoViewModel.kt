@@ -27,7 +27,7 @@ class PartidoViewModel(
 
     fun cargarJugadores(equipoId: String) {
         viewModelScope.launch {
-            _jugadores.value = jugadorRepository.getJugadoresByEquipo(equipoId)
+            _jugadores.value = jugadorRepository.getJugadoresPorEquipo(equipoId)
         }
     }
 

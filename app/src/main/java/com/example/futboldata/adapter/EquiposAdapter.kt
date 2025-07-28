@@ -13,7 +13,7 @@ import com.example.futboldata.databinding.ItemEquipoBinding
 import kotlinx.coroutines.Job
 
 class EquiposAdapter(
-    private var equipos: List<Pair<String, Equipo>>,
+    private var equipos: List<Equipo>,
     private val onItemClick: (String) -> Unit,
     private val onDeleteClick: (String) -> Unit
 ) : RecyclerView.Adapter<EquiposAdapter.EquipoViewHolder>() {
@@ -33,7 +33,7 @@ class EquiposAdapter(
     }
 
     override fun onBindViewHolder(holder: EquipoViewHolder, position: Int) {
-        val (id, equipo) = equipos[position]
+        val equipo = equipos[position]
         holder.binding.apply {
             tvNombre.text = equipo.nombre
 
@@ -46,8 +46,8 @@ class EquiposAdapter(
                 ivTeamLogo.setImageResource(R.drawable.ic_default_team_placeholder)
             }
 
-            root.setOnClickListener { onItemClick(id) }
-            btnDelete.setOnClickListener { onDeleteClick(id) }
+            root.setOnClickListener { onItemClick(equipo.id) }
+            btnDelete.setOnClickListener { onDeleteClick(equipo.id) }
         }
     }
 
@@ -99,7 +99,7 @@ class EquiposAdapter(
     override fun getItemCount() = equipos.size
 
     @SuppressLint("NotifyDataSetChanged")
-    fun updateList(newEquipos: List<Pair<String, Equipo>>) {
+    fun updateList(newEquipos: List<Equipo>) {
         equipos = newEquipos
         notifyDataSetChanged()
     }

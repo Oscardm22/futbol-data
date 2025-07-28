@@ -25,12 +25,12 @@ class FutbolDataApp : Application() {
     private fun setupDependencies() {
         val firestore = FirebaseFirestore.getInstance()
         val firebaseAuth = FirebaseAuth.getInstance()
-        val statsCalculator = StatsCalculator() // Instancia creada
+        val statsCalculator = StatsCalculator
 
         // Pasa statsCalculator al repositorio
         val equipoRepository = EquipoRepositoryImpl(
             db = firestore,
-            statsCalculator = statsCalculator // Parámetro añadido
+            statsCalculator = statsCalculator
         )
 
         val authRepository = AuthRepositoryImpl(firebaseAuth)

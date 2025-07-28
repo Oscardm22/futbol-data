@@ -27,4 +27,8 @@
     <color name="secondary_text">#8A000000</color>
     <color name="error_color">#FF5252</color>
     <color name="team_icon_tint">#B8A3AF</color>
+    <color name="primaryText">#212121</color>
+    <color name="winColor">#388039</color>
+    <color name="drawColor">#E5DF61</color>
+    <color name="lossColor">#B1061D</color>
 </resources>
