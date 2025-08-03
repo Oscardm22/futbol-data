@@ -140,7 +140,7 @@ class EquipoRepositoryImpl(
                 Log.d(
                     "RepoDebug",
                     "Partido [${p.fecha}-vs-${p.rival}]: ${p.resultado} | " +
-                            "Goles: ${p.getGolesEquipo()} | " +
+                            "Goles: ${p.golesEquipo} | " +  // Cambiado de getGolesEquipo() a golesEquipo
                             "Estado: ${p.obtenerEstadoPartido()}"
                 )
             }

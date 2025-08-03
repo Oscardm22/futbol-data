@@ -52,18 +52,20 @@ class AddPartidoActivity : AppCompatActivity() {
             equipoId = equipoId,
             fecha = Date(),
             rival = binding.etRival.text.toString(),
-            resultado = "$golesFavor-$golesContra",
-            competicionId = "comp_default", // Actualiza esto según tu UI
+            golesEquipo = golesFavor,
+            golesRival = golesContra,
+            competicionId = "comp_default",
             competicionNombre = binding.etCompeticion.text.toString(),
-            temporada = "2023-24", // Actualiza según necesidad
-            fase = "Fase de grupos", // Actualiza según necesidad
+            temporada = "2023-24",
+            fase = "Fase de grupos",
             jornada = binding.etJornada.text.toString().toIntOrNull(),
+            esLocal = true,
             alineacion = viewModel.obtenerAlineacionActual(),
             goleadores = viewModel.obtenerGoles(),
             asistentes = viewModel.obtenerAsistencias()
         )
 
-        viewModel.addPartido(partido)
+        viewModel.guardarPartido(partido)
         finish()
     }
 }

@@ -10,8 +10,8 @@ object StatsCalculator {
         val empates = partidos.count { it.obtenerEstadoPartido() == "Empate" }
         val derrotas = partidosJugados - victorias - empates
 
-        val golesFavor = partidos.sumOf { it.getGolesEquipo() }
-        val golesContra = partidos.sumOf { it.getGolesRival() }
+        val golesFavor = partidos.sumOf { it.golesEquipo }
+        val golesContra = partidos.sumOf { it.golesRival }
 
         val promedioGoles = if (partidosJugados > 0) golesFavor.toDouble() / partidosJugados else 0.0
         val porcentajeVictorias = if (partidosJugados > 0) victorias.toDouble() / partidosJugados * 100 else 0.0

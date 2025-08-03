@@ -36,7 +36,9 @@ import java.util.*
 import android.Manifest
 import android.os.Build
 import android.util.Base64
+import com.example.futboldata.ui.competiciones.CompeticionesActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlin.jvm.java
 
 class EquiposActivity : AppCompatActivity() {
 
@@ -82,6 +84,10 @@ class EquiposActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            R.id.action_competiciones -> {
+                startActivity(Intent(this, CompeticionesActivity::class.java))
+                true
+            }
             R.id.action_logout -> {
                 logout()
                 true

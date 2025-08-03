@@ -14,14 +14,15 @@
         android:layout_marginBottom="16dp">
 
         <ImageView
-            android:id="@+id/ivTeamPhoto"
+            android:id="@+id/ivCompeticionPhoto"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_default_team_placeholder"
-            android:contentDescription="@string/team_photo_desc"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_default_trophy"
+            android:contentDescription="@string/competition_photo_desc"
             android:background="@drawable/circle_background"
-            android:adjustViewBounds="true"/>
+            android:adjustViewBounds="true"
+            android:padding="16dp"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabAddPhoto"
@@ -35,22 +36,43 @@
             app:elevation="4dp"/>
     </FrameLayout>
 
+    <!-- Campo para el nombre -->
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tilNombreEquipo"
+        android:id="@+id/tilNombre"
         style="@style/BaseTextInputLayoutDialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/hint_equipo"
+        android:hint="@string/hint_competicion_name"
         app:errorEnabled="true"
         app:counterEnabled="true"
         app:counterMaxLength="30">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etNombreEquipo"
+            android:id="@+id/dialogNombre"
             style="@style/TextInputEditTextStyleDark"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxLength="30"
             android:inputType="textCapWords"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Campo para el tipo de competición -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilTipo"
+        style="@style/BaseTextInputLayoutDialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_tipo_competicion"
+        android:labelFor="@id/dialogTipo"
+        app:errorEnabled="true">
+
+        <AutoCompleteTextView
+            android:id="@+id/dialogTipo"
+            style="@style/TextInputEditTextStyleDark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none"
+            android:focusable="false"
+            android:clickable="true"/>
     </com.google.android.material.textfield.TextInputLayout>
 </LinearLayout>

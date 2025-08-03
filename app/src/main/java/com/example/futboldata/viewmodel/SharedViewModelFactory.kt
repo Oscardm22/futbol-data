@@ -3,6 +3,7 @@ package com.example.futboldata.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.futboldata.data.repository.AuthRepository
+import com.example.futboldata.data.repository.CompeticionRepository
 import com.example.futboldata.data.repository.EquipoRepository
 import com.example.futboldata.data.repository.JugadorRepository
 import com.example.futboldata.data.repository.PartidoRepository
@@ -11,7 +12,8 @@ class SharedViewModelFactory(
     private val equipoRepository: EquipoRepository,
     private val authRepository: AuthRepository,
     private val partidoRepository: PartidoRepository,
-    private val jugadorRepository: JugadorRepository
+    private val jugadorRepository: JugadorRepository,
+    private val competicionRepository: CompeticionRepository
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -21,7 +23,12 @@ class SharedViewModelFactory(
                 EquipoViewModel(equipoRepository) as T
             }
             modelClass.isAssignableFrom(EquipoDetailViewModel::class.java) -> {
-                EquipoDetailViewModel(equipoRepository, jugadorRepository, partidoRepository) as T
+                EquipoDetailViewModel(
+                    equipoRepository,
+                    jugadorRepository,
+                    partidoRepository,
+                    competicionRepository
+                ) as T
             }
             modelClass.isAssignableFrom(StatsViewModel::class.java) -> {
                 StatsViewModel(equipoRepository) as T
@@ -31,6 +38,9 @@ class SharedViewModelFactory(
             }
             modelClass.isAssignableFrom(PartidoViewModel::class.java) -> {
                 PartidoViewModel(partidoRepository, jugadorRepository) as T
+            }
+            modelClass.isAssignableFrom(CompeticionViewModel::class.java) -> {
+                CompeticionViewModel(competicionRepository) as T
             }
             else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }

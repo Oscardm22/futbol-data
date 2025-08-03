@@ -27,7 +27,7 @@ import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.example.futboldata.data.model.Posicion
-import com.example.futboldata.data.model.TipoCompeticion
+import com.example.futboldata.data.repository.impl.CompeticionRepositoryImpl
 import com.example.futboldata.data.repository.impl.JugadorRepositoryImpl
 import com.example.futboldata.data.repository.impl.PartidoRepositoryImpl
 import com.example.futboldata.databinding.DialogAddJugadorBinding
@@ -115,26 +115,52 @@ open class EquipoDetailActivity : AppCompatActivity() {
         val binding = DialogAddPartidoBinding.inflate(layoutInflater)
         val equipoId = intent.getStringExtra("equipo_id") ?: return
 
-        // Configurar spinner de competición
-        val competiciones = TipoCompeticion.entries.map { it.name }
-        val adapter = ArrayAdapter(this, R.layout.dropdown_item, competiciones)
-        binding.spinnerCompeticion.setAdapter(adapter)
+        // Obtener competiciones de Firestore
+        viewModel.competiciones.observe(this) { competiciones ->
+            competiciones?.let {
+                val competicionAdapter = ArrayAdapter(
+                    this,
+                    R.layout.dropdown_item,
+                    it.map { comp -> comp.nombre }
+                )
+                binding.spinnerCompeticion.setAdapter(competicionAdapter)
+            }
+        }
 
         dialog.setContentView(binding.root)
         dialog.setCancelable(true)
         dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
 
         binding.btnSave.setOnClickListener {
-            // Validar campos obligatorios
+            var isValid = true
+
+            // Validar rival
             if (binding.etRival.text.isNullOrBlank()) {
-                binding.etRival.error = getString(R.string.error_campo_obligatorio)
-                return@setOnClickListener
+                binding.tilRival.error = getString(R.string.error_campo_obligatorio)
+                isValid = false
+            } else {
+                binding.tilRival.error = null
             }
 
-            // Validar formato del resultado
-            val resultado = binding.etResultado.text.toString()
-            if (!resultado.matches(Regex("\\d+-\\d+"))) {
-                binding.etResultado.error = getString(R.string.error_formato_resultado)
+            // Validar goles equipo
+            val golesEquipo = binding.etGolesEquipo.text.toString().toIntOrNull()
+            if (golesEquipo == null || golesEquipo < 0) {
+                binding.tilGolesEquipo.error = "Valor inválido"
+                isValid = false
+            } else {
+                binding.tilGolesEquipo.error = null
+            }
+
+            // Validar goles rival
+            val golesRival = binding.etGolesRival.text.toString().toIntOrNull()
+            if (golesRival == null || golesRival < 0) {
+                binding.tilGolesRival.error = "Valor inválido"
+                isValid = false
+            } else {
+                binding.tilGolesRival.error = null
+            }
+
+            if (!isValid) {
                 return@setOnClickListener
             }
 
@@ -143,7 +169,8 @@ open class EquipoDetailActivity : AppCompatActivity() {
                     equipoId = equipoId,
                     fecha = Date(),
                     rival = binding.etRival.text.toString(),
-                    resultado = resultado,
+                    golesEquipo = golesEquipo ?: 0,
+                    golesRival = golesRival ?: 0,
                     competicionNombre = binding.spinnerCompeticion.text.toString(),
                     temporada = binding.etTemporada.text.toString(),
                     fase = binding.etFase.text.toString().takeIf { it.isNotBlank() },
@@ -153,10 +180,21 @@ open class EquipoDetailActivity : AppCompatActivity() {
 
                 viewModel.addPartido(nuevoPartido)
                 dialog.dismiss()
-            } catch (e: IllegalArgumentException) {
-                Toast.makeText(this, R.string.error_competicion_invalida, Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
-                Toast.makeText(this, R.string.error_generico, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Error: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+            }
+        }
+
+        // Limpiar errores al enfocar
+        listOf(binding.etRival, binding.etGolesEquipo, binding.etGolesRival).forEach { editText ->
+            editText.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    when (editText) {
+                        binding.etRival -> binding.tilRival.error = null
+                        binding.etGolesEquipo -> binding.tilGolesEquipo.error = null
+                        binding.etGolesRival -> binding.tilGolesRival.error = null
+                    }
+                }
             }
         }
 
@@ -193,6 +231,7 @@ open class EquipoDetailActivity : AppCompatActivity() {
         val equipoRepository = EquipoRepositoryImpl(firestore, StatsCalculator)
         val jugadorRepository = JugadorRepositoryImpl(firestore)
         val partidoRepository = PartidoRepositoryImpl(firestore)
+        val competicionRepository = CompeticionRepositoryImpl(firestore)
 
         val factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -200,7 +239,8 @@ open class EquipoDetailActivity : AppCompatActivity() {
                 return EquipoDetailViewModel(
                     repository = equipoRepository,
                     jugadorRepository = jugadorRepository,
-                    partidoRepository = partidoRepository
+                    partidoRepository = partidoRepository,
+                    competicionRepository = competicionRepository
                 ) as T
             }
         }

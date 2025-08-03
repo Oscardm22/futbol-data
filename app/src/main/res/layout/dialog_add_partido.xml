@@ -11,8 +11,20 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/anadir_nuevo_partido"
+            android:textColor="@color/Fondo"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginBottom="16dp"/>
+
         <!-- Rival -->
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilRival"
+            style="@style/BaseTextInputLayoutDialog"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -20,36 +32,79 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etRival"
+                style="@style/TextInputEditTextStyleDark"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/hint_rival"
-                android:inputType="textCapWords"/>
+                android:inputType="textCapWords"
+                android:maxLength="30"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Resultado -->
+        <!-- Goles Equipo vs Goles Rival -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
+
+            <!-- Goles Equipo -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilGolesEquipo"
+                style="@style/BaseTextInputLayoutDialog"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:errorEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etGolesEquipo"
+                    style="@style/TextInputEditTextStyleDark"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_goles_equipo"
+                    android:inputType="number"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dash"
+                android:textColor="@color/Fondo"
+                android:textSize="20sp"
+                android:layout_gravity="center"
+                android:padding="8dp"/>
+
+            <!-- Goles Rival -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilGolesRival"
+                style="@style/BaseTextInputLayoutDialog"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:errorEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etGolesRival"
+                    style="@style/TextInputEditTextStyleDark"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_goles_rival"
+                    android:inputType="number"/>
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <!-- Competición -->
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilCompeticion"
+            style="@style/BaseTextInputLayoutDialog"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             app:errorEnabled="true">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etResultado"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/hint_resultado"
-                android:inputType="number|numberSigned"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Competición -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
-
             <AutoCompleteTextView
                 android:id="@+id/spinnerCompeticion"
+                style="@style/TextInputEditTextStyleDark"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/hint_competicion"
@@ -58,6 +113,8 @@
 
         <!-- Temporada -->
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilTemporada"
+            style="@style/BaseTextInputLayoutDialog"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -65,6 +122,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etTemporada"
+                style="@style/TextInputEditTextStyleDark"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/hint_temporada"
@@ -73,6 +131,8 @@
 
         <!-- Fase -->
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilFase"
+            style="@style/BaseTextInputLayoutDialog"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -80,6 +140,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etFase"
+                style="@style/TextInputEditTextStyleDark"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/hint_fase"
@@ -88,13 +149,16 @@
 
         <!-- Jornada -->
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilJornada"
+            style="@style/BaseTextInputLayoutDialog"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="16dp"
             app:errorEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etJornada"
+                style="@style/TextInputEditTextStyleDark"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/hint_jornada"
@@ -108,13 +172,23 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:text="@string/es_local"
-            android:checked="true"/>
+            android:textColor="@color/Fondo"
+            android:checked="true"
+            app:trackTint="@color/selector_switch_track"
+            app:thumbTint="@color/selector_switch_thumb"/>
 
-        <Button
+        <!-- Botón Guardar -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSave"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/guardar"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+            android:textColor="@color/botones_positivos"
+            app:strokeColor="@color/botones_positivos"
+            app:strokeWidth="2dp"
+            app:backgroundTint="@android:color/transparent"
+            app:rippleColor="@color/botones_positivos"
+            app:cornerRadius="8dp"/>
     </LinearLayout>
 </ScrollView>

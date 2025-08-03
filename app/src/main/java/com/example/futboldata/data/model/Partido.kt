@@ -8,7 +8,8 @@ data class Partido(
     val equipoId: String = "",
     val fecha: Date = Date(),
     val rival: String = "",
-    val resultado: String = "0-0",
+    val golesEquipo: Int = 0,
+    val golesRival: Int = 0,
     val competicionId: String = "",
     val competicionNombre: String = "",
     val temporada: String = "",
@@ -20,50 +21,40 @@ data class Partido(
     val jugadorDelPartido: String? = null,
     val alineacion: List<ParticipacionJugador> = emptyList()
 ) {
-    // Constructor sin argumentos para Firestore
-    constructor() : this("", "", Date(), "", "0-0", "", "", "", "",
-        null, true, emptyList(), emptyList(), null, emptyList())
+    // Constructor sin argumentos para Firestore (corregido)
+    constructor() : this(
+        id = "",
+        equipoId = "",
+        fecha = Date(),
+        rival = "",
+        golesEquipo = 0,
+        golesRival = 0,
+        competicionId = "",
+        competicionNombre = "",
+        temporada = "",
+        fase = null,
+        jornada = null,
+        esLocal = true,
+        goleadores = emptyList(),
+        asistentes = emptyList(),
+        jugadorDelPartido = null,
+        alineacion = emptyList()
+    )
 
-    @Exclude
-    fun getGolesAFavor(): Int = resultado.split("-")[0].toIntOrNull() ?: 0
-
-    @Exclude
-    fun getGolesEnContra(): Int = resultado.split("-")[1].toIntOrNull() ?: 0
+    @get:Exclude
+    val resultado: String
+        get() = "$golesEquipo-$golesRival"
 
     @Exclude
     fun obtenerEstadoPartido(): String = when {
-        getGolesAFavor() > getGolesEnContra() -> "Victoria"
-        getGolesAFavor() < getGolesEnContra() -> "Derrota"
+        golesEquipo > golesRival -> "Victoria"
+        golesEquipo < golesRival -> "Derrota"
         else -> "Empate"
     }
 
     @Exclude
-    fun fueVictoria(): Boolean {
-        return if (esLocal) {
-            getGolesAFavor() > getGolesEnContra()
-        } else {
-            getGolesEnContra() > getGolesAFavor()
-        }
-    }
+    fun fueVictoria(): Boolean = golesEquipo > golesRival
 
     @Exclude
-    fun getGolesRival(): Int = if (esLocal) getGolesEnContra() else getGolesAFavor()
-
-    @Exclude
-    fun resultadoValido(): Boolean {
-        return try {
-            val partes = resultado.split("-")
-            partes.size == 2 && partes[0].toIntOrNull() != null && partes[1].toIntOrNull() != null
-        } catch (e: Exception) {
-            false
-        }
-    }
-
-    @Exclude
-    fun getGolesEquipo(): Int {
-        return if (!resultadoValido()) 0 else {
-            val partes = resultado.split("-")
-            if (esLocal) partes[0].toInt() else partes[1].toInt()
-        }
-    }
+    fun getDiferenciaGoles(): Int = golesEquipo - golesRival
 }

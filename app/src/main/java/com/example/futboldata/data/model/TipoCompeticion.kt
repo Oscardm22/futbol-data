@@ -6,3 +6,7 @@ enum class TipoCompeticion {
     COPA_INTERNACIONAL,
     SUPERCOPA
 }
+
+fun TipoCompeticion.toDisplayName(): String {
+    return name.replace("_", " ").lowercase().replaceFirstChar { it.uppercase() }
+}

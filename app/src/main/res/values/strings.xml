@@ -19,6 +19,9 @@
     <string name="error_competicion_invalida">Seleccione una competición válida</string>
     <string name="error_generico">Error al guardar los datos</string>
     <string name="error_formato_resultado" tools:ignore="TypographyDashes">Formato de resultado inválido (ej: 2-1)</string>
+    <string name="anadir_nuevo_partido">Añadir nuevo partido</string>
+    <string name="menu_competiciones">Competiciones</string>
+    <string name="competiciones_title">Competiciones</string>
 
     //Formatos
     <string name="avg_goals_format">Promedio de goles: %.1f</string>
@@ -37,13 +40,14 @@
     <string name="desc_fabAddPhoto">Botón para agregar foto</string>
     <string name="add_match">Añadir partido</string>
     <string name="ivTeamBackground">Imagen de fondo del equipo</string>
+    <string name="competition_photo_desc">Foto de la competición</string>
 
     //Hints
     <string name="hint_password">Contraseña</string>
     <string name="hint_email">Correo electrónico</string>
     <string name="hint_equipo">Nombre del equipo</string>
-    <string name="local_goals_hint">Goles local</string>
-    <string name="visitor_goals_hint">Goles visitante</string>
+    <string name="hint_goles_equipo">Goles equipo</string>
+    <string name="hint_goles_rival">Goles rival</string>
     <string name="match_date_hint">Fecha del partido</string>
     <string name="phase_hint">Fase</string>
     <string name="round_hint">Jornada</string>
@@ -55,6 +59,8 @@
     <string name="hint_jornada">Jornada</string>
     <string name="hint_nombre">Nombre completo</string>
     <string name="hint_posicion">Posición</string>
+    <string name="hint_competicion_name">Nombre de la competición</string>
+    <string name="hint_tipo_competicion">Tipo de competición</string>
 
     //Botones
     <string name="btn_login">Iniciar Sesión</string>
@@ -64,5 +70,7 @@
     <string name="visitor">Visitante</string>
     <string name="es_local">Partido en casa</string>
     <string name="guardar">Guardar</string>
+    <string name="add_competicion">Añadir competición</string>
+    <string name="refresh">Actualizar</string>
 
 </resources>

@@ -2,6 +2,7 @@ package com.example.futboldata
 
 import android.app.Application
 import com.example.futboldata.data.repository.impl.AuthRepositoryImpl
+import com.example.futboldata.data.repository.impl.CompeticionRepositoryImpl
 import com.example.futboldata.data.repository.impl.EquipoRepositoryImpl
 import com.example.futboldata.data.repository.impl.JugadorRepositoryImpl
 import com.example.futboldata.data.repository.impl.PartidoRepositoryImpl
@@ -36,12 +37,14 @@ class FutbolDataApp : Application() {
         val authRepository = AuthRepositoryImpl(firebaseAuth)
         val partidoRepository = PartidoRepositoryImpl(firestore)
         val jugadorRepository = JugadorRepositoryImpl(firestore)
+        val competicionRepository = CompeticionRepositoryImpl(firestore)
 
         viewModelFactory = SharedViewModelFactory(
             equipoRepository = equipoRepository,
             authRepository = authRepository,
             partidoRepository = partidoRepository,
-            jugadorRepository = jugadorRepository
+            jugadorRepository = jugadorRepository,
+            competicionRepository = competicionRepository
         )
     }
 }

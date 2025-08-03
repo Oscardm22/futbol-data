@@ -31,4 +31,7 @@
     <color name="winColor">#388039</color>
     <color name="drawColor">#E5DF61</color>
     <color name="lossColor">#B1061D</color>
+    <color name="Wenge">#564D4F</color>
+    <color name="midnight_green">#155366</color>
+    <color name="silver_1">#BFB8B0</color>
 </resources>

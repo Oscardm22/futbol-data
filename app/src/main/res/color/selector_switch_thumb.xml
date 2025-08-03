@@ -1,0 +1,4 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="@color/botones_positivos_presionados" android:state_checked="true"/>
+    <item android:color="@color/Timberwolf" android:state_checked="false"/>
+</selector>

@@ -5,6 +5,12 @@
     tools:ignore="MissingDefaultResource">
 
     <item
+        android:id="@+id/action_competiciones"
+        android:title="@string/menu_competiciones"
+        android:icon="@drawable/ic_competiciones"
+        app:showAsAction="ifRoom"/>
+
+    <item
         android:id="@+id/action_logout"
         android:title="@string/menu_logout"
         android:icon="@drawable/ic_logout"

@@ -98,10 +98,12 @@ class PartidoRepositoryImpl(
     private fun DocumentSnapshot.toPartido(): Partido? {
         return try {
             Partido(
+                id = id,
                 equipoId = getString("equipoId") ?: "",
                 fecha = getTimestamp("fecha")?.toDate() ?: Date(),
                 rival = getString("rival") ?: "",
-                resultado = getString("resultado") ?: "0-0",
+                golesEquipo = getLong("golesEquipo")?.toInt() ?: 0,  // Nuevo campo
+                golesRival = getLong("golesRival")?.toInt() ?: 0,    // Nuevo campo
                 competicionId = getString("competicionId") ?: "",
                 competicionNombre = getString("competicionNombre") ?: "",
                 temporada = getString("temporada") ?: "",
@@ -111,7 +113,8 @@ class PartidoRepositoryImpl(
                 goleadores = parseGoleadores(get("goleadores")),
                 asistentes = parseAsistentes(get("asistentes")),
                 jugadorDelPartido = getString("jugadorDelPartido"),
-                alineacion = parseAlineacion(get("alineacion")))
+                alineacion = parseAlineacion(get("alineacion"))
+            )
         } catch (e: Exception) {
             null
         }

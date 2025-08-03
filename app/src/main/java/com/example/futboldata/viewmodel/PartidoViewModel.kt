@@ -51,7 +51,7 @@ class PartidoViewModel(
 
     fun obtenerAsistencias(): List<Asistencia> = asistencias
 
-    fun addPartido(partido: Partido) {
+    fun guardarPartido(partido: Partido) {
         viewModelScope.launch {
             partidoRepository.addPartido(partido)
         }
