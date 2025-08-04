@@ -204,6 +204,11 @@ class CompeticionesActivity : AppCompatActivity() {
         dialogBinding.dialogNombre.setText(competicion.nombre)
         dialogBinding.dialogTipo.setText(competicion.tipo.toDisplayName())
 
+        // Configurar el AutoCompleteTextView para que muestre el desplegable al tocar
+        dialogBinding.dialogTipo.setOnClickListener {
+            dialogBinding.dialogTipo.showDropDown()
+        }
+
         // Cargar imagen si existe
         if (competicion.imagenBase64.isNotEmpty()) {
             try {
@@ -225,7 +230,7 @@ class CompeticionesActivity : AppCompatActivity() {
         currentDialog = dialog
 
         dialog.setOnShowListener {
-            // 1. Configura colores de botones
+            // Configura colores de botones
             dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(
                 ContextCompat.getColor(this, R.color.botones_positivos)
             )
@@ -233,7 +238,7 @@ class CompeticionesActivity : AppCompatActivity() {
                 ContextCompat.getColor(this, R.color.Fondo)
             )
 
-            // 2. Configuración del AutoCompleteTextView
+            // Configuración del AutoCompleteTextView
             val tipos = TipoCompeticion.entries
             val arrayAdapter = ArrayAdapter(
                 this,
@@ -249,7 +254,7 @@ class CompeticionesActivity : AppCompatActivity() {
                 dialogBinding.tilTipo.error = null
             }
 
-            // 3. Configuración del botón Guardar
+            // Configuración del botón Guardar
             dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setOnClickListener {
                 val nombre = dialogBinding.dialogNombre.text.toString().trim()
 
