@@ -115,6 +115,10 @@ open class EquipoDetailActivity : AppCompatActivity() {
         val binding = DialogAddPartidoBinding.inflate(layoutInflater)
         val equipoId = intent.getStringExtra("equipo_id") ?: return
 
+        binding.spinnerCompeticion.setOnClickListener {
+            binding.spinnerCompeticion.showDropDown()
+        }
+
         // Obtener competiciones de Firestore
         viewModel.competiciones.observe(this) { competiciones ->
             competiciones?.let {
@@ -160,6 +164,20 @@ open class EquipoDetailActivity : AppCompatActivity() {
                 binding.tilGolesRival.error = null
             }
 
+            if (binding.etTemporada.text.isNullOrBlank()) {
+                binding.tilTemporada.error = "La temporada es obligatoria"
+                isValid = false
+            } else {
+                binding.tilTemporada.error = null
+            }
+
+            if (binding.spinnerCompeticion.text.isNullOrBlank()) {
+                binding.tilCompeticion.error = "Selecciona una competición"
+                isValid = false
+            } else {
+                binding.tilCompeticion.error = null
+            }
+
             if (!isValid) {
                 return@setOnClickListener
             }
@@ -186,13 +204,21 @@ open class EquipoDetailActivity : AppCompatActivity() {
         }
 
         // Limpiar errores al enfocar
-        listOf(binding.etRival, binding.etGolesEquipo, binding.etGolesRival).forEach { editText ->
-            editText.setOnFocusChangeListener { _, hasFocus ->
+        listOf(
+            binding.etRival,
+            binding.etGolesEquipo,
+            binding.etGolesRival,
+            binding.etTemporada,
+            binding.spinnerCompeticion
+        ).forEach { view ->
+            view.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
-                    when (editText) {
+                    when (view) {
                         binding.etRival -> binding.tilRival.error = null
                         binding.etGolesEquipo -> binding.tilGolesEquipo.error = null
                         binding.etGolesRival -> binding.tilGolesRival.error = null
+                        binding.etTemporada -> binding.tilTemporada.error = null
+                        binding.spinnerCompeticion -> binding.tilCompeticion.error = null
                     }
                 }
             }
