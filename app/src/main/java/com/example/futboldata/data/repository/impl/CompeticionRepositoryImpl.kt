@@ -45,6 +45,17 @@ class CompeticionRepositoryImpl(
         }
     }
 
+    override suspend fun updateCompeticion(competicion: Competicion) {
+        try {
+            db.collection("competiciones")
+                .document(competicion.id)
+                .set(competicion)
+                .await()
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
     override suspend fun deleteCompeticion(id: String) {
         try {
             db.collection("competiciones")

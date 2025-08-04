@@ -35,10 +35,15 @@ import com.google.firebase.storage.ktx.storage
 import java.util.*
 import android.Manifest
 import android.os.Build
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.util.Base64
 import com.example.futboldata.ui.competiciones.CompeticionesActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlin.jvm.java
+import androidx.core.view.size
+import androidx.core.view.get
 
 class EquiposActivity : AppCompatActivity() {
 
@@ -79,6 +84,26 @@ class EquiposActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
+
+        for (i in 0 until menu.size) {
+            val menuItem = menu[i]
+            val spanString = SpannableString(menuItem.title.toString())
+            spanString.setSpan(
+                ForegroundColorSpan(ContextCompat.getColor(this, R.color.Fondo)),
+                0, spanString.length,
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+            )
+            menuItem.title = spanString
+        }
+
+        try {
+            val method = menu.javaClass.getDeclaredMethod("setOptionalIconsVisible", Boolean::class.javaPrimitiveType)
+            method.isAccessible = true
+            method.invoke(menu, true)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
         return true
     }
 
@@ -395,11 +420,9 @@ class EquiposActivity : AppCompatActivity() {
             .create()
 
         dialog.setOnShowListener {
-            // Botón Eliminar (positivo) - Rojo o color de error
             dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(
                 ContextCompat.getColor(this, R.color.error_color))
 
-            // Botón Cancelar (negativo) - Color principal
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(
                 ContextCompat.getColor(this, R.color.Fondo))
         }

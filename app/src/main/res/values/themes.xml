@@ -19,6 +19,8 @@
         <!-- Asignación de estilos a componentes -->
         <item name="materialButtonStyle">@style/ButtonStyle.FutbolData</item>
         <item name="textInputStyle">@style/RoundedTextInputLayout</item>
+        <item name="popupMenuStyle">@style/RoundedPopupMenu</item>
+        <item name="actionOverflowMenuStyle">@style/RoundedPopupMenu</item>
     </style>
 
     <!-- NUEVO TEMA PARA SPLASH SCREEN -->
@@ -30,7 +32,7 @@
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_logo_splash</item>
         <item name="windowSplashScreenAnimationDuration">2000</item>
 
-        <!-- Color del icono (necesario) -->
+        <!-- Color del icono -->
         <item name="windowSplashScreenIconBackgroundColor">@color/Fondo</item>
 
         <!-- Vincula con tu tema principal -->

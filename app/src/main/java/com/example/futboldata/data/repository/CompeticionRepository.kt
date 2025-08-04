@@ -9,6 +9,9 @@ interface CompeticionRepository {
     // Añadir nueva competición
     suspend fun saveCompeticion(competicion: Competicion): String
 
+    // Actualizar competición
+    suspend fun updateCompeticion(competicion: Competicion)
+
     // Eliminar competición
     suspend fun deleteCompeticion(id: String)
 }

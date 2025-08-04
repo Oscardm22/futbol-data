@@ -185,9 +185,10 @@ class CompeticionesActivity : AppCompatActivity() {
     private fun setupRecyclerView() {
         adapter = CompeticionAdapter(
             emptyList(),
-            onItemClick = { navigateToDetail(it) },
-            onDeleteClick = { viewModel.eliminarCompeticion(it.id) }
-        )
+            onItemClick = { showEditCompeticionDialog(it) },
+            onDeleteClick = { competicion ->
+                showDeleteConfirmationDialog(competicion)
+            }        )
 
         binding.rvCompeticiones.apply {
             layoutManager = LinearLayoutManager(this@CompeticionesActivity)
@@ -196,36 +197,141 @@ class CompeticionesActivity : AppCompatActivity() {
         }
     }
 
+    private fun showEditCompeticionDialog(competicion: Competicion) {
+        val dialogBinding = DialogAddCompeticionBinding.inflate(layoutInflater)
+
+        // Prellenar datos existentes
+        dialogBinding.dialogNombre.setText(competicion.nombre)
+        dialogBinding.dialogTipo.setText(competicion.tipo.toDisplayName())
+
+        // Cargar imagen si existe
+        if (competicion.imagenBase64.isNotEmpty()) {
+            try {
+                val decodedBytes = Base64.decode(competicion.imagenBase64, Base64.DEFAULT)
+                val bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+                dialogBinding.ivCompeticionPhoto.setImageBitmap(bitmap)
+            } catch (e: Exception) {
+                dialogBinding.ivCompeticionPhoto.setImageResource(R.drawable.ic_default_trophy)
+            }
+        }
+
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setTitle("Editar competición")
+            .setView(dialogBinding.root)
+            .setPositiveButton("Guardar", null)
+            .setNegativeButton("Cancelar", null)
+            .create()
+
+        currentDialog = dialog
+
+        dialog.setOnShowListener {
+            // 1. Configura colores de botones
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(
+                ContextCompat.getColor(this, R.color.botones_positivos)
+            )
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(
+                ContextCompat.getColor(this, R.color.Fondo)
+            )
+
+            // 2. Configuración del AutoCompleteTextView
+            val tipos = TipoCompeticion.entries
+            val arrayAdapter = ArrayAdapter(
+                this,
+                R.layout.item_dropdown,
+                tipos.map { it.toDisplayName() }
+            )
+            dialogBinding.dialogTipo.setAdapter(arrayAdapter)
+
+            var tipoSeleccionado: TipoCompeticion? = competicion.tipo
+
+            dialogBinding.dialogTipo.setOnItemClickListener { _, _, position, _ ->
+                tipoSeleccionado = tipos[position]
+                dialogBinding.tilTipo.error = null
+            }
+
+            // 3. Configuración del botón Guardar
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setOnClickListener {
+                val nombre = dialogBinding.dialogNombre.text.toString().trim()
+
+                // Validaciones
+                when {
+                    nombre.isEmpty() -> {
+                        dialogBinding.tilNombre.error = getString(R.string.error_empty_name)
+                        return@setOnClickListener
+                    }
+                    nombre.length < 3 -> {
+                        dialogBinding.tilNombre.error = getString(R.string.error_name_too_short)
+                        return@setOnClickListener
+                    }
+                    nombre.length > 50 -> {
+                        dialogBinding.tilNombre.error = getString(R.string.error_name_too_long)
+                        return@setOnClickListener
+                    }
+                    !nombre.matches(Regex("^[a-zA-Z0-9 áéíóúÁÉÍÓÚñÑ-]+$")) -> {
+                        dialogBinding.tilNombre.error = getString(R.string.error_invalid_chars)
+                        return@setOnClickListener
+                    }
+                }
+
+                val competicionActualizada = competicion.copy(
+                    nombre = nombre,
+                    tipo = tipoSeleccionado ?: competicion.tipo,
+                    imagenBase64 = competicionPhotoUri?.let { convertImageToBase64(it) } ?: competicion.imagenBase64
+                )
+
+                viewModel.actualizarCompeticion(competicionActualizada)
+                dialog.dismiss()
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun showDeleteConfirmationDialog(competicion: Competicion) {
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.delete_dialog_title))
+            .setMessage(getString(R.string.delete_dialog_message, competicion.nombre))
+            .setPositiveButton(getString(R.string.delete_button)) { _, _ ->
+                viewModel.eliminarCompeticion(competicion.id)
+            }
+            .setNegativeButton(getString(R.string.cancel_button), null)
+            .create()
+
+        dialog.setOnShowListener {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(
+                ContextCompat.getColor(this, R.color.error_color)
+            )
+
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(
+                ContextCompat.getColor(this, R.color.Fondo)
+            )
+        }
+
+        dialog.show()
+    }
+
     private fun setupObservers() {
         // Observador para la lista de competiciones
         viewModel.competiciones.observe(this) { competiciones ->
             competiciones?.let {
                 adapter.updateList(it)
+                binding.progressBar.visibility = View.GONE
             }
         }
 
-        // Observador para los estados de operación
+        // Observador para estados de operación (sin Snackbar)
         viewModel.operacionState.observe(this) { state ->
             when (state) {
                 is CompeticionViewModel.OperacionState.Loading -> {
-                    // Mostrar ProgressBar
                     binding.progressBar.visibility = View.VISIBLE
                 }
-                is CompeticionViewModel.OperacionState.Success -> {
-                    // Ocultar ProgressBar
-                    binding.progressBar.visibility = View.GONE
-                    // Mostrar mensaje de éxito si es necesario
-                    Snackbar.make(binding.root, state.mensaje, Snackbar.LENGTH_SHORT).show()
-                }
                 is CompeticionViewModel.OperacionState.Error -> {
-                    // Ocultar ProgressBar
                     binding.progressBar.visibility = View.GONE
-                    // Mostrar mensaje de error
-                    Snackbar.make(binding.root, state.mensaje, Snackbar.LENGTH_LONG).show()
+                    // Sin Snackbar (solo oculta ProgressBar en error)
                 }
-                else -> {
-                    // Ocultar ProgressBar por defecto
+                is CompeticionViewModel.OperacionState.Success -> {
                     binding.progressBar.visibility = View.GONE
+                    // Sin Snackbar
                 }
             }
         }
@@ -295,32 +401,49 @@ class CompeticionesActivity : AppCompatActivity() {
             dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setOnClickListener {
                 val nombre = dialogBinding.dialogNombre.text.toString().trim()
 
-                if (nombre.isNotEmpty() && tipoSeleccionado != null) {
-                    try {
-                        val imagenBase64 = if (competicionPhotoUri != null) {
-                            convertImageToBase64(competicionPhotoUri!!)
-                        } else {
-                            ""
-                        }
+                // Validaciones de nombre
+                when {
+                    nombre.isEmpty() -> {
+                        dialogBinding.tilNombre.error = getString(R.string.error_empty_name)
+                        return@setOnClickListener
+                    }
+                    nombre.length < 3 -> {
+                        dialogBinding.tilNombre.error = getString(R.string.error_name_too_short)
+                        return@setOnClickListener
+                    }
+                    nombre.length > 50 -> {
+                        dialogBinding.tilNombre.error = getString(R.string.error_name_too_long)
+                        return@setOnClickListener
+                    }
+                    !nombre.matches(Regex("^[a-zA-Z0-9 áéíóúÁÉÍÓÚñÑ-]+$")) -> {
+                        dialogBinding.tilNombre.error = getString(R.string.error_invalid_chars)
+                        return@setOnClickListener
+                    }
+                }
 
-                        val nuevaCompeticion = Competicion(
-                            nombre = nombre,
-                            tipo = tipoSeleccionado,
-                            imagenBase64 = imagenBase64.toString()
-                        )
+                // Validación de tipo
+                val tipoSeleccionado = tipoSeleccionado ?: run {
+                    dialogBinding.tilTipo.error = getString(R.string.error_no_competition_type)
+                    return@setOnClickListener
+                }
 
-                        viewModel.crearCompeticion(nuevaCompeticion)
-                        dialog.dismiss()
-                    } catch (e: Exception) {
-                        dialogBinding.tilTipo.error = "Error al guardar la competición"
+                try {
+                    val imagenBase64 = if (competicionPhotoUri != null) {
+                        convertImageToBase64(competicionPhotoUri!!)
+                    } else {
+                        ""
                     }
-                } else {
-                    if (nombre.isEmpty()) {
-                        dialogBinding.tilNombre.error = "Nombre requerido"
-                    }
-                    if (tipoSeleccionado == null) {
-                        dialogBinding.tilTipo.error = "Tipo requerido"
-                    }
+
+                    val nuevaCompeticion = Competicion(
+                        nombre = nombre,
+                        tipo = tipoSeleccionado,
+                        imagenBase64 = imagenBase64.toString()
+                    )
+
+                    viewModel.crearCompeticion(nuevaCompeticion)
+                    dialog.dismiss()
+                } catch (e: Exception) {
+                    Snackbar.make(dialogBinding.root, "Error al guardar: ${e.message}", Snackbar.LENGTH_SHORT).show()
                 }
             }
         }
@@ -427,13 +550,5 @@ class CompeticionesActivity : AppCompatActivity() {
             Snackbar.make(binding.root, "Error al procesar la imagen", Snackbar.LENGTH_SHORT).show()
             null
         }
-    }
-
-    private fun navigateToDetail(competicion: Competicion) {
-        // Implementa la navegación a la actividad de detalle
-        // val intent = Intent(this, CompeticionDetailActivity::class.java).apply {
-        //     putExtra("COMPETICION_ID", competicion.id)
-        // }
-        // startActivity(intent)
     }
 }

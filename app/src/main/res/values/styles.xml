@@ -76,4 +76,43 @@
         <item name="android:textColor">@color/Fondo</item>
         <item name="android:textCursorDrawable">@null</item>
     </style>
+
+    <style name="CustomPopupMenu" parent="Widget.MaterialComponents.PopupMenu">
+        <!-- Fondo -->
+        <item name="android:popupBackground">@color/white</item>
+
+        <!-- Apariencia de texto de ítems -->
+        <item name="android:textAppearance">@style/CustomPopupMenuTextAppearance</item>
+    </style>
+
+    <style name="CustomPopupMenuText" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:textColor">@color/Fondo</item>
+    </style>
+
+    <style name="CustomPopupMenuTextAppearance" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:textColor">@color/Fondo</item>
+    </style>
+
+    <style name="RoundedPopupMenu" parent="Widget.MaterialComponents.PopupMenu">
+        <!-- Fondo con esquinas redondeadas -->
+        <item name="android:popupBackground">@drawable/rounded_popup_background</item>
+
+        <!-- Color del texto -->
+        <item name="android:textColor">@color/Fondo</item>
+
+        <!-- Margen para que no toque los bordes -->
+        <item name="android:popupMenuStyle">@style/RoundedPopupMenu</item>
+        <item name="android:popupElevation">8dp</item>
+
+        <!-- Ajustes de posición -->
+        <item name="android:dropDownVerticalOffset">4dp</item>
+        <item name="android:dropDownHorizontalOffset">-4dp</item>
+    </style>
+
+    <style name="PopupMenuItemTextAppearance" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:textColor">@color/Fondo</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+    </style>
 </resources>

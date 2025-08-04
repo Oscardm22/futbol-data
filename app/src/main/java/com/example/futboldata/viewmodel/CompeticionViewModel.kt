@@ -53,6 +53,19 @@ class CompeticionViewModel(
         }
     }
 
+    fun actualizarCompeticion(competicion: Competicion) {
+        viewModelScope.launch {
+            _operacionState.value = OperacionState.Loading
+            try {
+                repository.updateCompeticion(competicion)
+                cargarCompeticiones() // Recargar la lista después de actualizar
+                _operacionState.value = OperacionState.Success("Competición actualizada")
+            } catch (e: Exception) {
+                _operacionState.value = OperacionState.Error("Error al actualizar: ${e.message}")
+            }
+        }
+    }
+
     fun eliminarCompeticion(id: String) {
         viewModelScope.launch {
             _operacionState.value = OperacionState.Loading
