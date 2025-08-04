@@ -21,7 +21,6 @@ data class Partido(
     val jugadorDelPartido: String? = null,
     val alineacion: List<ParticipacionJugador> = emptyList()
 ) {
-    // Constructor sin argumentos para Firestore (corregido)
     constructor() : this(
         id = "",
         equipoId = "",

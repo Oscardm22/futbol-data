@@ -232,20 +232,59 @@ open class EquipoDetailActivity : AppCompatActivity() {
         val binding = DialogAddJugadorBinding.inflate(layoutInflater)
         val equipoId = intent.getStringExtra("equipo_id") ?: return
 
-        // Configurar spinner de posición
+        // Configurar el desplegable
+        binding.spinnerPosicion.setOnClickListener {
+            binding.spinnerPosicion.showDropDown()
+        }
+
         val posiciones = Posicion.entries.map { it.name }
         val posicionAdapter = ArrayAdapter(this, R.layout.dropdown_item, posiciones)
         binding.spinnerPosicion.setAdapter(posicionAdapter)
 
         binding.btnSave.setOnClickListener {
-            val nuevoJugador = Jugador(
-                nombre = binding.etNombre.text.toString(),
-                posicion = Posicion.valueOf(binding.spinnerPosicion.text.toString()),
-                equipoId = equipoId
-            )
+            var isValid = true
 
-            viewModel.addJugador(nuevoJugador)
-            dialog.dismiss()
+            // Validar nombre
+            if (binding.etNombre.text.isNullOrBlank()) {
+                binding.tilNombre.error = getString(R.string.error_campo_obligatorio)
+                isValid = false
+            } else {
+                binding.tilNombre.error = null
+            }
+
+            // Validar posición
+            if (binding.spinnerPosicion.text.isNullOrBlank()) {
+                binding.tilPosicion.error = "Selecciona una posición"
+                isValid = false
+            } else {
+                binding.tilPosicion.error = null
+            }
+
+            if (!isValid) return@setOnClickListener
+
+            try {
+                val nuevoJugador = Jugador(
+                    nombre = binding.etNombre.text.toString(),
+                    posicion = Posicion.valueOf(binding.spinnerPosicion.text.toString()),
+                    equipoId = equipoId
+                )
+                viewModel.addJugador(nuevoJugador)
+                dialog.dismiss()
+            } catch (e: Exception) {
+                Toast.makeText(this, "Error: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+            }
+        }
+
+        // Limpiar errores al enfocar
+        listOf(binding.etNombre, binding.spinnerPosicion).forEach { view ->
+            view.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    when (view) {
+                        binding.etNombre -> binding.tilNombre.error = null
+                        binding.spinnerPosicion -> binding.tilPosicion.error = null
+                    }
+                }
+            }
         }
 
         dialog.setContentView(binding.root)

@@ -20,7 +20,7 @@ data class Jugador(
 
     fun toMap(): Map<String, Any> {
         return mapOf(
-            "id" to id,  // Añadido el ID al mapa
+            "id" to id,
             "nombre" to nombre,
             "posicion" to posicion.name,
             "equipoId" to equipoId,
@@ -42,7 +42,7 @@ data class Jugador(
             }
 
             return Jugador(
-                id = map["id"] as? String ?: "",  // Obtenemos el ID del mapa
+                id = map["id"] as? String ?: "",
                 nombre = map["nombre"] as? String ?: "",
                 posicion = (map["posicion"] as? String)?.let { Posicion.valueOf(it) } ?: Posicion.PO,
                 equipoId = map["equipoId"] as? String ?: "",

@@ -24,6 +24,7 @@
     <string name="competiciones_title">Competiciones</string>
     <string name="delete_dialog_title">Eliminar competición</string>
     <string name="delete_dialog_message">¿Estás seguro de eliminar \'%s\'?</string>
+    <string name="anadir_nuevo_jugador">Añadir nuevo jugador</string>
 
     //Formatos
     <string name="avg_goals_format">Promedio de goles: %.1f</string>

@@ -109,6 +109,8 @@
                 android:hint="@string/hint_competicion"
                 android:inputType="none"
                 android:focusable="false"
+                android:dropDownHeight="300dp"
+                android:dropDownVerticalOffset="4dp"
                 android:clickable="true"/>
         </com.google.android.material.textfield.TextInputLayout>
 

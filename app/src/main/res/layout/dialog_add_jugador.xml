@@ -11,8 +11,21 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <!-- Título -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/anadir_nuevo_jugador"
+            android:textColor="@color/Fondo"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginBottom="16dp"/>
+
         <!-- Nombre -->
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilNombre"
+            style="@style/BaseTextInputLayoutDialog"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -20,32 +33,51 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etNombre"
+                style="@style/TextInputEditTextStyleDark"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/hint_nombre"
-                android:inputType="textCapWords"/>
+                android:inputType="textCapWords"
+                android:maxLength="30"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Posición -->
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilPosicion"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+            app:errorEnabled="true"
+            app:hintTextColor="@color/Fondo"
+            app:boxStrokeColor="@color/Fondo">
 
             <AutoCompleteTextView
                 android:id="@+id/spinnerPosicion"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/hint_posicion"
-                android:inputType="none"/>
+                android:inputType="none"
+                android:focusable="false"
+                android:clickable="true"
+                android:textColor="@color/Fondo"
+                android:dropDownHeight="300dp"
+                android:dropDownVerticalOffset="4dp"
+                android:textColorHint="@color/Fondo"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
+        <!-- Botón Guardar -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSave"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/guardar"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+            android:textColor="@color/botones_positivos"
+            app:strokeColor="@color/botones_positivos"
+            app:strokeWidth="2dp"
+            app:backgroundTint="@android:color/transparent"
+            app:rippleColor="@color/botones_positivos"
+            app:cornerRadius="8dp"/>
     </LinearLayout>
 </ScrollView>
