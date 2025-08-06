@@ -24,15 +24,24 @@ class JugadoresPartidoAdapter(
                 swTitular.setOnCheckedChangeListener { _, isChecked ->
                     onParticipacionChange(jugador, ParticipacionJugador(
                         jugadorId = jugador.id,
-                        titular = isChecked,
-                        minutosJugados = if (isChecked) 90 else 0
+                        esTitular = isChecked,
+                        minutosJugados = if (isChecked) 90 else 0,
+                        goles = 0,
+                        asistencias = 0,
+                        tarjetasAmarillas = 0,
+                        tarjetasRojas = 0
                     ))
                 }
 
                 etGoles.setOnEditorActionListener { _, _, _ ->
                     onParticipacionChange(jugador, ParticipacionJugador(
                         jugadorId = jugador.id,
-                        goles = etGoles.text.toString().toIntOrNull() ?: 0
+                        esTitular = binding.swTitular.isChecked,
+                        goles = etGoles.text.toString().toIntOrNull() ?: 0,
+                        minutosJugados = if (binding.swTitular.isChecked) 90 else 0,
+                        asistencias = 0,
+                        tarjetasAmarillas = 0,
+                        tarjetasRojas = 0
                     ))
                     false
                 }

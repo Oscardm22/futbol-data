@@ -109,7 +109,7 @@
                 android:hint="@string/hint_competicion"
                 android:inputType="none"
                 android:focusable="false"
-                android:dropDownHeight="300dp"
+                android:dropDownHeight="200dp"
                 android:dropDownVerticalOffset="4dp"
                 android:clickable="true"/>
         </com.google.android.material.textfield.TextInputLayout>
@@ -179,6 +179,18 @@
             android:checked="true"
             app:trackTint="@color/selector_switch_track"
             app:thumbTint="@color/selector_switch_thumb"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAddJugadores"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/agregar_jugadores"
+            android:layout_marginBottom="16dp"
+            app:icon="@drawable/ic_group_add"
+            app:iconGravity="start"
+            app:iconTint="@color/botones_positivos"
+            android:textColor="@color/botones_positivos"/>
 
         <!-- Botón Guardar -->
         <com.google.android.material.button.MaterialButton

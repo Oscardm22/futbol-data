@@ -1,53 +1,56 @@
 package com.example.futboldata.data.model
 
+import android.os.Parcelable
+import com.google.firebase.firestore.Exclude
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class Jugador(
     val id: String = "",
     val nombre: String,
     val posicion: Posicion,
     val equipoId: String,
-    val goles: Map<TipoCompeticion, Int> = mapOf(
-        TipoCompeticion.LIGA to 0,
-        TipoCompeticion.COPA_NACIONAL to 0,
-        TipoCompeticion.COPA_INTERNACIONAL to 0,
-        TipoCompeticion.SUPERCOPA to 0
-    )
-) {
-    // Constructor sin parámetros requerido por Firestore
+    @get:Exclude
+    val golesPorCompeticion: Map<String, Int> = emptyMap()
+) : Parcelable {
+
+    @get:Exclude
+    val golesTotales: Int
+        get() = golesPorCompeticion.values.sum()
+
+    // Constructor para Firestore
     constructor() : this("", "", Posicion.PO, "")
 
-    val golesTotales: Int
-        get() = goles.values.sum()
+    companion object {
+        fun fromFirestore(
+            id: String,
+            nombre: String,
+            posicion: String,
+            equipoId: String,
+            goles: Map<String, Int>?
+        ): Jugador {
+            return Jugador(
+                id = id,
+                nombre = nombre,
+                posicion = Posicion.valueOf(posicion),
+                equipoId = equipoId,
+                golesPorCompeticion = goles ?: emptyMap()
+            )
+        }
+    }
 
-    fun toMap(): Map<String, Any> {
+    fun toFirestoreMap(): Map<String, Any> {
         return mapOf(
-            "id" to id,
             "nombre" to nombre,
             "posicion" to posicion.name,
             "equipoId" to equipoId,
-            "goles" to goles.mapKeys { it.key.name },
-            "golesTotales" to golesTotales
+            "golesPorCompeticion" to golesPorCompeticion
         )
     }
 
-    companion object {
-        fun fromMap(map: Map<String, Any>): Jugador {
-            val golesMap = when (val goles = map["goles"]) {
-                is Map<*, *> -> goles.mapNotNull { (key, value) ->
-                    when {
-                        key is String && value is Int -> key to value
-                        else -> null
-                    }
-                }.toMap()
-                else -> emptyMap()
-            }
-
-            return Jugador(
-                id = map["id"] as? String ?: "",
-                nombre = map["nombre"] as? String ?: "",
-                posicion = (map["posicion"] as? String)?.let { Posicion.valueOf(it) } ?: Posicion.PO,
-                equipoId = map["equipoId"] as? String ?: "",
-                goles = golesMap.mapKeys { TipoCompeticion.valueOf(it.key) }
-            )
-        }
+    fun agregarGoles(competicionId: String, cantidad: Int): Jugador {
+        val nuevosGoles = golesPorCompeticion.toMutableMap()
+        nuevosGoles[competicionId] = (nuevosGoles[competicionId] ?: 0) + cantidad
+        return this.copy(golesPorCompeticion = nuevosGoles)
     }
 }

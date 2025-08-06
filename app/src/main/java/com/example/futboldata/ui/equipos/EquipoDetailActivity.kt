@@ -26,12 +26,20 @@ import com.google.android.material.tabs.TabLayoutMediator
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import com.example.futboldata.data.model.Asistencia
+import com.example.futboldata.data.model.Gol
+import com.example.futboldata.data.model.ParticipacionJugador
 import com.example.futboldata.data.model.Posicion
 import com.example.futboldata.data.repository.impl.CompeticionRepositoryImpl
 import com.example.futboldata.data.repository.impl.JugadorRepositoryImpl
 import com.example.futboldata.data.repository.impl.PartidoRepositoryImpl
 import com.example.futboldata.databinding.DialogAddJugadorBinding
 import com.example.futboldata.databinding.DialogAddPartidoBinding
+import com.example.futboldata.databinding.DialogJugadoresPartidoBinding
+import com.example.futboldata.ui.equipos.fragments.AlineacionFragment
+import com.example.futboldata.ui.equipos.fragments.AsistenciasFragment
+import com.example.futboldata.ui.equipos.fragments.GoleadoresFragment
+import com.example.futboldata.ui.equipos.fragments.MVPFragment
 import java.util.Date
 
 open class EquipoDetailActivity : AppCompatActivity() {
@@ -69,7 +77,7 @@ open class EquipoDetailActivity : AppCompatActivity() {
     }
 
     inner class ViewPagerAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity) {
-        private val fragments = mutableListOf<Pair<Fragment, String>>()
+        val fragments = mutableListOf<Pair<Fragment, String>>()
 
         fun addFragment(fragment: Fragment, title: String) {
             fragments.add(Pair(fragment, title))
@@ -110,10 +118,81 @@ open class EquipoDetailActivity : AppCompatActivity() {
         }
     }
 
+    private fun showJugadoresPartidoDialog(
+        equipoId: String,
+        onAlineacionSelected: (List<ParticipacionJugador>) -> Unit,
+        onGoleadoresSelected: (List<Gol>) -> Unit,
+        onAsistenciasSelected: (List<Asistencia>) -> Unit,
+        onMvpSelected: (String?) -> Unit
+    ) {
+        val dialog = BottomSheetDialog(this)
+        val binding = DialogJugadoresPartidoBinding.inflate(layoutInflater)
+
+        // 1. Crear fragments primero y mantener referencias
+        val alineacionFragment = AlineacionFragment()
+        val goleadoresFragment = GoleadoresFragment()
+        val asistenciasFragment = AsistenciasFragment()
+        val mvpFragment = MVPFragment()
+
+        // 2. Configurar ViewPager
+        val adapter = ViewPagerAdapter(this).apply {
+            addFragment(alineacionFragment, "Alineación")
+            addFragment(goleadoresFragment, "Goles")
+            addFragment(asistenciasFragment, "Asistencias")
+            addFragment(mvpFragment, "MVP")
+        }
+
+        binding.viewPager.adapter = adapter
+        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+            tab.text = adapter.getTitle(position)
+        }.attach()
+
+        // 3. Cargar jugadores y observar cambios
+        viewModel.jugadores.observe(this) { jugadores ->
+            if (jugadores.isNotEmpty()) {
+                alineacionFragment.updateJugadores(jugadores)
+                goleadoresFragment.updateJugadores(jugadores)
+                asistenciasFragment.updateJugadores(jugadores)
+                mvpFragment.updateJugadores(jugadores)
+            }
+        }
+
+        // 4. Forzar carga inicial
+        viewModel.cargarJugadores(equipoId)
+
+        binding.btnConfirm.setOnClickListener {
+            val alineacion = alineacionFragment.getAlineacionSeleccionada()
+            val goleadores = goleadoresFragment.getGoleadores()
+            val asistencias = asistenciasFragment.getAsistencias()
+            val mvp = mvpFragment.getMVP()
+
+            if (alineacion.count { it.esTitular } < 11) {
+                Toast.makeText(this, "Debes seleccionar al menos 11 titulares", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            onAlineacionSelected(alineacion)
+            onGoleadoresSelected(goleadores)
+            onAsistenciasSelected(asistencias)
+            onMvpSelected(mvp)
+            dialog.dismiss()
+        }
+
+        binding.btnCancel.setOnClickListener { dialog.dismiss() }
+        dialog.setContentView(binding.root)
+        dialog.show()
+    }
+
     private fun showAddPartidoDialog() {
         val dialog = BottomSheetDialog(this)
         val binding = DialogAddPartidoBinding.inflate(layoutInflater)
         val equipoId = intent.getStringExtra("equipo_id") ?: return
+
+        // Variables para almacenar las selecciones
+        var alineacionSeleccionada = mutableListOf<ParticipacionJugador>()
+        var goleadoresSeleccionados = mutableListOf<Gol>()
+        var asistenciasSeleccionadas = mutableListOf<Asistencia>()
+        var jugadorDelPartido: String? = null
 
         binding.spinnerCompeticion.setOnClickListener {
             binding.spinnerCompeticion.showDropDown()
@@ -134,6 +213,24 @@ open class EquipoDetailActivity : AppCompatActivity() {
         dialog.setContentView(binding.root)
         dialog.setCancelable(true)
         dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
+
+        binding.btnAddJugadores.setOnClickListener {
+            showJugadoresPartidoDialog(
+                equipoId = equipoId,
+                onAlineacionSelected = { alineacion ->
+                    alineacionSeleccionada = alineacion.toMutableList()
+                },
+                onGoleadoresSelected = { goleadores ->
+                    goleadoresSeleccionados = goleadores.toMutableList()
+                },
+                onAsistenciasSelected = { asistencias ->
+                    asistenciasSeleccionadas = asistencias.toMutableList()
+                },
+                onMvpSelected = { mvp ->
+                    jugadorDelPartido = mvp
+                }
+            )
+        }
 
         binding.btnSave.setOnClickListener {
             var isValid = true
@@ -193,8 +290,18 @@ open class EquipoDetailActivity : AppCompatActivity() {
                     temporada = binding.etTemporada.text.toString(),
                     fase = binding.etFase.text.toString().takeIf { it.isNotBlank() },
                     jornada = binding.etJornada.text.toString().toIntOrNull(),
-                    esLocal = binding.switchLocal.isChecked
+                    esLocal = binding.switchLocal.isChecked,
+                    alineacion = alineacionSeleccionada,
+                    goleadores = goleadoresSeleccionados,
+                    asistentes = asistenciasSeleccionadas,
+                    jugadorDelPartido = jugadorDelPartido
                 )
+
+                // Validar que los goles coincidan con los goleadores
+                if (goleadoresSeleccionados.size != (golesEquipo ?: 0)) {
+                    Toast.makeText(this, "La cantidad de goles no coincide con los goleadores registrados", Toast.LENGTH_LONG).show()
+                    return@setOnClickListener
+                }
 
                 viewModel.addPartido(nuevoPartido)
                 dialog.dismiss()

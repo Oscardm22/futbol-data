@@ -25,6 +25,7 @@
     <string name="delete_dialog_title">Eliminar competición</string>
     <string name="delete_dialog_message">¿Estás seguro de eliminar \'%s\'?</string>
     <string name="anadir_nuevo_jugador">Añadir nuevo jugador</string>
+    <string name="Seleccion_Jugadores">Selección de Jugadores</string>
 
     //Formatos
     <string name="avg_goals_format">Promedio de goles: %.1f</string>
@@ -44,6 +45,7 @@
     <string name="add_match">Añadir partido</string>
     <string name="ivTeamBackground">Imagen de fondo del equipo</string>
     <string name="competition_photo_desc">Foto de la competición</string>
+    <string name="desc_ic_mvp_selected">Icono de MVP</string>
 
     //Hints
     <string name="hint_password">Contraseña</string>
@@ -77,6 +79,8 @@
     <string name="refresh">Actualizar</string>
     <string name="delete_button">Eliminar</string>
     <string name="cancel_button">Cancelar</string>
+    <string name="confirmar">Confirmar</string>
+    <string name="agregar_jugadores">Agregar jugadores</string>
 
     //Errores
     <string name="error_empty_name">Ingresa un nombre para la competición</string>

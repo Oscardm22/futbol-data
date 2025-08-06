@@ -39,7 +39,7 @@ class PartidoViewModel(
         return _jugadores.value?.map { jugador ->
             participaciones[jugador.id] ?: ParticipacionJugador(
                 jugadorId = jugador.id,
-                titular = false,
+                esTitular = false,
                 minutosJugados = 0,
                 goles = 0,
                 asistencias = 0

@@ -81,8 +81,19 @@ class EquipoViewModel(
         viewModelScope.launch {
             _equipoStatsState.value = EquipoStatsState.Loading
             try {
-                val (equipo, stats) = repository.getEquipoWithStats(equipoId)
-                _equipoStatsState.value = EquipoStatsState.Success(equipo, stats)
+                val result = repository.getEquipoWithStats(equipoId)
+                if (result != null) {
+                    val (equipo, stats) = result
+                    _equipoStatsState.value = EquipoStatsState.Success(
+                        equipo,
+                        stats ?: Estadisticas.empty()
+                    )
+                } else {
+                    _equipoStatsState.value = EquipoStatsState.Success(
+                        null,
+                        Estadisticas.empty()
+                    )
+                }
             } catch (e: Exception) {
                 _equipoStatsState.value = EquipoStatsState.Error(
                     e.localizedMessage ?: "Error al cargar estadísticas"
@@ -106,7 +117,7 @@ class EquipoViewModel(
 
     sealed class EquipoStatsState {
         object Loading : EquipoStatsState()
-        data class Success(val equipo: Equipo?, val stats: Estadisticas) : EquipoStatsState()
+        data class Success(val equipo: Equipo?, val stats: Estadisticas?) : EquipoStatsState()
         data class Error(val mensaje: String) : EquipoStatsState()
     }
 }

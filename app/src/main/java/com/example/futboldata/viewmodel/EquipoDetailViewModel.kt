@@ -1,5 +1,6 @@
 package com.example.futboldata.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -44,16 +45,20 @@ class EquipoDetailViewModel(
         _isLoading.value = true
         viewModelScope.launch {
             try {
-                // Cargar equipo y estadísticas
-                val (equipoData, statsData) = repository.getEquipoWithStats(equipoId)
-                _equipo.value = equipoData
-                _estadisticas.value = statsData
+                repository.getEquipoWithStats(equipoId)?.let { (equipo, stats) ->
+                    _equipo.value = equipo ?: Equipo()
+                    _estadisticas.value = stats ?: Estadisticas.empty()
+                } ?: run {
+                    _equipo.value = Equipo()
+                    _estadisticas.value = Estadisticas.empty()
+                }
 
                 cargarJugadores(equipoId)
                 cargarPartidos(equipoId)
                 cargarCompeticiones()
             } catch (e: Exception) {
-                // Manejo de errores
+                _equipo.value = Equipo()
+                _estadisticas.value = Estadisticas.empty()
             } finally {
                 _isLoading.value = false
             }
@@ -63,14 +68,13 @@ class EquipoDetailViewModel(
     fun cargarJugadores(equipoId: String) {
         viewModelScope.launch {
             try {
-                _isLoading.value = true
-                val listaJugadores = jugadorRepository.getJugadoresPorEquipo(equipoId)
-                _jugadores.value = listaJugadores
+                Log.d("DEBUG_VIEWMODEL", "Cargando jugadores para equipo: $equipoId")
+                val lista = jugadorRepository.getJugadoresPorEquipo(equipoId)
+                Log.d("DEBUG_VIEWMODEL", "Jugadores obtenidos: ${lista.size}")
+                _jugadores.value = lista
             } catch (e: Exception) {
-                // Manejo de errores
+                Log.e("DEBUG_VIEWMODEL", "Error cargando jugadores", e)
                 _jugadores.value = emptyList()
-            } finally {
-                _isLoading.value = false
             }
         }
     }

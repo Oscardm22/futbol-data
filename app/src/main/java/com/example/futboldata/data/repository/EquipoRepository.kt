@@ -21,5 +21,5 @@ interface EquipoRepository {
     suspend fun getCompeticiones(): List<Competicion>
 
     // Stats
-    suspend fun getEquipoWithStats(equipoId: String): Pair<Equipo?, Estadisticas>
+    suspend fun getEquipoWithStats(equipoId: String): Pair<Equipo?, Estadisticas?>?
 }

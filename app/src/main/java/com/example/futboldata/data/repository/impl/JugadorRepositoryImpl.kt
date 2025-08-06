@@ -11,7 +11,7 @@ class JugadorRepositoryImpl(
 
     override suspend fun addJugador(jugador: Jugador) {
         db.collection("jugadores")
-            .add(jugador.toMap())
+            .add(jugador.toFirestoreMap())
             .await()
     }
 
@@ -22,7 +22,20 @@ class JugadorRepositoryImpl(
             .await()
             .documents
             .mapNotNull { document ->
-                document.toObject(Jugador::class.java)
+                val golesMap = when (val goles = document.get("golesPorCompeticion")) {
+                    is Map<*, *> -> goles.mapNotNull { (key, value) ->
+                        if (key is String && value is Int) key to value else null
+                    }.toMap()
+                    else -> null
+                }
+
+                Jugador.fromFirestore(
+                    id = document.id,
+                    nombre = document.getString("nombre") ?: "",
+                    posicion = document.getString("posicion") ?: "PO",
+                    equipoId = document.getString("equipoId") ?: "",
+                    goles = golesMap
+                )
             }
     }
 }

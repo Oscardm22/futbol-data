@@ -1,0 +1,42 @@
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="@color/selector_mvp_card"> <!-- Color que cambia al seleccionar -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="?attr/selectableItemBackground">
+
+        <TextView
+            android:id="@+id/tvNombre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/tvPosicion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textSize="14sp"/>
+
+        <!-- Elemento adicional para indicar selección -->
+        <ImageView
+            android:id="@+id/ivSelected"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="end"
+            android:contentDescription="@string/desc_ic_mvp_selected"
+            android:visibility="gone"
+            android:src="@drawable/ic_mvp_selected"/>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

@@ -131,27 +131,15 @@ class EquipoRepositoryImpl(
     }
 
     // --- Estadísticas ---
-    override suspend fun getEquipoWithStats(equipoId: String): Pair<Equipo?, Estadisticas> {
+    override suspend fun getEquipoWithStats(equipoId: String): Pair<Equipo?, Estadisticas?> {
         return try {
             val equipo = getEquipoById(equipoId)
             val partidos = getPartidos(equipoId)
-
-            partidos.forEach { p ->
-                Log.d(
-                    "RepoDebug",
-                    "Partido [${p.fecha}-vs-${p.rival}]: ${p.resultado} | " +
-                            "Goles: ${p.golesEquipo} | " +  // Cambiado de getGolesEquipo() a golesEquipo
-                            "Estado: ${p.obtenerEstadoPartido()}"
-                )
-            }
-
             val stats = statsCalculator.calculate(partidos)
-            Log.d("RepoDebug", "Stats calculadas: $stats")
-
             Pair(equipo, stats)
         } catch (e: Exception) {
             Log.e("RepoError", "Error al procesar estadísticas:", e)
-            Pair(null, Estadisticas.empty())
+            Pair(null, null)
         }
     }
 }

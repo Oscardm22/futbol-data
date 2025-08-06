@@ -15,9 +15,9 @@ enum class Posicion(val displayName: String) {
     DC("Delantero Centro");
 
     companion object {
-        fun getAll(): List<Posicion> = values().toList()
+        fun getAll(): List<Posicion> = Posicion.entries
         fun fromDisplayName(displayName: String): Posicion? {
-            return values().find { it.displayName == displayName }
+            return Posicion.entries.find { it.displayName == displayName }
         }
     }
 }

@@ -5,7 +5,7 @@ data class ParticipacionJugador(
     val goles: Int = 0,
     val asistencias: Int = 0,
     val minutosJugados: Int = 0,
-    val titular: Boolean = false,
+    val esTitular: Boolean,
     val tarjetasAmarillas: Int = 0,
     val tarjetasRojas: Int = 0
 )

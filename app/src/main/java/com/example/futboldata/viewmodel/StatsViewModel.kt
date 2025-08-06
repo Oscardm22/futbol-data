@@ -18,14 +18,24 @@ class StatsViewModel(
         object Loading : StatsState()
         data class Success(val data: Estadisticas) : StatsState()
         data class Error(val message: String) : StatsState()
+        object NotFound : StatsState()
     }
 
     fun loadStats(equipoId: String) {
         _statsState.value = StatsState.Loading
         viewModelScope.launch {
             try {
-                val (_, stats) = equipoRepository.getEquipoWithStats(equipoId)
-                _statsState.value = StatsState.Success(stats)
+                val result = equipoRepository.getEquipoWithStats(equipoId)
+                if (result != null) {
+                    val (_, stats) = result
+                    if (stats != null) {
+                        _statsState.value = StatsState.Success(stats)
+                    } else {
+                        _statsState.value = StatsState.Success(Estadisticas.empty())
+                    }
+                } else {
+                    _statsState.value = StatsState.NotFound
+                }
             } catch (e: Exception) {
                 _statsState.value = StatsState.Error(e.message ?: "Error al cargar estadísticas")
             }

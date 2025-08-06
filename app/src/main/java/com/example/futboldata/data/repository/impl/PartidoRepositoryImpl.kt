@@ -50,7 +50,7 @@ class PartidoRepositoryImpl(
                     "goles" to participacion.goles,
                     "asistencias" to participacion.asistencias,
                     "minutosJugados" to participacion.minutosJugados,
-                    "titular" to participacion.titular,
+                    "titular" to participacion.esTitular,
                     "tarjetasAmarillas" to participacion.tarjetasAmarillas,
                     "tarjetasRojas" to participacion.tarjetasRojas
                 )
@@ -161,7 +161,7 @@ class PartidoRepositoryImpl(
                     goles = (it["goles"] as? Number)?.toInt() ?: 0,
                     asistencias = (it["asistencias"] as? Number)?.toInt() ?: 0,
                     minutosJugados = (it["minutosJugados"] as? Number)?.toInt() ?: 0,
-                    titular = it["titular"] as? Boolean == true,
+                    esTitular = it["titular"] as? Boolean == true,
                     tarjetasAmarillas = (it["tarjetasAmarillas"] as? Number)?.toInt() ?: 0,
                     tarjetasRojas = (it["tarjetasRojas"] as? Number)?.toInt() ?: 0
                 )
