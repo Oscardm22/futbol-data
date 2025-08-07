@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -8,14 +7,15 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilMinuto"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        style="@style/BaseTextInputLayoutDialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:hint="Minuto">
+        android:hint="@string/hint_minuto">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etMinuto"
+            style="@style/TextInputEditTextStyleDark"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="number"/>
@@ -25,5 +25,5 @@
         android:id="@+id/cbPenalti"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="¿Fue penalti?"/>
+        android:text="@string/hint_penalti"/>
 </LinearLayout>

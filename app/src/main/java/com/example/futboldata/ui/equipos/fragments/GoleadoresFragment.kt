@@ -33,6 +33,10 @@ class GoleadoresFragment : Fragment() {
             showGolDialog(jugadorId, jugadorNombre)
         }
 
+        if (_jugadores.isNotEmpty()) {
+            adapter.submitList(_jugadores.toList())
+        }
+
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = this@GoleadoresFragment.adapter
@@ -61,7 +65,9 @@ class GoleadoresFragment : Fragment() {
                 )
 
                 golesRegistrados.add(gol)
-                adapter.notifyItemInserted(golesRegistrados.size - 1)
+
+                adapter.updateGoles(golesRegistrados)
+
             }
             .setNegativeButton("Cancelar", null)
             .show()
@@ -71,7 +77,6 @@ class GoleadoresFragment : Fragment() {
         Log.d("DEBUG_FRAGMENT", "updateJugadores - ${this::class.simpleName} - Jugadores: ${jugadores.size}")
         _jugadores = jugadores
         if (::adapter.isInitialized) {
-            Log.d("DEBUG_ADAPTER", "Enviando lista al adapter")
             adapter.submitList(jugadores.toList())
         }
     }

@@ -26,6 +26,7 @@
     <string name="delete_dialog_message">¿Estás seguro de eliminar \'%s\'?</string>
     <string name="anadir_nuevo_jugador">Añadir nuevo jugador</string>
     <string name="Seleccion_Jugadores">Selección de Jugadores</string>
+    <string name="tvGoles">Goles: 0</string>
 
     //Formatos
     <string name="avg_goals_format">Promedio de goles: %.1f</string>
@@ -34,6 +35,7 @@
     <string name="stats_win_percentage">%1$d%% victorias</string>
     <string name="stats_avg_goals">Promedio goles: %1$.1f</string>
     <string name="stats_possession">%1$d%% posesión</string>
+    <string name="label_goles">Goles: %1$d</string>
 
     //Descripciones
     <string name="desc_logo">Logo de la aplicación</string>
@@ -66,6 +68,8 @@
     <string name="hint_posicion">Posición</string>
     <string name="hint_competicion_name">Nombre de la competición</string>
     <string name="hint_tipo_competicion">Tipo de competición</string>
+    <string name="hint_minuto">Minuto</string>
+    <string name="hint_penalti">¿Fue penalti?</string>
 
     //Botones
     <string name="btn_login">Iniciar Sesión</string>
@@ -81,6 +85,7 @@
     <string name="cancel_button">Cancelar</string>
     <string name="confirmar">Confirmar</string>
     <string name="agregar_jugadores">Agregar jugadores</string>
+    <string name="btnAddGol">Gol</string>
 
     //Errores
     <string name="error_empty_name">Ingresa un nombre para la competición</string>
