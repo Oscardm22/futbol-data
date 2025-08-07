@@ -6,14 +6,17 @@
     android:padding="16dp">
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilMinuto"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        style="@style/BaseTextInputLayoutDialog">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etMinuto"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Minuto de la asistencia"
-            android:inputType="number"/>
-    </com.google.android.material.textfield.TextInputLayout>
-</LinearLayout>
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/etMinuto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/TextInputEditTextStyleDark"
+        android:hint="@string/hint_minuto"
+        android:inputType="number"/>
+</com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>

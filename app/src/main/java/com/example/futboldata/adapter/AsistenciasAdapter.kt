@@ -4,23 +4,32 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.example.futboldata.R
+import com.example.futboldata.data.model.Asistencia
 import com.example.futboldata.data.model.Jugador
-import com.example.futboldata.databinding.ItemPlayerBinding
+import com.example.futboldata.databinding.ItemAsistenciaBinding
 
 class AsistenciasAdapter(
     private val onAsistenciaClick: (jugadorId: String, jugadorNombre: String) -> Unit
 ) : RecyclerView.Adapter<AsistenciasAdapter.JugadorViewHolder>() {
 
     private var jugadores: List<Jugador> = emptyList()
+    private var asistencias: List<Asistencia> = emptyList()
 
-    inner class JugadorViewHolder(private val binding: ItemPlayerBinding) :
+    inner class JugadorViewHolder(private val binding: ItemAsistenciaBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(jugador: Jugador) {
             binding.apply {
                 tvNombre.text = jugador.nombre
-                tvPosicion.text = jugador.posicion.name
-                root.setOnClickListener {
+
+                // Mostrar conteo de asistencias
+                val numAsistencias = asistencias.count { it.jugadorId == jugador.id }
+                binding.tvAsistencias.text = binding.root.context.getString(
+                    R.string.label_asistencias,
+                    numAsistencias
+                )
+                btnAddAsistencia.setOnClickListener {
                     onAsistenciaClick(jugador.id, jugador.nombre)
                 }
             }
@@ -28,7 +37,7 @@ class AsistenciasAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): JugadorViewHolder {
-        val binding = ItemPlayerBinding.inflate(
+        val binding = ItemAsistenciaBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false
@@ -66,5 +75,10 @@ class AsistenciasAdapter(
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             return oldList[oldItemPosition] == newList[newItemPosition]
         }
+    }
+
+    fun updateAsistencias(nuevasAsistencias: List<Asistencia>) {
+        this.asistencias = nuevasAsistencias
+        notifyItemRangeChanged(0, itemCount)
     }
 }

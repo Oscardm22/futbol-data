@@ -39,6 +39,10 @@ class MVPFragment : Fragment() {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = this@MVPFragment.adapter
         }
+
+        if (_jugadores.isNotEmpty()) {
+            adapter.submitList(_jugadores.toList())
+        }
     }
 
     fun updateJugadores(jugadores: List<Jugador>) {

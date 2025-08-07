@@ -21,7 +21,6 @@ class MVPAdapter(
             binding.apply {
                 tvNombre.text = jugador.nombre
                 tvPosicion.text = jugador.posicion.name
-                // Resaltar selección
                 root.isSelected = jugador.id == selectedJugadorId
 
                 root.setOnClickListener {

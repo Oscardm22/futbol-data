@@ -27,6 +27,7 @@
     <string name="anadir_nuevo_jugador">Añadir nuevo jugador</string>
     <string name="Seleccion_Jugadores">Selección de Jugadores</string>
     <string name="tvGoles">Goles: 0</string>
+    <string name="tvAsistencias">Asistencias: 0</string>
 
     //Formatos
     <string name="avg_goals_format">Promedio de goles: %.1f</string>
@@ -36,6 +37,7 @@
     <string name="stats_avg_goals">Promedio goles: %1$.1f</string>
     <string name="stats_possession">%1$d%% posesión</string>
     <string name="label_goles">Goles: %1$d</string>
+    <string name="label_asistencias">asistencias: %1$d</string>
 
     //Descripciones
     <string name="desc_logo">Logo de la aplicación</string>
@@ -86,6 +88,7 @@
     <string name="confirmar">Confirmar</string>
     <string name="agregar_jugadores">Agregar jugadores</string>
     <string name="btnAddGol">Gol</string>
+    <string name="btnAddAsistencia">Asist</string>
 
     //Errores
     <string name="error_empty_name">Ingresa un nombre para la competición</string>
@@ -93,4 +96,7 @@
     <string name="error_name_too_long">El nombre no puede exceder 50 caracteres</string>
     <string name="error_invalid_chars">Solo letras, números, espacios y guiones</string>
     <string name="error_no_competition_type">Seleccione el tipo de competición</string>
+    <string name="error_minuto_vacio">Debes ingresar un minuto</string>
+    <string name="error_minuto_invalido">Debe ser un número válido</string>
+    <string name="error_minuto_rango">Debe estar entre 1 y 120</string>
 </resources>
