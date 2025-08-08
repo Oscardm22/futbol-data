@@ -1,6 +1,7 @@
 package com.example.futboldata.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -21,10 +22,13 @@ class MVPAdapter(
             binding.apply {
                 tvNombre.text = jugador.nombre
                 tvPosicion.text = jugador.posicion.name
-                root.isSelected = jugador.id == selectedJugadorId
+
+                // Mostrar/ocultar el badge de MVP según la selección
+                ivSelected.visibility = if (jugador.id == selectedJugadorId) View.VISIBLE else View.INVISIBLE
 
                 root.setOnClickListener {
                     onJugadorSelected(jugador.id)
+                    ivSelected.visibility = View.VISIBLE
                 }
             }
         }
@@ -55,9 +59,17 @@ class MVPAdapter(
     fun setSelectedJugador(jugadorId: String?) {
         val previousSelected = selectedJugadorId
         selectedJugadorId = jugadorId
-        // Notificar cambios para actualizar la UI
-        notifyItemChanged(jugadores.indexOfFirst { it.id == previousSelected })
-        notifyItemChanged(jugadores.indexOfFirst { it.id == selectedJugadorId })
+
+        // Notificar cambios para actualizar la UI de ambos items (anterior y nuevo seleccionado)
+        previousSelected?.let { oldId ->
+            val oldPosition = jugadores.indexOfFirst { it.id == oldId }
+            if (oldPosition != -1) notifyItemChanged(oldPosition)
+        }
+
+        selectedJugadorId?.let { newId ->
+            val newPosition = jugadores.indexOfFirst { it.id == newId }
+            if (newPosition != -1) notifyItemChanged(newPosition)
+        }
     }
 
     private class JugadorDiffCallback(

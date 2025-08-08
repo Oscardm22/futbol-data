@@ -2,39 +2,79 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="4dp"
     app:cardCornerRadius="8dp"
-    app:cardElevation="4dp">
+    app:cardElevation="1dp"
+    app:cardBackgroundColor="@color/card_dialogos">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp">
+        android:padding="12dp"
+        android:gravity="center_vertical"
+        android:background="@color/card_dialogos">
 
+        <!-- Nombre del jugador -->
         <TextView
             android:id="@+id/tvNombre"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textSize="16sp"/>
-
-        <TextView
-            android:id="@+id/tvAsistencias"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:text="@string/tvAsistencias"
-            android:textSize="14sp"/>
+            android:textSize="16sp"
+            android:textColor="@color/Fondo"
+            android:textStyle="bold"
+            android:ellipsize="end"
+            android:maxLines="1"
+            tools:text="Lionel Messi"/>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnAddAsistencia"
+        <!-- Contenedor para asistencias y botón -->
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/btnAddAsistencia"
-            app:icon="@drawable/ic_add"
-            app:iconGravity="start"/>
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <!-- Contador de asistencias con icono -->
+            <TextView
+                android:id="@+id/tvAsistencias"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:minWidth="48dp"
+                android:gravity="center"
+                android:paddingHorizontal="4dp"
+                android:paddingVertical="2dp"
+                android:drawablePadding="4dp"
+                android:background="@drawable/bg_goles_counter"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:drawableStartCompat="@drawable/ic_assist"
+                tools:text="3"/>
+
+            <!-- Botón de añadir asistencia -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAddAsistencia"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:padding="8dp"
+                android:gravity="center"
+                app:icon="@drawable/ic_add"
+                app:iconSize="20dp"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:rippleColor="@color/botones_positivos"
+                app:iconTint="@color/botones_positivos"
+                app:strokeColor="@color/botones_positivos"
+                app:strokeWidth="1dp"
+                app:cornerRadius="18dp"/>
+        </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>
