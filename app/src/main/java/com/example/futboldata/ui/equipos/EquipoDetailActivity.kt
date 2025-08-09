@@ -291,9 +291,9 @@ open class EquipoDetailActivity : AppCompatActivity() {
                     fase = binding.etFase.text.toString().takeIf { it.isNotBlank() },
                     jornada = binding.etJornada.text.toString().toIntOrNull(),
                     esLocal = binding.switchLocal.isChecked,
-                    alineacion = alineacionSeleccionada,
-                    goleadores = goleadoresSeleccionados,
-                    asistentes = asistenciasSeleccionadas,
+                    alineacionIds = alineacionSeleccionada.map { it.jugadorId },
+                    goleadoresIds = goleadoresSeleccionados.map { it.jugadorId },
+                    asistentesIds = asistenciasSeleccionadas.map { it.jugadorId },
                     jugadorDelPartido = jugadorDelPartido
                 )
 

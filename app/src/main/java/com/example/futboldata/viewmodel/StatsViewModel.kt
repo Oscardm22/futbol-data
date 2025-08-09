@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.futboldata.data.model.Estadisticas
+import com.example.futboldata.data.model.Partido
 import com.example.futboldata.data.repository.EquipoRepository
 import kotlinx.coroutines.launch
 
@@ -21,21 +22,13 @@ class StatsViewModel(
         object NotFound : StatsState()
     }
 
-    fun loadStats(equipoId: String) {
+    fun loadStats(equipoId: String, partidos: List<Partido>) {
         _statsState.value = StatsState.Loading
         viewModelScope.launch {
             try {
-                val result = equipoRepository.getEquipoWithStats(equipoId)
-                if (result != null) {
-                    val (_, stats) = result
-                    if (stats != null) {
-                        _statsState.value = StatsState.Success(stats)
-                    } else {
-                        _statsState.value = StatsState.Success(Estadisticas.empty())
-                    }
-                } else {
-                    _statsState.value = StatsState.NotFound
-                }
+                val result = equipoRepository.getEquipoWithStats(equipoId, partidos)
+                val stats = result.second ?: Estadisticas.empty()
+                _statsState.value = StatsState.Success(stats)
             } catch (e: Exception) {
                 _statsState.value = StatsState.Error(e.message ?: "Error al cargar estadísticas")
             }
