@@ -47,13 +47,16 @@ class EquipoViewModel(
         viewModelScope.launch {
             _operacionState.value = OperacionState.Loading
             try {
-                val equipoId = repository.saveEquipo(equipo)
-                // Mensaje más descriptivo
-                _operacionState.value = OperacionState.Success(
-                    if (equipo.id.isEmpty()) "Equipo creado con ID: $equipoId"
-                    else "Equipo actualizado correctamente"
-                )
-                cargarEquipos() // Refrescar lista
+                val id = repository.saveEquipo(equipo)
+                if (id.isNotEmpty()) {
+                    _operacionState.value = OperacionState.Success(
+                        if (equipo.id.isEmpty()) "Equipo creado con ID: $id"
+                        else "Equipo actualizado"
+                    )
+                    cargarEquipos()
+                } else {
+                    _operacionState.value = OperacionState.Error("Error al obtener ID")
+                }
             } catch (e: Exception) {
                 _operacionState.value = OperacionState.Error(
                     e.localizedMessage ?: "Error al guardar equipo"
@@ -72,31 +75,6 @@ class EquipoViewModel(
             } catch (e: Exception) {
                 _operacionState.value = OperacionState.Error(
                     e.localizedMessage ?: "Error al eliminar equipo"
-                )
-            }
-        }
-    }
-
-    fun cargarEquipoConEstadisticas(equipoId: String) {
-        viewModelScope.launch {
-            _equipoStatsState.value = EquipoStatsState.Loading
-            try {
-                val result = repository.getEquipoWithStats(equipoId)
-                if (result != null) {
-                    val (equipo, stats) = result
-                    _equipoStatsState.value = EquipoStatsState.Success(
-                        equipo,
-                        stats ?: Estadisticas.empty()
-                    )
-                } else {
-                    _equipoStatsState.value = EquipoStatsState.Success(
-                        null,
-                        Estadisticas.empty()
-                    )
-                }
-            } catch (e: Exception) {
-                _equipoStatsState.value = EquipoStatsState.Error(
-                    e.localizedMessage ?: "Error al cargar estadísticas"
                 )
             }
         }

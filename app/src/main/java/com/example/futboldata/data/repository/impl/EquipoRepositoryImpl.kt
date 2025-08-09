@@ -4,9 +4,7 @@ import android.util.Log
 import com.example.futboldata.data.repository.EquipoRepository
 import com.example.futboldata.data.model.*
 import com.example.futboldata.utils.StatsCalculator
-import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import kotlinx.coroutines.tasks.await
 import kotlin.jvm.java
 
@@ -23,11 +21,18 @@ class EquipoRepositoryImpl(
                 .await()
                 .documents
                 .mapNotNull { document ->
-                    document.toObject(Equipo::class.java)?.copy(id = document.id)
+                    // Primero obtener el objeto
+                    val equipo = document.toObject(Equipo::class.java)
+                    // Luego asegurarnos que tenga el ID correcto
+                    equipo?.copy(id = document.id).also {
+                        Log.d("FIREBASE_DEBUG", "Equipo cargado: ${it?.nombre} - ID: ${it?.id}")
+                    }
                 }
         } catch (e: Exception) {
             Log.e("EquipoRepository", "Error al obtener equipos", e)
-            emptyList()
+            emptyList<Equipo>().also {
+                Log.e("FIREBASE_DEBUG", "Error cargando equipos: ${e.message}")
+            }
         }
     }
 
@@ -53,13 +58,16 @@ class EquipoRepositoryImpl(
     override suspend fun saveEquipo(equipo: Equipo): String {
         return try {
             if (equipo.id.isEmpty()) {
-                // Nuevo equipo
-                val docRef = db.collection("equipos")
-                    .add(equipo)
-                    .await()
+                // 1. Creamos una referencia de documento con ID generado
+                val docRef = db.collection("equipos").document()
+                // 2. Creamos una copia del equipo con el ID asignado
+                val equipoConId = equipo.copy(id = docRef.id)
+                // 3. Guardamos el equipo completo (con ID)
+                docRef.set(equipoConId).await()
+                // 4. Retornamos el ID generado
                 docRef.id
             } else {
-                // Equipo existente
+                // Caso de actualización (sin cambios)
                 db.collection("equipos")
                     .document(equipo.id)
                     .set(equipo)
@@ -84,44 +92,6 @@ class EquipoRepositoryImpl(
         }
     }
 
-    // --- Partidos (sin cambios) ---
-    override suspend fun getPartidos(equipoId: String): List<Partido> {
-        return db.collection("partidos")
-            .whereEqualTo("equipoId", equipoId)
-            .get()
-            .await()
-            .toObjects(Partido::class.java)
-    }
-
-    override suspend fun getUltimosPartidos(equipoId: String, limit: Int): List<Partido> {
-        return db.collection("partidos")
-            .whereEqualTo("equipoId", equipoId)
-            .orderBy("fecha", Query.Direction.DESCENDING)
-            .limit(limit.toLong())
-            .get()
-            .await()
-            .toObjects(Partido::class.java)
-    }
-
-    override suspend fun addPartido(partido: Partido): String {
-        val partidoMap = hashMapOf(
-            "equipoId" to partido.equipoId,
-            "fecha" to Timestamp(partido.fecha),
-            "rival" to partido.rival,
-            "resultado" to partido.resultado,
-            "competicionId" to partido.competicionId,
-            "competicionNombre" to partido.competicionNombre,
-            "temporada" to partido.temporada,
-            "fase" to partido.fase,
-            "jornada" to partido.jornada,
-            "jugadorDelPartido" to partido.jugadorDelPartido
-        )
-        return db.collection("partidos")
-            .add(partidoMap)
-            .await()
-            .id
-    }
-
     // --- Competiciones (sin cambios) ---
     override suspend fun getCompeticiones(): List<Competicion> {
         return db.collection("competiciones")
@@ -131,10 +101,9 @@ class EquipoRepositoryImpl(
     }
 
     // --- Estadísticas ---
-    override suspend fun getEquipoWithStats(equipoId: String): Pair<Equipo?, Estadisticas?> {
+    override suspend fun getEquipoWithStats(equipoId: String, partidos: List<Partido>): Pair<Equipo?, Estadisticas?> {
         return try {
             val equipo = getEquipoById(equipoId)
-            val partidos = getPartidos(equipoId)
             val stats = statsCalculator.calculate(partidos)
             Pair(equipo, stats)
         } catch (e: Exception) {

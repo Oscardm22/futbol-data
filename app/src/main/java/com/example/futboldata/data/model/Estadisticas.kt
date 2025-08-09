@@ -5,10 +5,10 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Estadisticas(
-    val promedioGoles: Number,
-    val porcentajeVictorias: Number,
-    val posesionPromedio: Number,
-    val golesPorPartido: Map<String, Int>,
+    val promedioGoles: Double = 0.0,
+    val porcentajeVictorias: Double = 0.0,
+    val posesionPromedio: Double = 0.0,
+    val golesPorPartido: Map<String, Int> = emptyMap(),
     val partidosJugados: Int = 0,
     val victorias: Int = 0,
     val empates: Int = 0,
@@ -16,22 +16,14 @@ data class Estadisticas(
     val golesFavor: Int = 0,
     val golesContra: Int = 0
 ) : Parcelable {
+    // Constructor sin argumentos
+    constructor() : this(0.0, 0.0, 0.0, emptyMap(), 0, 0, 0, 0, 0, 0)
+
     companion object {
-        fun empty() = Estadisticas(
-            promedioGoles = 0.0,
-            porcentajeVictorias = 0.0,
-            posesionPromedio = 0.0,
-            golesPorPartido = emptyMap(),
-            partidosJugados = 0,
-            victorias = 0,
-            empates = 0,
-            derrotas = 0,
-            golesFavor = 0,
-            golesContra = 0
-        )
+        fun empty() = Estadisticas()
     }
 
-    fun getPromedioGolesDouble() = promedioGoles.toDouble()
-    fun getPorcentajeVictoriasDouble() = porcentajeVictorias.toDouble()
-    fun getPosesionPromedioDouble() = posesionPromedio.toDouble()
+    fun getPromedioGolesDouble() = promedioGoles
+    fun getPorcentajeVictoriasDouble() = porcentajeVictorias
+    fun getPosesionPromedioDouble() = posesionPromedio
 }

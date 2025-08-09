@@ -45,16 +45,17 @@ class EquipoDetailViewModel(
         _isLoading.value = true
         viewModelScope.launch {
             try {
-                repository.getEquipoWithStats(equipoId)?.let { (equipo, stats) ->
+                // 1. Obtenemos los partidos primero
+                val partidos = partidoRepository.getPartidos(equipoId)
+
+                // 2. Pasamos los partidos al método getEquipoWithStats
+                repository.getEquipoWithStats(equipoId, partidos).let { (equipo, stats) ->
                     _equipo.value = equipo ?: Equipo()
                     _estadisticas.value = stats ?: Estadisticas.empty()
-                } ?: run {
-                    _equipo.value = Equipo()
-                    _estadisticas.value = Estadisticas.empty()
+                    _partidos.value = partidos // Actualizamos los partidos en el LiveData
                 }
 
                 cargarJugadores(equipoId)
-                cargarPartidos(equipoId)
                 cargarCompeticiones()
             } catch (e: Exception) {
                 _equipo.value = Equipo()
@@ -93,19 +94,13 @@ class EquipoDetailViewModel(
 
     fun addPartido(partido: Partido) {
         viewModelScope.launch {
-            repository.addPartido(partido)
-        }
-    }
-
-    fun cargarPartidos(equipoId: String) {
-        viewModelScope.launch {
             try {
-                _isLoading.value = true
-                _partidos.value = partidoRepository.getPartidos(equipoId)
+                partidoRepository.addPartido(partido)
+                // Actualizar la lista de partidos después de añadir uno nuevo
+                cargarEquipo(partido.equipoId)
             } catch (e: Exception) {
-                _partidos.value = emptyList()
-            } finally {
-                _isLoading.value = false
+                Log.e("EquipoDetailVM", "Error al añadir partido", e)
+                // Puedes manejar el error aquí (mostrar mensaje, etc.)
             }
         }
     }

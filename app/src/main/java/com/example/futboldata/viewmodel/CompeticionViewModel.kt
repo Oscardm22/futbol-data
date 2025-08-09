@@ -44,7 +44,9 @@ class CompeticionViewModel(
         viewModelScope.launch {
             _operacionState.value = OperacionState.Loading
             try {
-                repository.saveCompeticion(competicion)
+                val id = repository.saveCompeticion(competicion)
+                // Actualizamos la competición en Firestore con el ID generado
+                repository.updateCompeticion(competicion.copy(id = id))
                 cargarCompeticiones() // Recargamos la lista después de crear
                 _operacionState.value = OperacionState.Success("Competición creada exitosamente")
             } catch (e: Exception) {

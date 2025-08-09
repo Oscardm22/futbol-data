@@ -28,10 +28,10 @@ class CompeticionRepositoryImpl(
         return try {
             if (competicion.id.isEmpty()) {
                 // Nueva competición
-                db.collection("competiciones")
+                val documentRef = db.collection("competiciones")
                     .add(competicion)
                     .await()
-                    .id
+                documentRef.id // Retornamos el ID generado por Firestore
             } else {
                 // Actualización
                 db.collection("competiciones")

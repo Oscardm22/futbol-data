@@ -18,6 +18,9 @@ class EquiposAdapter(
     private val onDeleteClick: (String) -> Unit
 ) : RecyclerView.Adapter<EquiposAdapter.EquipoViewHolder>() {
 
+    val currentList: List<Equipo>
+        get() = equipos
+
     private val imageJobs = mutableMapOf<ImageView, Job>()
 
     inner class EquipoViewHolder(val binding: ItemEquipoBinding) :
@@ -100,7 +103,9 @@ class EquiposAdapter(
 
     @SuppressLint("NotifyDataSetChanged")
     fun updateList(newEquipos: List<Equipo>) {
-        equipos = newEquipos
-        notifyDataSetChanged()
+        if (equipos != newEquipos) {
+            equipos = newEquipos
+            notifyDataSetChanged()
+        }
     }
 }

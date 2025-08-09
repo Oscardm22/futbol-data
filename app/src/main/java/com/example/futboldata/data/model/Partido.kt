@@ -16,30 +16,11 @@ data class Partido(
     val fase: String? = null,
     val jornada: Int? = null,
     val esLocal: Boolean = true,
-    val goleadores: List<Gol> = emptyList(),
-    val asistentes: List<Asistencia> = emptyList(),
     val jugadorDelPartido: String? = null,
-    val alineacion: List<ParticipacionJugador> = emptyList()
+    val alineacionIds: List<String> = emptyList(),
+    val goleadoresIds: List<String> = emptyList(),
+    val asistentesIds: List<String> = emptyList()
 ) {
-    constructor() : this(
-        id = "",
-        equipoId = "",
-        fecha = Date(),
-        rival = "",
-        golesEquipo = 0,
-        golesRival = 0,
-        competicionId = "",
-        competicionNombre = "",
-        temporada = "",
-        fase = null,
-        jornada = null,
-        esLocal = true,
-        goleadores = emptyList(),
-        asistentes = emptyList(),
-        jugadorDelPartido = null,
-        alineacion = emptyList()
-    )
-
     @get:Exclude
     val resultado: String
         get() = "$golesEquipo-$golesRival"
@@ -56,4 +37,11 @@ data class Partido(
 
     @Exclude
     fun getDiferenciaGoles(): Int = golesEquipo - golesRival
+
+    // Nuevo método para validación
+    @Exclude
+    fun esValido(): Boolean {
+        return equipoId.isNotBlank() && rival.isNotBlank() &&
+                competicionId.isNotBlank() && temporada.isNotBlank()
+    }
 }
