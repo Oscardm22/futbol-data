@@ -187,6 +187,7 @@ open class EquipoDetailActivity : AppCompatActivity() {
         val dialog = BottomSheetDialog(this)
         val binding = DialogAddPartidoBinding.inflate(layoutInflater)
         val equipoId = intent.getStringExtra("equipo_id") ?: return
+        val competicionMap = mutableMapOf<String, String>()
 
         // Variables para almacenar las selecciones
         var alineacionSeleccionada = mutableListOf<ParticipacionJugador>()
@@ -201,6 +202,9 @@ open class EquipoDetailActivity : AppCompatActivity() {
         // Obtener competiciones de Firestore
         viewModel.competiciones.observe(this) { competiciones ->
             competiciones?.let {
+                competicionMap.clear()
+                it.forEach { comp -> competicionMap[comp.nombre] = comp.id }
+
                 val competicionAdapter = ArrayAdapter(
                     this,
                     R.layout.dropdown_item,
@@ -280,13 +284,21 @@ open class EquipoDetailActivity : AppCompatActivity() {
             }
 
             try {
+                // Obtener el ID de la competición seleccionada
+                val competicionNombre = binding.spinnerCompeticion.text.toString()
+                val competicionId = competicionMap[competicionNombre] ?: run {
+                    Toast.makeText(this, "Error: Competición no válida", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
                 val nuevoPartido = Partido(
                     equipoId = equipoId,
                     fecha = Date(),
                     rival = binding.etRival.text.toString(),
                     golesEquipo = golesEquipo ?: 0,
                     golesRival = golesRival ?: 0,
-                    competicionNombre = binding.spinnerCompeticion.text.toString(),
+                    competicionId = competicionId,
+                    competicionNombre = competicionNombre,
                     temporada = binding.etTemporada.text.toString(),
                     fase = binding.etFase.text.toString().takeIf { it.isNotBlank() },
                     jornada = binding.etJornada.text.toString().toIntOrNull(),
