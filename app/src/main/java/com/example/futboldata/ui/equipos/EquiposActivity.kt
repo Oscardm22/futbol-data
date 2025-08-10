@@ -39,7 +39,6 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.util.Base64
-import android.util.Log
 import com.example.futboldata.ui.competiciones.CompeticionesActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlin.jvm.java
@@ -141,39 +140,31 @@ class EquiposActivity : AppCompatActivity() {
     }
 
     private fun setupObservers() {
+        // Observador para equipos con estadísticas
+        viewModel.equiposConStats.observe(this) { equiposConStats ->
+            val adapter = binding.rvEquipos.adapter as? EquiposAdapter ?: run {
+                EquiposAdapter(
+                    emptyList(),
+                    { equipoId -> abrirDetalleEquipo(equipoId) },
+                    { equipoId -> mostrarDialogoEliminacion(equipoId) }
+                ).also {
+                    binding.rvEquipos.adapter = it
+                }
+            }
+            adapter.updateList(equiposConStats)
+        }
+
+        // Observador para estados (opcional)
         viewModel.equiposState.observe(this) { state ->
-            Log.d("UI_DEBUG", "Nuevo estado: ${state.javaClass.simpleName}")
             when (state) {
                 is EquipoViewModel.EquipoState.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE
-                    Log.d("UI_DEBUG", "Cargando equipos...")
                 }
                 is EquipoViewModel.EquipoState.Success -> {
                     binding.progressBar.visibility = View.GONE
-                    Log.d("UI_DEBUG", "Equipos cargados: ${state.equipos.size}")
-
-                    // Verificar si el adapter existe
-                    val adapter = binding.rvEquipos.adapter as? EquiposAdapter ?: run {
-                        Log.d("UI_DEBUG", "Creando nuevo adapter")
-                        EquiposAdapter(
-                            emptyList(),
-                            { equipoId -> abrirDetalleEquipo(equipoId) },
-                            { equipoId -> mostrarDialogoEliminacion(equipoId) }
-                        ).also {
-                            binding.rvEquipos.adapter = it
-                        }
-                    }
-
-                    // Actualizar lista solo si hay cambios
-                    if (adapter.itemCount != state.equipos.size ||
-                        adapter.currentList != state.equipos) {
-                        Log.d("UI_DEBUG", "Actualizando lista del adapter")
-                        adapter.updateList(state.equipos)
-                    }
                 }
                 is EquipoViewModel.EquipoState.Error -> {
                     binding.progressBar.visibility = View.GONE
-                    Log.e("UI_DEBUG", "Error: ${state.mensaje}")
                     Toast.makeText(this, state.mensaje, Toast.LENGTH_SHORT).show()
                 }
             }

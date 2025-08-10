@@ -29,6 +29,8 @@
     <string name="tvGoles">Goles: 0</string>
     <string name="tvAsistencias">Asistencias: 0</string>
     <string name="switchTitular">Titular</string>
+    <string name="partidos_jugados_format">%1$d PJ</string>
+    <string name="victorias_format">%1$d V</string>
 
     //Formatos
     <string name="avg_goals_format">Promedio de goles: %.1f</string>

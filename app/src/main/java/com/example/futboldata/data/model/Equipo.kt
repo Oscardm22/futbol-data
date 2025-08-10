@@ -10,7 +10,6 @@ data class Equipo(
     val nombre: String = "",
     val fechaCreacion: Date = Date(),
     val imagenBase64: String = "",
-    val estadisticas: Estadisticas = Estadisticas.empty()
 ) : Parcelable {
     fun getIniciales(): String {
         return nombre.split(" ")
@@ -18,5 +17,5 @@ data class Equipo(
             .uppercase()
     }
 
-    constructor() : this("", "", Date(), "", Estadisticas.empty())
+    constructor() : this("", "", Date(), "")
 }

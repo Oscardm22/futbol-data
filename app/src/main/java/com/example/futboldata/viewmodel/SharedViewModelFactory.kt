@@ -20,7 +20,7 @@ class SharedViewModelFactory(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
             modelClass.isAssignableFrom(EquipoViewModel::class.java) -> {
-                EquipoViewModel(equipoRepository) as T
+                EquipoViewModel(equipoRepository,partidoRepository) as T
             }
             modelClass.isAssignableFrom(EquipoDetailViewModel::class.java) -> {
                 EquipoDetailViewModel(

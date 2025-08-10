@@ -9,17 +9,18 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.futboldata.R
 import com.example.futboldata.data.model.Equipo
+import com.example.futboldata.data.model.Estadisticas
 import com.example.futboldata.databinding.ItemEquipoBinding
 import kotlinx.coroutines.Job
 
 class EquiposAdapter(
-    private var equipos: List<Equipo>,
+    private var equiposConStats: List<Pair<Equipo, Estadisticas>>,
     private val onItemClick: (String) -> Unit,
     private val onDeleteClick: (String) -> Unit
 ) : RecyclerView.Adapter<EquiposAdapter.EquipoViewHolder>() {
 
     val currentList: List<Equipo>
-        get() = equipos
+        get() = equiposConStats.map { it.first }
 
     private val imageJobs = mutableMapOf<ImageView, Job>()
 
@@ -36,13 +37,13 @@ class EquiposAdapter(
     }
 
     override fun onBindViewHolder(holder: EquipoViewHolder, position: Int) {
-        val equipo = equipos[position]
+        val (equipo, stats) = equiposConStats[position]
         holder.binding.apply {
             tvNombre.text = equipo.nombre
+            tvPartidos.text = root.context.getString(R.string.partidos_jugados_format, stats.partidosJugados)
+            tvVictorias.text = root.context.getString(R.string.victorias_format, stats.victorias)
 
-            // Cancelar cualquier carga previa para esta ImageView
             imageJobs[ivTeamLogo]?.cancel()
-
             if (equipo.imagenBase64.isNotEmpty()) {
                 loadImageFromBase64(equipo.imagenBase64, ivTeamLogo)
             } else {
@@ -99,13 +100,11 @@ class EquiposAdapter(
         imageJobs.remove(holder.binding.ivTeamLogo)?.cancel()
     }
 
-    override fun getItemCount() = equipos.size
+    override fun getItemCount() = equiposConStats.size
 
     @SuppressLint("NotifyDataSetChanged")
-    fun updateList(newEquipos: List<Equipo>) {
-        if (equipos != newEquipos) {
-            equipos = newEquipos
-            notifyDataSetChanged()
-        }
+    fun updateList(newEquiposConStats: List<Pair<Equipo, Estadisticas>>) {
+        equiposConStats = newEquiposConStats
+        notifyDataSetChanged()
     }
 }
