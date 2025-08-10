@@ -41,6 +41,7 @@ data class Jugador(
 
     fun toFirestoreMap(): Map<String, Any> {
         return mapOf(
+            "id" to id,
             "nombre" to nombre,
             "posicion" to posicion.name,
             "equipoId" to equipoId,

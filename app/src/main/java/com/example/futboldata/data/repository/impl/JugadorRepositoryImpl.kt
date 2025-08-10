@@ -9,10 +9,12 @@ class JugadorRepositoryImpl(
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 ) : JugadorRepository {
 
-    override suspend fun addJugador(jugador: Jugador) {
-        db.collection("jugadores")
-            .add(jugador.toFirestoreMap())
-            .await()
+    override suspend fun addJugador(jugador: Jugador): String {
+        val documentRef = db.collection("jugadores").document()
+        val jugadorConId = jugador.copy(id = documentRef.id)
+
+        documentRef.set(jugadorConId.toFirestoreMap()).await()
+        return documentRef.id
     }
 
     override suspend fun getJugadoresPorEquipo(equipoId: String): List<Jugador> {

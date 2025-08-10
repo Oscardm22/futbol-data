@@ -41,6 +41,8 @@ class EquipoDetailViewModel(
     private val _competiciones = MutableLiveData<List<Competicion>>()
     val competiciones: LiveData<List<Competicion>> = _competiciones
 
+    private val _jugadorAdded = MutableLiveData<String>()
+
     fun cargarEquipo(equipoId: String) {
         _isLoading.value = true
         viewModelScope.launch {
@@ -83,11 +85,11 @@ class EquipoDetailViewModel(
     fun addJugador(jugador: Jugador) {
         viewModelScope.launch {
             try {
-                jugadorRepository.addJugador(jugador)
-                // Actualizar la lista después de añadir
+                val jugadorId = jugadorRepository.addJugador(jugador)
+                _jugadorAdded.value = jugadorId
                 cargarJugadores(jugador.equipoId)
             } catch (e: Exception) {
-                // Manejo de errores
+                Log.e("EquipoDetailVM", "Error al añadir jugador", e)
             }
         }
     }

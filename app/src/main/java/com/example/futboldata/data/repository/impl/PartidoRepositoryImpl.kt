@@ -14,27 +14,30 @@ class PartidoRepositoryImpl(
 ) : PartidoRepository {
 
     override suspend fun addPartido(partido: Partido): String {
+        val documentRef = db.collection("partidos").document()
+        val partidoConId = partido.copy(id = documentRef.id)
+
         val partidoData = hashMapOf(
-            "equipoId" to partido.equipoId,
-            "fecha" to convertDateToTimestamp(partido.fecha),
-            "rival" to partido.rival,
-            "golesEquipo" to partido.golesEquipo,
-            "golesRival" to partido.golesRival,
-            "competicionId" to partido.competicionId,
-            "competicionNombre" to partido.competicionNombre,
-            "temporada" to partido.temporada,
-            "fase" to partido.fase,
-            "jornada" to partido.jornada,
-            "jugadorDelPartido" to partido.jugadorDelPartido,
-            "alineacionIds" to partido.alineacionIds,
-            "goleadoresIds" to partido.goleadoresIds,
-            "asistentesIds" to partido.asistentesIds
+            "id" to documentRef.id,
+            "equipoId" to partidoConId.equipoId,
+            "fecha" to convertDateToTimestamp(partidoConId.fecha),
+            "rival" to partidoConId.rival,
+            "golesEquipo" to partidoConId.golesEquipo,
+            "golesRival" to partidoConId.golesRival,
+            "competicionId" to partidoConId.competicionId,
+            "competicionNombre" to partidoConId.competicionNombre,
+            "temporada" to partidoConId.temporada,
+            "fase" to partidoConId.fase,
+            "jornada" to partidoConId.jornada,
+            "esLocal" to partidoConId.esLocal,
+            "jugadorDelPartido" to partidoConId.jugadorDelPartido,
+            "alineacionIds" to partidoConId.alineacionIds,
+            "goleadoresIds" to partidoConId.goleadoresIds,
+            "asistentesIds" to partidoConId.asistentesIds
         )
 
-        return db.collection("partidos")
-            .add(partidoData)
-            .await()
-            .id
+        documentRef.set(partidoData).await()
+        return documentRef.id
     }
 
     override suspend fun getPartidos(equipoId: String): List<Partido> {
