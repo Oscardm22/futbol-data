@@ -1,5 +1,6 @@
 package com.example.futboldata.data.repository.impl
 
+import android.util.Log
 import com.example.futboldata.data.model.Jugador
 import com.example.futboldata.data.repository.JugadorRepository
 import com.google.firebase.firestore.FirebaseFirestore
@@ -18,12 +19,15 @@ class JugadorRepositoryImpl(
     }
 
     override suspend fun getJugadoresPorEquipo(equipoId: String): List<Jugador> {
-        return db.collection("jugadores")
-            .whereEqualTo("equipoId", equipoId)
-            .get()
-            .await()
-            .documents
-            .mapNotNull { document ->
+        Log.d("DEBUG_REPO", "▶ [Firestore] Consultando jugadores para equipoId: $equipoId")
+        return try {
+            val querySnapshot = db.collection("jugadores")
+                .whereEqualTo("equipoId", equipoId)
+                .get()
+                .await()
+
+            Log.d("DEBUG_REPO", "✓ [Firestore] Documentos encontrados: ${querySnapshot.documents.size}")
+            querySnapshot.documents.mapNotNull { document ->
                 val golesMap = when (val goles = document.get("golesPorCompeticion")) {
                     is Map<*, *> -> goles.mapNotNull { (key, value) ->
                         if (key is String && value is Int) key to value else null
@@ -39,5 +43,9 @@ class JugadorRepositoryImpl(
                     goles = golesMap
                 )
             }
+        } catch (e: Exception) {
+            Log.e("DEBUG_REPO", "✕ [Firestore] Error: ${e.message}")
+            emptyList()
+        }
     }
 }

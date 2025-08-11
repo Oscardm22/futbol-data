@@ -29,9 +29,9 @@
     <string name="tvGoles">Goles: 0</string>
     <string name="tvAsistencias">Asistencias: 0</string>
     <string name="switchTitular">Titular</string>
-    <string name="partidos_jugados_format">%1$d PJ</string>
-    <string name="victorias_format">%1$d V</string>
+    <string name="no_players_found">No se encontraron jugadores</string>
 
+    no_players_found
     //Formatos
     <string name="avg_goals_format">Promedio de goles: %.1f</string>
     <string name="win_rate_format">Porcentaje de victorias: %.1f%%</string>
@@ -42,6 +42,8 @@
     <string name="label_goles">%1$d</string>
     <string name="label_asistencias">%1$d</string>
     <string name="stats_format">%1$d goles • %2$d asistencias</string>
+    <string name="partidos_jugados_format">%1$d PJ</string>
+    <string name="victorias_format">%1$d V</string>
 
     //Descripciones
     <string name="desc_logo">Logo de la aplicación</string>

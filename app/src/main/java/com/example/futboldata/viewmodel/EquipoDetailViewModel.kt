@@ -47,21 +47,24 @@ class EquipoDetailViewModel(
         _isLoading.value = true
         viewModelScope.launch {
             try {
-                // 1. Obtenemos los partidos primero
+                Log.d("DEBUG_VM", "▶ [ViewModel] Cargando partidos para equipo: $equipoId")
                 val partidos = partidoRepository.getPartidos(equipoId)
+                Log.d("DEBUG_VM", "✓ [ViewModel] Partidos obtenidos: ${partidos.size}")
 
-                // 2. Pasamos los partidos al método getEquipoWithStats
                 repository.getEquipoWithStats(equipoId, partidos).let { (equipo, stats) ->
-                    _equipo.value = equipo ?: Equipo()
-                    _estadisticas.value = stats ?: Estadisticas.empty()
-                    _partidos.value = partidos // Actualizamos los partidos en el LiveData
+                    _equipo.value = equipo?.also {
+                        Log.d("DEBUG_VM", "✓ [ViewModel] Equipo cargado: ${it.nombre}")
+                    }
+                    _estadisticas.value = stats?.also {
+                        Log.d("DEBUG_VM", "✓ [ViewModel] Stats calculadas: ${it.partidosJugados} partidos")
+                    }
+                    _partidos.value = partidos
                 }
 
                 cargarJugadores(equipoId)
                 cargarCompeticiones()
             } catch (e: Exception) {
-                _equipo.value = Equipo()
-                _estadisticas.value = Estadisticas.empty()
+                Log.e("DEBUG_VM", "✕ [ViewModel] Error en cargarEquipo: ${e.message}")
             } finally {
                 _isLoading.value = false
             }

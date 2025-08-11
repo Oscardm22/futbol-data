@@ -1,6 +1,7 @@
 package com.example.futboldata.ui.equipos.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,10 +11,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.futboldata.adapter.JugadoresAdapter
 import com.example.futboldata.databinding.FragmentJugadoresBinding
 import com.example.futboldata.viewmodel.EquipoDetailViewModel
+import androidx.core.graphics.toColorInt
 
 class JugadoresFragment : Fragment() {
     private var _binding: FragmentJugadoresBinding? = null
     private val binding get() = _binding!!
+    private lateinit var adapter: JugadoresAdapter
 
     private val viewModel: EquipoDetailViewModel by activityViewModels()
 
@@ -28,15 +31,40 @@ class JugadoresFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d("DEBUG_UI", "▶ [Fragment] Inicializando JugadoresFragment")
 
-        // Configura el RecyclerView
-        binding.rvJugadores.layoutManager = LinearLayoutManager(requireContext())
+        setupRecyclerView()
+        setupObservers()
+    }
 
-        // Observa los cambios en la lista de jugadores
-        viewModel.jugadores.observe(viewLifecycleOwner) { jugadores ->
-            binding.rvJugadores.adapter = JugadoresAdapter(jugadores)
+    private fun setupRecyclerView() {
+        Log.d("DEBUG_FRAGMENT", "Configurando RecyclerView")
+        adapter = JugadoresAdapter()
+        binding.rvJugadores.apply {
+            layoutManager = LinearLayoutManager(requireContext()).also {
+                Log.d("DEBUG_FRAGMENT", "LayoutManager configurado")
+            }
+            adapter = this@JugadoresFragment.adapter.also {
+                Log.d("DEBUG_FRAGMENT", "Adapter asignado al RecyclerView")
+            }
+
+            // Verificación de visibilidad
+            setBackgroundColor("#22FF0000".toColorInt()) // Rojo semitransparente
         }
     }
+
+    private fun setupObservers() {
+        viewModel.jugadores.observe(viewLifecycleOwner) { jugadores ->
+            Log.d("DEBUG_FRAGMENT", "Nuevos datos recibidos. Primer jugador: ${jugadores.firstOrNull()?.nombre}")
+            adapter.submitList(jugadores) {
+                Log.d("DEBUG_FRAGMENT", "submitList completado. Lista tamaño: ${adapter.itemCount}")
+                binding.rvJugadores.post {
+                    Log.d("DEBUG_FRAGMENT", "RecyclerView estado: width=${binding.rvJugadores.width}, height=${binding.rvJugadores.height}, visibility=${binding.rvJugadores.visibility}")
+                }
+            }
+        }
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

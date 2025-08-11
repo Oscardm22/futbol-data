@@ -1,31 +1,47 @@
 package com.example.futboldata.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.futboldata.R
+import com.example.futboldata.adapter.diffcallbacks.JugadorDiffCallback
 import com.example.futboldata.data.model.Jugador
+import com.example.futboldata.databinding.ItemPlayerBinding
+import androidx.core.graphics.toColorInt
 
-class JugadoresAdapter(private val players: List<Jugador>) : RecyclerView.Adapter<JugadoresAdapter.PlayerViewHolder>() {
+class JugadoresAdapter : ListAdapter<Jugador, JugadoresAdapter.PlayerViewHolder>(JugadorDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlayerViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_player, parent, false)
-        return PlayerViewHolder(view)
+        Log.d("DEBUG_ADAPTER", "Creando ViewHolder")
+        val binding = ItemPlayerBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
+        return PlayerViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: PlayerViewHolder, position: Int) {
-        holder.bind(players[position])
+        Log.d("DEBUG_ADAPTER", "Vinculando posición $position")
+        holder.bind(getItem(position))
     }
 
-    override fun getItemCount(): Int = players.size
+    override fun getItemCount(): Int {
+        val count = super.getItemCount()
+        Log.d("DEBUG_ADAPTER", "Número de items: $count")
+        return count
+    }
 
-    class PlayerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class PlayerViewHolder(private val binding: ItemPlayerBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(player: Jugador) {
-            itemView.findViewById<TextView>(R.id.tvNombre).text = player.nombre
-            itemView.findViewById<TextView>(R.id.tvPosicion).text = player.posicion.toString()
+            Log.d("DEBUG_ADAPTER", "Mostrando jugador: ${player.nombre}")
+            binding.tvNombre.text = player.nombre
+            binding.tvPosicion.text = player.posicion.toString()
+
+            // Verificación visual temporal
+            binding.root.setBackgroundColor("#220000FF".toColorInt())
         }
     }
 }
