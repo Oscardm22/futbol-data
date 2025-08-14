@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- ProgressBar -->
+    <!-- ProgressBar centrado en toda la pantalla -->
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/progressBar"
         android:layout_width="48dp"
@@ -18,28 +18,27 @@
         app:trackColor="@color/Timberwolf"
         android:elevation="8dp"/>
 
-    <!-- Cambia el NestedScrollView por un LinearLayout -->
-    <LinearLayout
+    <!-- Botón flotante para añadir partido -->
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp">
 
-            <!-- Encabezado del equipo -->
+            <!-- Encabezado simplificado con solo el logo -->
             <LinearLayout
                 android:id="@+id/teamHeader"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:paddingTop="16dp">
+                android:paddingTop="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <!-- Logo del equipo -->
                 <com.google.android.material.card.MaterialCardView
@@ -75,12 +74,12 @@
                 android:id="@+id/cardQuickStats"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/teamHeader"
                 android:layout_marginTop="24dp"
                 app:cardCornerRadius="8dp"
-                app:cardElevation="4dp">
+                app:cardElevation="4dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/teamHeader">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -186,19 +185,19 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Pestañas -->
+            <!-- Pestañas para estadísticas detalladas -->
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tabLayout"
+                app:tabTextAppearance="@style/TabTextStyle"
+                style="@style/MyTabLayoutStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cardQuickStats"
-                android:layout_marginTop="24dp"
                 app:tabGravity="fill"
-                app:tabMode="fixed"
-                style="@style/MyTabLayoutStyle"
-                app:tabTextAppearance="@style/TabTextStyle">
+                app:tabMode="fixed">
 
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
@@ -216,20 +215,20 @@
                     android:text="@string/tab_jugadores" />
             </com.google.android.material.tabs.TabLayout>
 
-            <!-- ViewPager2 -->
+            <!-- Contenedor de fragments para las pestañas -->
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/viewPager"
                 android:layout_width="0dp"
-                android:layout_height="400dp"
+                android:layout_height="300dp"
+                android:layout_marginTop="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tabLayout"
-                android:layout_marginTop="8dp"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </LinearLayout>
+                app:layout_constraintTop_toBottomOf="@id/tabLayout" />
 
-    <!-- Botón flotante -->
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddMatch"
         android:layout_width="wrap_content"
@@ -239,5 +238,6 @@
         android:contentDescription="@string/add_match"
         android:src="@drawable/ic_add"
         app:backgroundTint="@color/botones_positivos"
-        app:tint="@android:color/white"/>
+        app:tint="@android:color/white" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -35,10 +35,24 @@ class PartidosFragment : Fragment() {
             setHasFixedSize(true)
         }
 
-        // Observador de los partidos
-        viewModel.partidos.observe(viewLifecycleOwner) { partidos ->
-            partidos?.let {
-                binding.rvPartidos.adapter = PartidosAdapter(it)
+        // Observador de los partidos y competiciones
+        viewModel.equipo.observe(viewLifecycleOwner) { equipo ->
+            viewModel.partidos.observe(viewLifecycleOwner) { partidos ->
+                viewModel.competiciones.observe(viewLifecycleOwner) { competiciones ->
+                    partidos?.let { partidosList ->
+                        // Crear mapa de imágenes de competición
+                        val imagesMap = competiciones?.associate { it.id to it.imagenBase64 } ?: emptyMap()
+
+                        // Crear mapa de nombres de equipos (solo para el equipo actual)
+                        val teamNamesMap = equipo?.let { mapOf(it.id to it.nombre) } ?: emptyMap()
+
+                        binding.rvPartidos.adapter = PartidosAdapter(
+                            matches = partidosList,
+                            competitionImages = imagesMap,
+                            teamNames = teamNamesMap
+                        )
+                    }
+                }
             }
         }
     }

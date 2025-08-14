@@ -5,10 +5,11 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.futboldata.R
 import com.example.futboldata.adapter.diffcallbacks.JugadorDiffCallback
 import com.example.futboldata.data.model.Jugador
+import com.example.futboldata.data.model.Posicion
 import com.example.futboldata.databinding.ItemPlayerBinding
-import androidx.core.graphics.toColorInt
 
 class JugadoresAdapter : ListAdapter<Jugador, JugadoresAdapter.PlayerViewHolder>(JugadorDiffCallback()) {
 
@@ -27,21 +28,22 @@ class JugadoresAdapter : ListAdapter<Jugador, JugadoresAdapter.PlayerViewHolder>
         holder.bind(getItem(position))
     }
 
-    override fun getItemCount(): Int {
-        val count = super.getItemCount()
-        Log.d("DEBUG_ADAPTER", "Número de items: $count")
-        return count
-    }
-
     inner class PlayerViewHolder(private val binding: ItemPlayerBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(player: Jugador) {
             Log.d("DEBUG_ADAPTER", "Mostrando jugador: ${player.nombre}")
             binding.tvNombre.text = player.nombre
-            binding.tvPosicion.text = player.posicion.toString()
+            binding.tvPosicion.text = player.posicion.displayName
 
-            // Verificación visual temporal
-            binding.root.setBackgroundColor("#220000FF".toColorInt())
+            // Asignar icono según posición
+            val iconRes = when(player.posicion) {
+                Posicion.PO -> R.drawable.ic_portero
+                Posicion.DFC, Posicion.LD, Posicion.LI -> R.drawable.ic_defensa
+                Posicion.MCD, Posicion.MC, Posicion.MCO, Posicion.MI, Posicion.MD -> R.drawable.ic_mediocampista
+                Posicion.ED, Posicion.EI, Posicion.DC -> R.drawable.ic_delantero
+            }
+
+            binding.ivPositionIcon.setImageResource(iconRes)
         }
     }
 }

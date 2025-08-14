@@ -31,7 +31,6 @@
     <string name="switchTitular">Titular</string>
     <string name="no_players_found">No se encontraron jugadores</string>
 
-    no_players_found
     //Formatos
     <string name="avg_goals_format">Promedio de goles: %.1f</string>
     <string name="win_rate_format">Porcentaje de victorias: %.1f%%</string>
@@ -57,6 +56,7 @@
     <string name="competition_photo_desc">Foto de la competición</string>
     <string name="desc_ic_mvp_selected">Icono de MVP</string>
     <string name="desc_ic_assist">Icono de asistencia</string>
+    <string name="position_icon_desc">Icono de posición</string>
 
     //Hints
     <string name="hint_password">Contraseña</string>

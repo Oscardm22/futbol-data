@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.futboldata.adapter.JugadoresAdapter
 import com.example.futboldata.databinding.FragmentJugadoresBinding
 import com.example.futboldata.viewmodel.EquipoDetailViewModel
-import androidx.core.graphics.toColorInt
 
 class JugadoresFragment : Fragment() {
     private var _binding: FragmentJugadoresBinding? = null
@@ -47,9 +46,6 @@ class JugadoresFragment : Fragment() {
             adapter = this@JugadoresFragment.adapter.also {
                 Log.d("DEBUG_FRAGMENT", "Adapter asignado al RecyclerView")
             }
-
-            // Verificación de visibilidad
-            setBackgroundColor("#22FF0000".toColorInt()) // Rojo semitransparente
         }
     }
 
