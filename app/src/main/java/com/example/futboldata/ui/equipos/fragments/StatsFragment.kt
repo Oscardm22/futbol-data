@@ -10,9 +10,14 @@ import androidx.fragment.app.activityViewModels
 import com.example.futboldata.data.model.Estadisticas
 import com.example.futboldata.databinding.FragmentStatsBinding
 import com.example.futboldata.viewmodel.EquipoDetailViewModel
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.BarData
+import com.github.mikephil.charting.data.BarDataSet
+import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 
 class StatsFragment : Fragment() {
     private var _binding: FragmentStatsBinding? = null
@@ -47,7 +52,6 @@ class StatsFragment : Fragment() {
     }
 
     private fun updateCharts(stats: Estadisticas) {
-        // Configura el gráfico de torta (victorias/empates/derrotas)
         val pieEntries = listOf(
             PieEntry(stats.victorias.toFloat(), "Victorias"),
             PieEntry(stats.empates.toFloat(), "Empates"),
@@ -57,16 +61,70 @@ class StatsFragment : Fragment() {
         val pieDataSet = PieDataSet(pieEntries, "").apply {
             colors = listOf(Color.GREEN, Color.YELLOW, Color.RED)
             valueTextColor = Color.BLACK
+            valueTextSize = 12f
+            setDrawValues(true)
         }
 
-        binding.pieChart.data = PieData(pieDataSet)
-        binding.pieChart.description.isEnabled = false
-        binding.pieChart.animateY(1000)
-        binding.pieChart.invalidate()
+        binding.pieChart.apply {
+            data = PieData(pieDataSet)
+            setEntryLabelColor(Color.BLACK)
+            setEntryLabelTextSize(10f)
+            description.isEnabled = false
+            animateY(1000)
+            invalidate()
+        }
+
+        // 2. Nueva configuración para el BarChart
+        setupBarChart(stats)
 
         // Actualiza los TextViews
-        binding.tvAvgGoals.text = "Promedio goles: ${stats.promedioGoles}"
-        binding.tvWinRate.text = "Porcentaje victorias: ${stats.porcentajeVictorias}%"
+        binding.tvAvgGoals.text = "Promedio goles: ${"%.2f".format(stats.promedioGoles)}"
+        binding.tvWinRate.text = "Victorias: ${"%.1f".format(stats.porcentajeVictorias)}%"
+    }
+
+    private fun setupBarChart(stats: Estadisticas) {
+        // 1. Prepara los datos y etiquetas
+        val entries = listOf(
+            BarEntry(0f, stats.golesFavor.toFloat()),
+            BarEntry(1f, stats.golesContra.toFloat())
+        )
+
+        val labels = listOf("A Favor", "En Contra") // Lista de etiquetas única
+
+        val dataSet = BarDataSet(entries, "").apply {
+            color = Color.BLUE
+            valueTextColor = Color.BLACK
+            valueTextSize = 12f
+        }
+
+        // 2. Configuración avanzada del gráfico
+        binding.barChart.apply {
+            data = BarData(dataSet)
+
+            // Configuración del eje X
+            xAxis.apply {
+                valueFormatter = IndexAxisValueFormatter(labels)
+                position = XAxis.XAxisPosition.BOTTOM
+                granularity = 1f
+                setDrawGridLines(false)
+            }
+
+            // Configuración del eje Y izquierdo
+            axisLeft.apply {
+                axisMinimum = 0f
+                granularity = 1f
+            }
+
+            // Deshabilitar eje Y derecho
+            axisRight.isEnabled = false
+
+            // Otras configuraciones
+            description.isEnabled = false
+            legend.isEnabled = false
+            setFitBars(true) // Ajusta el ancho de las barras automáticamente
+            animateY(1000)
+            invalidate()
+        }
     }
 
     private fun showNoDataMessage() {
