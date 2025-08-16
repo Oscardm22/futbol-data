@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.example.futboldata.R
 import com.example.futboldata.data.model.Estadisticas
 import com.example.futboldata.databinding.FragmentStatsBinding
 import com.example.futboldata.viewmodel.EquipoDetailViewModel
@@ -78,8 +79,8 @@ class StatsFragment : Fragment() {
         setupBarChart(stats)
 
         // Actualiza los TextViews
-        binding.tvAvgGoals.text = "Promedio goles: ${"%.2f".format(stats.promedioGoles)}"
-        binding.tvWinRate.text = "Victorias: ${"%.1f".format(stats.porcentajeVictorias)}%"
+        binding.tvAvgGoals.text = getString(R.string.promedio_goles, stats.promedioGoles)
+        binding.tvWinRate.text = getString(R.string.porcentaje_victorias, stats.porcentajeVictorias)
     }
 
     private fun setupBarChart(stats: Estadisticas) {
@@ -121,7 +122,7 @@ class StatsFragment : Fragment() {
             // Otras configuraciones
             description.isEnabled = false
             legend.isEnabled = false
-            setFitBars(true) // Ajusta el ancho de las barras automáticamente
+            setFitBars(true)
             animateY(1000)
             invalidate()
         }
@@ -129,7 +130,7 @@ class StatsFragment : Fragment() {
 
     private fun showNoDataMessage() {
         binding.pieChart.clear()
-        binding.tvAvgGoals.text = "No hay datos disponibles"
+        binding.tvAvgGoals.text = getString(R.string.no_hay_datos)
         binding.tvWinRate.text = ""
         binding.progressBar.visibility = View.GONE
     }

@@ -38,7 +38,7 @@
                     style="@style/TextAppearance.MaterialComponents.Headline6"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Resumen Estadístico"
+                    android:text="@string/Resumen_Estadístico"
                     android:textSize="16sp"
                     android:textAlignment="center"/>
 
@@ -87,7 +87,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
-                    android:text="Distribución de Resultados"
+                    android:text="@string/Distribución_Resultados"
                     android:textAlignment="center"/>
 
                 <com.github.mikephil.charting.charts.PieChart
@@ -115,7 +115,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
-                    android:text="Goles por Partido"
+                    android:text="@string/Goles_Partido"
                     android:textAlignment="center"/>
 
                 <com.github.mikephil.charting.charts.BarChart
