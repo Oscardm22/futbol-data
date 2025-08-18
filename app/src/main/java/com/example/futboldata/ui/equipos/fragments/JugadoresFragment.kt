@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.futboldata.R
 import com.example.futboldata.adapter.JugadoresAdapter
 import com.example.futboldata.data.model.Jugador
+import com.example.futboldata.data.model.Posicion
 import com.example.futboldata.databinding.FragmentJugadoresBinding
 import com.example.futboldata.viewmodel.EquipoDetailViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -54,9 +55,34 @@ class JugadoresFragment : Fragment() {
 
     private fun setupObservers() {
         viewModel.jugadores.observe(viewLifecycleOwner) { jugadores ->
-            Log.d("DEBUG_FRAGMENT", "Nuevos datos recibidos. Primer jugador: ${jugadores.firstOrNull()?.nombre}")
-            adapter.submitList(jugadores) {
+            // 1. Definir el orden de prioridad de las posiciones
+            val ordenPosiciones = listOf(
+                Posicion.PO,    // 1. Porteros
+                Posicion.DFC,   // 2. Defensas centrales
+                Posicion.LD,    // 3. Laterales derechos
+                Posicion.LI,    // 4. Laterales izquierdos
+                Posicion.MCD,  // 5. Mediocentros defensivos
+                Posicion.MC,    // 6. Mediocentros
+                Posicion.MCO,  // 7. Mediocentros ofensivos
+                Posicion.MD,   // 8. Mediocentros derechos
+                Posicion.MI,   // 9. Mediocentros izquierdos
+                Posicion.ED,    // 10. Extremos derechos
+                Posicion.EI,   // 11. Extremos izquierdos
+                Posicion.DC    // 12. Delanteros centros
+            )
+
+            // 2. Ordenar los jugadores
+            val jugadoresOrdenados = jugadores.sortedBy { jugador ->
+                ordenPosiciones.indexOf(jugador.posicion)
+            }
+
+            Log.d("DEBUG_FRAGMENT", "Nuevos datos recibidos. Primer jugador: ${jugadoresOrdenados.firstOrNull()?.nombre} (Posición: ${jugadoresOrdenados.firstOrNull()?.posicion?.displayName})")
+
+            // 3. Enviar lista ordenada al adapter
+            adapter.submitList(jugadoresOrdenados) {
                 Log.d("DEBUG_FRAGMENT", "submitList completado. Lista tamaño: ${adapter.itemCount}")
+                Log.d("DEBUG_ORDER", "Orden actual: ${jugadoresOrdenados.joinToString { "${it.posicion.displayName} - ${it.nombre}" }}")
+
                 binding.rvJugadores.post {
                     Log.d("DEBUG_FRAGMENT", "RecyclerView estado: width=${binding.rvJugadores.width}, height=${binding.rvJugadores.height}, visibility=${binding.rvJugadores.visibility}")
                 }
