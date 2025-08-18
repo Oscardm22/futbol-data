@@ -36,6 +36,8 @@
     <string name="no_data_pie_chart">No hay resultados registrados</string>
     <string name="no_data_bar_chart">No hay datos de goles</string>
     <string name="no_hay_datos">No hay partidos registrados</string>
+    <string name="delete_dialog_title_player">Eliminar jugador</string>
+    <string name="delete_dialog_message_player">¿Estás seguro de eliminar a %s? Todos sus datos se perderán permanentemente.</string>
 
     //Formatos
     <string name="avg_goals_format">Promedio de goles: %.1f</string>

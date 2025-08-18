@@ -5,12 +5,17 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.futboldata.R
 import com.example.futboldata.adapter.JugadoresAdapter
+import com.example.futboldata.data.model.Jugador
 import com.example.futboldata.databinding.FragmentJugadoresBinding
 import com.example.futboldata.viewmodel.EquipoDetailViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class JugadoresFragment : Fragment() {
     private var _binding: FragmentJugadoresBinding? = null
@@ -38,7 +43,7 @@ class JugadoresFragment : Fragment() {
 
     private fun setupRecyclerView() {
         adapter = JugadoresAdapter { jugador ->
-            viewModel.eliminarJugador(jugador)
+            showDeleteConfirmationDialog(jugador)
         }
 
         binding.rvJugadores.apply {
@@ -59,6 +64,27 @@ class JugadoresFragment : Fragment() {
         }
     }
 
+    private fun showDeleteConfirmationDialog(jugador: Jugador) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.delete_dialog_title_player))
+            .setMessage(getString(R.string.delete_dialog_message_player, jugador.nombre))
+            .setPositiveButton(getString(R.string.delete_button)) { _, _ ->
+                viewModel.eliminarJugador(jugador)
+            }
+            .setNegativeButton(getString(R.string.cancel_button), null)
+            .create()
+            .apply {
+                setOnShowListener {
+                    getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(
+                        ContextCompat.getColor(requireContext(), R.color.error_color)
+                    )
+                    getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(
+                        ContextCompat.getColor(requireContext(), R.color.Fondo)
+                    )
+                }
+                show()
+            }
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

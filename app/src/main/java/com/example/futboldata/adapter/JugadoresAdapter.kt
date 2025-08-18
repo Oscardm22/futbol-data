@@ -20,20 +20,21 @@ class JugadoresAdapter(
             parent,
             false
         )
-        return PlayerViewHolder(binding)
+        return PlayerViewHolder(binding, onDeleteClick)
     }
 
     override fun onBindViewHolder(holder: PlayerViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
 
-    inner class PlayerViewHolder(private val binding: ItemPlayerBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    inner class PlayerViewHolder(
+        private val binding: ItemPlayerBinding,
+        private val onDeleteClick: (Jugador) -> Unit
+    ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(player: Jugador) {
             binding.tvNombre.text = player.nombre
             binding.tvPosicion.text = player.posicion.displayName
 
-            // Asignar icono según posición
             val iconRes = when(player.posicion) {
                 Posicion.PO -> R.drawable.ic_portero
                 Posicion.DFC, Posicion.LD, Posicion.LI -> R.drawable.ic_defensa
@@ -43,7 +44,6 @@ class JugadoresAdapter(
 
             binding.ivPositionIcon.setImageResource(iconRes)
 
-            // Configurar el click listener del botón de eliminar
             binding.ivDelete.setOnClickListener {
                 onDeleteClick(player)
             }
