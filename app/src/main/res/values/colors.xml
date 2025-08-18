@@ -38,4 +38,5 @@
     <color name="gray_light">#E0E0E0</color>
     <color name="gray_medium">#9E9E9E</color>
     <color name="gray_dark">#616161</color>
+    <color name="gray">#808080</color>
 </resources>

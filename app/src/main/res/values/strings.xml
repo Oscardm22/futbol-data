@@ -30,10 +30,12 @@
     <string name="tvAsistencias">Asistencias: 0</string>
     <string name="switchTitular">Titular</string>
     <string name="no_players_found">No se encontraron jugadores</string>
-    <string name="no_hay_datos">No hay datos disponibles</string>
     <string name="Resumen_Estadístico">Resumen Estadístico</string>
     <string name="Distribución_Resultados">Distribución de Resultados</string>
     <string name="Goles_Partido">Goles por Partido</string>
+    <string name="no_data_pie_chart">No hay resultados registrados</string>
+    <string name="no_data_bar_chart">No hay datos de goles</string>
+    <string name="no_hay_datos">No hay partidos registrados</string>
 
     //Formatos
     <string name="avg_goals_format">Promedio de goles: %.1f</string>

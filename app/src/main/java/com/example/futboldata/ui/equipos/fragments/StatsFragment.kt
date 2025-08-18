@@ -1,16 +1,20 @@
 package com.example.futboldata.ui.equipos.fragments
 
 import android.graphics.Color
+import android.graphics.Typeface // Cambiado de compose a graphics
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat // Import añadido
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.futboldata.R
 import com.example.futboldata.data.model.Estadisticas
 import com.example.futboldata.databinding.FragmentStatsBinding
 import com.example.futboldata.viewmodel.EquipoDetailViewModel
+import com.github.mikephil.charting.charts.BarChart // Import añadido
+import com.github.mikephil.charting.charts.PieChart // Import añadido
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -25,6 +29,18 @@ class StatsFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: EquipoDetailViewModel by activityViewModels()
 
+    private fun PieChart.setupNoDataMessage() {
+        setNoDataText(getString(R.string.no_data_pie_chart))
+        setNoDataTextColor(ContextCompat.getColor(context, R.color.gray))
+        setNoDataTextTypeface(Typeface.DEFAULT_BOLD)
+    }
+
+    private fun BarChart.setupNoDataMessage() {
+        setNoDataText(getString(R.string.no_data_bar_chart))
+        setNoDataTextColor(ContextCompat.getColor(context, R.color.gray))
+        setNoDataTextTypeface(Typeface.DEFAULT_BOLD)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -36,6 +52,11 @@ class StatsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Configurar mensajes de no datos
+        binding.pieChart.setupNoDataMessage()
+        binding.barChart.setupNoDataMessage()
+
         setupObservers()
     }
 
@@ -130,9 +151,15 @@ class StatsFragment : Fragment() {
 
     private fun showNoDataMessage() {
         binding.pieChart.clear()
+        binding.barChart.clear()
         binding.tvAvgGoals.text = getString(R.string.no_hay_datos)
         binding.tvWinRate.text = ""
         binding.progressBar.visibility = View.GONE
+
+        binding.pieChart.data = null
+        binding.barChart.data = null
+        binding.pieChart.invalidate()
+        binding.barChart.invalidate()
     }
 
     override fun onDestroyView() {
