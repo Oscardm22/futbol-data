@@ -37,15 +37,13 @@ class JugadoresFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        Log.d("DEBUG_FRAGMENT", "Configurando RecyclerView")
-        adapter = JugadoresAdapter()
+        adapter = JugadoresAdapter { jugador ->
+            viewModel.eliminarJugador(jugador)
+        }
+
         binding.rvJugadores.apply {
-            layoutManager = LinearLayoutManager(requireContext()).also {
-                Log.d("DEBUG_FRAGMENT", "LayoutManager configurado")
-            }
-            adapter = this@JugadoresFragment.adapter.also {
-                Log.d("DEBUG_FRAGMENT", "Adapter asignado al RecyclerView")
-            }
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = this@JugadoresFragment.adapter
         }
     }
 

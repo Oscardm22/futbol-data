@@ -43,6 +43,9 @@ class EquipoDetailViewModel(
 
     private val _jugadorAdded = MutableLiveData<String>()
 
+    private val _errorMessage = MutableLiveData<String>()
+    val errorMessage: LiveData<String> = _errorMessage
+
     fun cargarEquipo(equipoId: String) {
         _isLoading.value = true
         viewModelScope.launch {
@@ -119,6 +122,28 @@ class EquipoDetailViewModel(
                 _competiciones.value = emptyList()
             } finally {
                 _isLoading.value = false
+            }
+        }
+    }
+
+    fun eliminarJugador(jugador: Jugador) {
+        viewModelScope.launch {
+            try {
+                // 1. Eliminar el jugador del repositorio
+                jugadorRepository.eliminarJugador(jugador.id)
+
+                // 2. Actualizar la lista local de jugadores
+                _jugadores.value = _jugadores.value?.filter { it.id != jugador.id }
+
+                // 3. Actualizar estadísticas si es necesario
+                _equipo.value?.id?.let { equipoId ->
+                    cargarEquipo(equipoId)
+                }
+
+                Log.d("DEBUG_VM", "✓ Jugador eliminado: ${jugador.nombre}")
+            } catch (e: Exception) {
+                Log.e("DEBUG_VM", "✕ Error al eliminar jugador", e)
+                _errorMessage.postValue("Error al eliminar jugador: ${e.message}")
             }
         }
     }

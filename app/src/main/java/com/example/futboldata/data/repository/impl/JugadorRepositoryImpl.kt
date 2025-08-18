@@ -48,4 +48,15 @@ class JugadorRepositoryImpl(
             emptyList()
         }
     }
+
+    override suspend fun eliminarJugador(jugadorId: String) {
+        try {
+            Log.d("DEBUG_REPO", "▶ [Firestore] Eliminando jugador con ID: $jugadorId")
+            db.collection("jugadores").document(jugadorId).delete().await()
+            Log.d("DEBUG_REPO", "✓ [Firestore] Jugador eliminado correctamente")
+        } catch (e: Exception) {
+            Log.e("DEBUG_REPO", "✕ [Firestore] Error al eliminar jugador: ${e.message}")
+            throw Exception("No se pudo eliminar el jugador: ${e.message}")
+        }
+    }
 }
