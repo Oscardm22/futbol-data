@@ -38,6 +38,14 @@
     <string name="no_hay_datos">No hay partidos registrados</string>
     <string name="delete_dialog_title_player">Eliminar jugador</string>
     <string name="delete_dialog_message_player">¿Estás seguro de eliminar a %s? Todos sus datos se perderán permanentemente.</string>
+    <string name="portero_imbatido">Portero imbatido</string>
+    <string name="Detalles_Partido">Detalles del Partido</string>
+    <string name="Local">Local</string>
+    <string name="marcador">0 – 0</string>
+    <string name="Visitante">Visitante</string>
+    <string name="Jugadores">Jugadores</string>
+    <string name="Goleadores">Goleadores</string>
+    <string name="Asistentes">Asistentes</string>
 
     //Formatos
     <string name="avg_goals_format">Promedio de goles: %.1f</string>
@@ -53,6 +61,7 @@
     <string name="victorias_format">%1$d V</string>
     <string name="promedio_goles">Promedio goles: %1$.2f</string>
     <string name="porcentaje_victorias">Victorias: %1$.1f%%</string>
+    <string name="jornada_template">Jornada %d</string>
 
     //Descripciones
     <string name="desc_logo">Logo de la aplicación</string>
@@ -67,6 +76,7 @@
     <string name="desc_ic_mvp_selected">Icono de MVP</string>
     <string name="desc_ic_assist">Icono de asistencia</string>
     <string name="position_icon_desc">Icono de posición</string>
+    <string name="portero_icon_desc">Icono de portero</string>
 
     //Hints
     <string name="hint_password">Contraseña</string>

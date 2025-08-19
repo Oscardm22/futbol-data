@@ -6,25 +6,27 @@ import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.futboldata.R
 import com.example.futboldata.data.model.Partido
+import com.example.futboldata.data.model.TipoCompeticion
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.core.graphics.drawable.toDrawable
+import com.example.futboldata.databinding.ItemMatchBinding
 
 class PartidosAdapter(
     private val matches: List<Partido>,
     private val competitionImages: Map<String, String>,
-    private val teamNames: Map<String, String>
+    private val teamNames: Map<String, String>,
+    private val competitionNames: Map<String, String>,
+    private val competitionTypes: Map<String, TipoCompeticion>
 ) : RecyclerView.Adapter<PartidosAdapter.MatchViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MatchViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_match, parent, false)
-        return MatchViewHolder(view, teamNames)
+        val binding = ItemMatchBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return MatchViewHolder(binding, teamNames, competitionNames, competitionTypes)
     }
 
     override fun onBindViewHolder(holder: MatchViewHolder, position: Int) {
@@ -34,45 +36,83 @@ class PartidosAdapter(
     override fun getItemCount(): Int = matches.size
 
     class MatchViewHolder(
-        itemView: View,
-        private val teamNames: Map<String, String>
-    ) : RecyclerView.ViewHolder(itemView) {
-        private val fechaTextView: TextView = itemView.findViewById(R.id.textViewFecha)
-        private val rivalTextView: TextView = itemView.findViewById(R.id.textViewRival)
-        private val homeScoreTextView: TextView = itemView.findViewById(R.id.textViewHomeScore)
-        private val awayScoreTextView: TextView = itemView.findViewById(R.id.textViewAwayScore)
-        private val miEquipoTextView: TextView = itemView.findViewById(R.id.textViewMiEquipo)
-
+        private val binding: ItemMatchBinding,
+        private val teamNames: Map<String, String>,
+        private val competitionNames: Map<String, String>,
+        private val competitionTypes: Map<String, TipoCompeticion>
+    ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(match: Partido, competitionImage: String?) {
             // Formatear fecha
-            val dateFormat = SimpleDateFormat("EEE dd MMM - HH:mm", Locale.getDefault())
-            fechaTextView.text = dateFormat.format(match.fecha)
+            val dateFormat = SimpleDateFormat("dd MMM yyyy - hh:mm a", Locale.getDefault())
+            binding.textViewFecha.text = dateFormat.format(match.fecha)
 
             // Obtener nombre del equipo desde el mapa
             val nombreEquipo = teamNames[match.equipoId] ?: "Mi Equipo"
-            miEquipoTextView.text = nombreEquipo.toString() // Asegurar que es String
 
-            // Asignar nombre del rival y resultado
-            rivalTextView.text = match.rival.toString() // Asegurar que es String
-            homeScoreTextView.text = match.golesEquipo.toString()
-            awayScoreTextView.text = match.golesRival.toString()
+            // Determinar qué equipo es local y cuál visitante según esLocal
+            if (match.esLocal) {
+                // Tu equipo es local, rival es visitante
+                binding.textViewMiEquipo.text = nombreEquipo
+                binding.textViewRival.text = match.rival
+                binding.textViewHomeScore.text = match.golesEquipo.toString()
+                binding.textViewAwayScore.text = match.golesRival.toString()
+            } else {
+                // Tu equipo es visitante, rival es local
+                binding.textViewMiEquipo.text = match.rival
+                binding.textViewRival.text = nombreEquipo
+                binding.textViewHomeScore.text = match.golesRival.toString() // Goles del rival (local)
+                binding.textViewAwayScore.text = match.golesEquipo.toString() // Tus goles (visitante)
+            }
 
-            // Resto del código sin cambios...
+            // Obtener y establecer nombre de la competición
+            val nombreCompeticion = competitionNames[match.competicionId] ?: "Competición"
+            binding.textViewCompeticion.text = nombreCompeticion
+
+            // Obtener tipo de competición y mostrar fase o jornada según corresponda
+            val tipoCompeticion = competitionTypes[match.competicionId] ?: TipoCompeticion.LIGA
+
+            when (tipoCompeticion) {
+                TipoCompeticion.LIGA -> {
+                    // Para ligas: mostrar jornada
+                    match.jornada?.let {
+                        binding.textViewJornada.text = itemView.context.getString(R.string.jornada_template, it)
+                        binding.textViewJornada.visibility = View.VISIBLE
+                    } ?: run {
+                        binding.textViewJornada.visibility = View.GONE
+                    }
+                }
+                TipoCompeticion.COPA_NACIONAL,
+                TipoCompeticion.COPA_INTERNACIONAL,
+                TipoCompeticion.SUPERCOPA -> {
+                    // Para todas las copas: mostrar fase
+                    match.fase?.let {
+                        binding.textViewJornada.text = it
+                        binding.textViewJornada.visibility = View.VISIBLE
+                    } ?: run {
+                        binding.textViewJornada.visibility = View.GONE
+                    }
+                }
+            }
+
+            // Establecer imagen de competición
             setCompetitionImage(competitionImage)
 
-            val homeScoreColor = if (match.esLocal) {
-                ContextCompat.getColor(itemView.context, R.color.botones_positivos)
-            } else {
-                val typedValue = android.util.TypedValue()
-                itemView.context.theme.resolveAttribute(
-                    android.R.attr.textColorPrimary,
-                    typedValue,
-                    true
-                )
-                typedValue.data
+            // Cambiar color del marcador según el resultado
+            val resultadoColor = when {
+                match.golesEquipo > match.golesRival -> ContextCompat.getColor(itemView.context, R.color.win_color)
+                match.golesEquipo < match.golesRival -> ContextCompat.getColor(itemView.context, R.color.lose_color)
+                else -> ContextCompat.getColor(itemView.context, R.color.draw_color)
             }
-            homeScoreTextView.setTextColor(homeScoreColor)
+
+            // Aplicar el color al marcador correcto según si es local o visitante
+            if (match.esLocal) {
+                binding.textViewHomeScore.setTextColor(resultadoColor) // Tu marcador (local)
+                binding.textViewAwayScore.setTextColor(ContextCompat.getColor(itemView.context, android.R.color.black))
+            } else {
+                binding.textViewAwayScore.setTextColor(resultadoColor) // Tu marcador (visitante)
+                binding.textViewHomeScore.setTextColor(ContextCompat.getColor(itemView.context, android.R.color.black))
+            }
         }
 
         private fun setCompetitionImage(imageBase64: String?) {
@@ -111,10 +151,10 @@ class PartidosAdapter(
                 createDefaultDrawable()
             }
 
-            fechaTextView.setCompoundDrawablesWithIntrinsicBounds(
-                null,
-                null,
+            binding.textViewCompeticion.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 drawable,
+                null,
+                null,
                 null
             )
         }
@@ -136,7 +176,7 @@ class PartidosAdapter(
 
         private fun createDefaultDrawable(): Drawable? {
             return ContextCompat.getDrawable(itemView.context, R.drawable.ic_liga)?.apply {
-                val sizeInPx = (48 * itemView.context.resources.displayMetrics.density).toInt()
+                val sizeInPx = (24 * itemView.context.resources.displayMetrics.density).toInt()
                 setBounds(0, 0, sizeInPx, sizeInPx)
             }
         }

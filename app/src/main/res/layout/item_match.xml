@@ -8,7 +8,9 @@
     android:layout_marginHorizontal="8dp"
     android:layout_marginVertical="4dp"
     app:cardCornerRadius="8dp"
-    app:cardElevation="2dp">
+    app:cardElevation="2dp"
+    android:clickable="true"
+    android:focusable="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,17 +19,44 @@
         android:padding="16dp"
         android:background="?attr/selectableItemBackground">
 
-        <!-- Fecha con icono de competición como compound drawable -->
+        <!-- Fila superior: Competición y Jornada -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:baselineAligned="false">
+
+            <TextView
+                android:id="@+id/textViewCompeticion"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/secondary_text"
+                android:textSize="14sp"
+                android:textAlignment="textStart"
+                app:drawableStartCompat="@drawable/ic_liga"
+                android:drawablePadding="8dp"
+                tools:text="League Two" />
+
+            <TextView
+                android:id="@+id/textViewJornada"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/secondary_text"
+                android:textSize="14sp"
+                tools:text="Jornada 2" />
+        </LinearLayout>
+
+        <!-- Fecha -->
         <TextView
             android:id="@+id/textViewFecha"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawablePadding="8dp"
             android:textColor="@color/secondary_text"
             android:textSize="14sp"
-            android:textAlignment="textStart"
-            app:drawableEndCompat="@drawable/ic_liga"
-            tools:text="SÁB 15 ABR - 20:45" />
+            android:layout_marginTop="4dp"
+            tools:text="19 AGO 2025 - 01:43" />
 
         <!-- Separador -->
         <View
@@ -41,26 +70,35 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:baselineAligned="false">
 
             <!-- Nombre de tu equipo -->
-            <TextView
-                android:id="@+id/textViewMiEquipo"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textAlignment="textEnd"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                tools:text="MI EQUIPO" />
+                android:orientation="horizontal"
+                android:gravity="end|center_vertical"
+                android:baselineAligned="false">
+
+                <TextView
+                    android:id="@+id/textViewMiEquipo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    tools:text="Local"/>
+            </LinearLayout>
 
             <!-- Resultado -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="12dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:baselineAligned="false">
 
                 <TextView
                     android:id="@+id/textViewHomeScore"
@@ -69,7 +107,7 @@
                     android:textColor="?android:attr/textColorPrimary"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    tools:text="2" />
+                    tools:text="0" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -85,20 +123,27 @@
                     android:textColor="?android:attr/textColorPrimary"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    tools:text="1" />
+                    tools:text="0" />
             </LinearLayout>
 
             <!-- Nombre del rival -->
-            <TextView
-                android:id="@+id/textViewRival"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textAlignment="textStart"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                tools:text="RIVAL FC" />
+                android:orientation="horizontal"
+                android:gravity="start|center_vertical"
+                android:baselineAligned="false">
+
+                <TextView
+                    android:id="@+id/textViewRival"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    tools:text="Visitante" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

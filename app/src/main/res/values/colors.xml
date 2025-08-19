@@ -39,4 +39,7 @@
     <color name="gray_medium">#9E9E9E</color>
     <color name="gray_dark">#616161</color>
     <color name="gray">#808080</color>
+    <color name="win_color">#4CAF50</color>
+    <color name="lose_color">#F44336</color>
+    <color name="draw_color">#FF9800</color>
 </resources>

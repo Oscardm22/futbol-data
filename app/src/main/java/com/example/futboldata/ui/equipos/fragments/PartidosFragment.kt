@@ -40,16 +40,27 @@ class PartidosFragment : Fragment() {
             viewModel.partidos.observe(viewLifecycleOwner) { partidos ->
                 viewModel.competiciones.observe(viewLifecycleOwner) { competiciones ->
                     partidos?.let { partidosList ->
+                        // ORDENAR los partidos por fecha
+                        val partidosOrdenados = partidosList.sortedByDescending { it.fecha }
+
                         // Crear mapa de imágenes de competición
                         val imagesMap = competiciones?.associate { it.id to it.imagenBase64 } ?: emptyMap()
 
                         // Crear mapa de nombres de equipos (solo para el equipo actual)
                         val teamNamesMap = equipo?.let { mapOf(it.id to it.nombre) } ?: emptyMap()
 
+                        // Crear mapa de nombres de competiciones
+                        val competitionNamesMap = competiciones?.associate { it.id to it.nombre } ?: emptyMap()
+
+                        // Crear mapa de tipos de competición
+                        val competitionTypesMap = competiciones?.associate { it.id to it.tipo } ?: emptyMap()
+
                         binding.rvPartidos.adapter = PartidosAdapter(
-                            matches = partidosList,
+                            matches = partidosOrdenados, // Usar la lista ordenada
                             competitionImages = imagesMap,
-                            teamNames = teamNamesMap
+                            teamNames = teamNamesMap,
+                            competitionNames = competitionNamesMap,
+                            competitionTypes = competitionTypesMap
                         )
                     }
                 }
