@@ -69,4 +69,17 @@ class JugadorRepositoryImpl(
             throw Exception("No se pudo eliminar el jugador: ${e.message}")
         }
     }
+
+    override suspend fun updateJugador(jugador: Jugador) {
+        try {
+            db.collection("jugadores")
+                .document(jugador.id)
+                .set(jugador.toFirestoreMap())
+                .await()
+            Log.d("DEBUG_REPO", "✓ [Firestore] Jugador ${jugador.id} actualizado")
+        } catch (e: Exception) {
+            Log.e("DEBUG_REPO", "✕ [Firestore] Error al actualizar jugador: ${e.message}")
+            throw Exception("No se pudo actualizar el jugador: ${e.message}")
+        }
+    }
 }

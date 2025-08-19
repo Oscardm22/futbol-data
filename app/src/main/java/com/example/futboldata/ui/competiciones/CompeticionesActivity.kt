@@ -47,7 +47,7 @@ class CompeticionesActivity : AppCompatActivity() {
         SharedViewModelFactory(
             equipoRepository = EquipoRepositoryImpl(FirebaseFirestore.getInstance(), StatsCalculator),
             authRepository = AuthRepositoryImpl(FirebaseAuth.getInstance()),
-            partidoRepository = PartidoRepositoryImpl(FirebaseFirestore.getInstance()),
+            partidoRepository = PartidoRepositoryImpl(db = FirebaseFirestore.getInstance(), jugadorRepository = JugadorRepositoryImpl(FirebaseFirestore.getInstance())),
             jugadorRepository = JugadorRepositoryImpl(FirebaseFirestore.getInstance()),
             competicionRepository = CompeticionRepositoryImpl(FirebaseFirestore.getInstance())
         )

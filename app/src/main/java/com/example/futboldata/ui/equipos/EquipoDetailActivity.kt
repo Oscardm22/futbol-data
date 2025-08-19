@@ -409,7 +409,7 @@ open class EquipoDetailActivity : AppCompatActivity() {
         val firestore = FirebaseFirestore.getInstance()
         val equipoRepository = EquipoRepositoryImpl(firestore, StatsCalculator)
         val jugadorRepository = JugadorRepositoryImpl(firestore)
-        val partidoRepository = PartidoRepositoryImpl(firestore)
+        val partidoRepository = PartidoRepositoryImpl(db = firestore, jugadorRepository = jugadorRepository)
         val competicionRepository = CompeticionRepositoryImpl(firestore)
 
         val factory = object : ViewModelProvider.Factory {

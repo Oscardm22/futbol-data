@@ -1,6 +1,8 @@
 package com.example.futboldata.data.repository.impl
 
+import android.util.Log
 import com.example.futboldata.data.model.*
+import com.example.futboldata.data.repository.JugadorRepository
 import com.example.futboldata.data.repository.PartidoRepository
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentSnapshot
@@ -10,13 +12,15 @@ import kotlinx.coroutines.tasks.await
 import java.util.*
 
 class PartidoRepositoryImpl(
-    private val db: FirebaseFirestore
+    private val db: FirebaseFirestore,
+    private val jugadorRepository: JugadorRepository
 ) : PartidoRepository {
 
     override suspend fun addPartido(partido: Partido): String {
         val documentRef = db.collection("partidos").document()
         val partidoConId = partido.copy(id = documentRef.id)
 
+        // 1. Guardar el partido
         val partidoData = hashMapOf(
             "id" to documentRef.id,
             "equipoId" to partidoConId.equipoId,
@@ -37,7 +41,29 @@ class PartidoRepositoryImpl(
         )
 
         documentRef.set(partidoData).await()
+
+        // 2. Actualizar estadísticas de jugadores
+        actualizarEstadisticasJugadores(partidoConId)
+
         return documentRef.id
+    }
+
+    private suspend fun actualizarEstadisticasJugadores(partido: Partido) {
+        try {
+            // Obtener todos los jugadores del equipo
+            val jugadores = jugadorRepository.getJugadoresPorEquipo(partido.equipoId)
+
+            // Actualizar estadísticas para cada jugador
+            jugadores.forEach { jugador ->
+                val jugadorActualizado = jugador.actualizarEstadisticasPartido(partido)
+                jugadorRepository.updateJugador(jugadorActualizado)
+            }
+
+            Log.d("DEBUG_REPO", "✓ Estadísticas de jugadores actualizadas para partido ${partido.id}")
+        } catch (e: Exception) {
+            Log.e("DEBUG_REPO", "✕ Error al actualizar estadísticas: ${e.message}")
+            throw Exception("Partido guardado pero error actualizando estadísticas: ${e.message}")
+        }
     }
 
     override suspend fun getPartidos(equipoId: String): List<Partido> {

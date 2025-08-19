@@ -33,7 +33,7 @@ class JugadoresAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(player: Jugador) {
             binding.tvNombre.text = player.nombre
-            binding.tvPosicion.text = player.posicion.displayName
+            binding.tvPosicion.text = player.posicion.toString()
 
             val iconRes = when(player.posicion) {
                 Posicion.PO -> R.drawable.ic_portero

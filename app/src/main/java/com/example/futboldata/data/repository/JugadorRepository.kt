@@ -6,4 +6,5 @@ interface JugadorRepository {
     suspend fun addJugador(jugador: Jugador): String
     suspend fun getJugadoresPorEquipo(equipoId: String): List<Jugador>
     suspend fun eliminarJugador(jugadorId: String)
+    suspend fun updateJugador(jugador: Jugador)
 }

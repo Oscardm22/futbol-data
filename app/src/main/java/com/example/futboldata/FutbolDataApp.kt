@@ -28,15 +28,15 @@ class FutbolDataApp : Application() {
         val firebaseAuth = FirebaseAuth.getInstance()
         val statsCalculator = StatsCalculator
 
-        // Pasa statsCalculator al repositorio
+        val jugadorRepository = JugadorRepositoryImpl(firestore)
+
         val equipoRepository = EquipoRepositoryImpl(
             db = firestore,
             statsCalculator = statsCalculator
         )
 
         val authRepository = AuthRepositoryImpl(firebaseAuth)
-        val partidoRepository = PartidoRepositoryImpl(firestore)
-        val jugadorRepository = JugadorRepositoryImpl(firestore)
+        val partidoRepository = PartidoRepositoryImpl(db = firestore, jugadorRepository = jugadorRepository)
         val competicionRepository = CompeticionRepositoryImpl(firestore)
 
         viewModelFactory = SharedViewModelFactory(

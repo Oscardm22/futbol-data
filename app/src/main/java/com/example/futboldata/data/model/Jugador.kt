@@ -71,8 +71,8 @@ data class Jugador(
     @Exclude
     fun actualizarEstadisticasPartido(partido: Partido): Jugador {
         val jugoEnPartido = partido.alineacionIds.contains(id)
-        val goles = partido.goleadoresIds.count { it == id }
-        val asistencias = partido.asistentesIds.count { it == id }
+        val nuevosGoles = partido.goleadoresIds.count { it == id }
+        val nuevasAsistencias = partido.asistentesIds.count { it == id }
         val porteriaImbatida = id == partido.porteroImbatidoId
 
         return if (!jugoEnPartido) {
@@ -80,13 +80,13 @@ data class Jugador(
         } else {
             this.copy(
                 partidosJugados = partidosJugados + 1,
-                goles = goles + goles,
-                asistencias = asistencias + asistencias,
+                goles = goles + nuevosGoles,
+                asistencias = asistencias + nuevasAsistencias,
                 porteriasImbatidas = porteriasImbatidas + (if (porteriaImbatida) 1 else 0)
             ).actualizarEstadisticasCompeticion(
                 competicionId = partido.competicionId,
-                goles = goles,
-                asistencias = asistencias,
+                goles = nuevosGoles,
+                asistencias = nuevasAsistencias,
                 porteriaImbatida = porteriaImbatida
             )
         }
