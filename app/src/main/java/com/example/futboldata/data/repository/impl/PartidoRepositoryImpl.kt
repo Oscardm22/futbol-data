@@ -18,9 +18,21 @@ class PartidoRepositoryImpl(
 
     override suspend fun addPartido(partido: Partido): String {
         val documentRef = db.collection("partidos").document()
-        val partidoConId = partido.copy(id = documentRef.id)
 
-        // 1. Guardar el partido
+        // Determinar automáticamente al portero imbatido si no recibieron goles
+        val porteroImbatidoId = if (partido.golesRival == 0) {
+            jugadorRepository.getJugadoresPorEquipo(partido.equipoId)
+                .firstOrNull { jugador ->
+                    jugador.posicion == Posicion.PO && partido.alineacionIds.contains(jugador.id)
+                }?.id
+        } else null
+
+        val partidoConId = partido.copy(
+            id = documentRef.id,
+            porteroImbatidoId = porteroImbatidoId
+        )
+
+        // Guardar el partido
         val partidoData = hashMapOf(
             "id" to documentRef.id,
             "equipoId" to partidoConId.equipoId,
@@ -37,12 +49,13 @@ class PartidoRepositoryImpl(
             "jugadorDelPartido" to partidoConId.jugadorDelPartido,
             "alineacionIds" to partidoConId.alineacionIds,
             "goleadoresIds" to partidoConId.goleadoresIds,
-            "asistentesIds" to partidoConId.asistentesIds
+            "asistentesIds" to partidoConId.asistentesIds,
+            "porteroImbatidoId" to partidoConId.porteroImbatidoId
         )
 
         documentRef.set(partidoData).await()
 
-        // 2. Actualizar estadísticas de jugadores
+        // Actualizar estadísticas de jugadores
         actualizarEstadisticasJugadores(partidoConId)
 
         return documentRef.id
