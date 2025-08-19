@@ -1,7 +1,6 @@
 package com.example.futboldata.ui.equipos.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -53,10 +52,10 @@ class AlineacionFragment : Fragment() {
     }
 
     fun updateJugadores(jugadores: List<Jugador>) {
-        Log.d("DEBUG_FRAGMENT", "updateJugadores - ${this::class.simpleName} - Jugadores: ${jugadores.size}")
         _jugadores = jugadores
         if (::adapter.isInitialized) {
-            Log.d("DEBUG_ADAPTER", "Enviando lista al adapter")
+            // Actualizar las selecciones en el adapter
+            adapter.setSelecciones(seleccionados)
             adapter.submitList(jugadores.toList())
         }
     }
