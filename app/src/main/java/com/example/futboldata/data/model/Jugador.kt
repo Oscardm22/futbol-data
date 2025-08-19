@@ -16,6 +16,7 @@ data class Jugador(
     val goles: Int = 0,
     val asistencias: Int = 0,
     val porteriasImbatidas: Int = 0,
+    val mvp: Int = 0,
 
     // Estadísticas por competición
     @get:Exclude
@@ -25,7 +26,10 @@ data class Jugador(
     @get:Exclude
     val asistenciasPorCompeticion: Map<String, Int> = emptyMap(),
     @get:Exclude
-    val porteriasImbatidasPorCompeticion: Map<String, Int> = emptyMap()
+    val porteriasImbatidasPorCompeticion: Map<String, Int> = emptyMap(),
+    @get:Exclude
+    val mvpPorCompeticion: Map<String, Int> = emptyMap()
+
 ) : Parcelable {
 
     constructor() : this("", "", Posicion.PO, "")
@@ -63,7 +67,9 @@ data class Jugador(
                 partidosPorCompeticion = safeCastToIntMap(data["partidosPorCompeticion"]),
                 golesPorCompeticion = safeCastToIntMap(data["golesPorCompeticion"]),
                 asistenciasPorCompeticion = safeCastToIntMap(data["asistenciasPorCompeticion"]),
-                porteriasImbatidasPorCompeticion = safeCastToIntMap(data["porteriasImbatidasPorCompeticion"])
+                porteriasImbatidasPorCompeticion = safeCastToIntMap(data["porteriasImbatidasPorCompeticion"]),
+                mvp = (data["mvp"] as? Long)?.toInt() ?: 0,
+                mvpPorCompeticion = safeCastToIntMap(data["mvpPorCompeticion"])
             )
         }
     }
@@ -74,6 +80,7 @@ data class Jugador(
         val nuevosGoles = partido.goleadoresIds.count { it == id }
         val nuevasAsistencias = partido.asistentesIds.count { it == id }
         val porteriaImbatida = id == partido.porteroImbatidoId
+        val esMVP = id == partido.jugadorDelPartido
 
         return if (!jugoEnPartido) {
             this
@@ -82,12 +89,14 @@ data class Jugador(
                 partidosJugados = partidosJugados + 1,
                 goles = goles + nuevosGoles,
                 asistencias = asistencias + nuevasAsistencias,
-                porteriasImbatidas = porteriasImbatidas + (if (porteriaImbatida) 1 else 0)
+                porteriasImbatidas = porteriasImbatidas + (if (porteriaImbatida) 1 else 0),
+                mvp = mvp + (if (esMVP) 1 else 0)
             ).actualizarEstadisticasCompeticion(
                 competicionId = partido.competicionId,
                 goles = nuevosGoles,
                 asistencias = nuevasAsistencias,
-                porteriaImbatida = porteriaImbatida
+                porteriaImbatida = porteriaImbatida,
+                esMVP = esMVP
             )
         }
     }
@@ -96,7 +105,8 @@ data class Jugador(
         competicionId: String,
         goles: Int,
         asistencias: Int,
-        porteriaImbatida: Boolean
+        porteriaImbatida: Boolean,
+        esMVP: Boolean
     ): Jugador {
         val nuevosPartidos = partidosPorCompeticion.incrementar(competicionId)
         val nuevosGoles = golesPorCompeticion.incrementar(competicionId, goles)
@@ -105,12 +115,16 @@ data class Jugador(
             competicionId,
             if (porteriaImbatida) 1 else 0
         )
-
+        val nuevosMVP = mvpPorCompeticion.incrementar(
+            competicionId,
+            if (esMVP) 1 else 0
+        )
         return this.copy(
             partidosPorCompeticion = nuevosPartidos,
             golesPorCompeticion = nuevosGoles,
             asistenciasPorCompeticion = nuevasAsistencias,
-            porteriasImbatidasPorCompeticion = nuevasPorterias
+            porteriasImbatidasPorCompeticion = nuevasPorterias,
+            mvpPorCompeticion = nuevosMVP
         )
     }
 
@@ -155,7 +169,9 @@ fun Jugador.toFirestoreMap(): Map<String, Any> {
         "partidosJugados" to partidosJugados,
         "goles" to goles,
         "asistencias" to asistencias,
-        "porteriasImbatidas" to porteriasImbatidas
+        "porteriasImbatidas" to porteriasImbatidas,
+        "mvp" to mvp,
+        "mvpPorCompeticion" to mvpPorCompeticion
     ).apply {
         // Añadir mapas de competiciones solo si no están vacíos
         if (partidosPorCompeticion.isNotEmpty()) put("partidosPorCompeticion", partidosPorCompeticion)

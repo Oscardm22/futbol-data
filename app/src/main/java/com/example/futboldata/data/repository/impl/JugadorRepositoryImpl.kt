@@ -40,12 +40,14 @@ class JugadorRepositoryImpl(
                     document.getLong("goles")?.let { put("goles", it) }
                     document.getLong("asistencias")?.let { put("asistencias", it) }
                     document.getLong("porteriasImbatidas")?.let { put("porteriasImbatidas", it) }
+                    document.getLong("mvp")?.let { put("mvp", it) }
 
                     // Manejar mapas de competiciones
                     document.get("partidosPorCompeticion")?.let { put("partidosPorCompeticion", it) }
                     document.get("golesPorCompeticion")?.let { put("golesPorCompeticion", it) }
                     document.get("asistenciasPorCompeticion")?.let { put("asistenciasPorCompeticion", it) }
                     document.get("porteriasImbatidasPorCompeticion")?.let { put("porteriasImbatidasPorCompeticion", it) }
+                    document.get("mvpPorCompeticion")?.let { put("mvpPorCompeticion", it) }
                 }
 
                 Jugador.fromFirestore(
