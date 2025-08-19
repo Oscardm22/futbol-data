@@ -6,11 +6,11 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.futboldata.data.model.Jugador
-import com.example.futboldata.data.model.ParticipacionJugador
 import com.example.futboldata.databinding.ItemJugadorPartidoBinding
 
 class JugadoresPartidoAdapter(
-    private val onParticipacionChange: (Jugador, ParticipacionJugador) -> Unit
+    private val onTitularChange: (String, Boolean) -> Unit,
+    private val onGolesChange: (String, Int) -> Unit
 ) : ListAdapter<Jugador, JugadoresPartidoAdapter.ViewHolder>(DiffCallback()) {
 
     inner class ViewHolder(val binding: ItemJugadorPartidoBinding) :
@@ -21,28 +21,15 @@ class JugadoresPartidoAdapter(
                 tvNombre.text = jugador.nombre
                 tvPosicion.text = jugador.posicion.displayName
 
+                // Listener para cambios en titularidad
                 swTitular.setOnCheckedChangeListener { _, isChecked ->
-                    onParticipacionChange(jugador, ParticipacionJugador(
-                        jugadorId = jugador.id,
-                        esTitular = isChecked,
-                        minutosJugados = if (isChecked) 90 else 0,
-                        goles = 0,
-                        asistencias = 0,
-                        tarjetasAmarillas = 0,
-                        tarjetasRojas = 0
-                    ))
+                    onTitularChange(jugador.id, isChecked)
                 }
 
+                // Listener para cambios en goles
                 etGoles.setOnEditorActionListener { _, _, _ ->
-                    onParticipacionChange(jugador, ParticipacionJugador(
-                        jugadorId = jugador.id,
-                        esTitular = binding.swTitular.isChecked,
-                        goles = etGoles.text.toString().toIntOrNull() ?: 0,
-                        minutosJugados = if (binding.swTitular.isChecked) 90 else 0,
-                        asistencias = 0,
-                        tarjetasAmarillas = 0,
-                        tarjetasRojas = 0
-                    ))
+                    val goles = etGoles.text.toString().toIntOrNull() ?: 0
+                    onGolesChange(jugador.id, goles)
                     false
                 }
             }

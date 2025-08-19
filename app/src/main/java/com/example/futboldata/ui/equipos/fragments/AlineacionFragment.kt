@@ -8,15 +8,13 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.futboldata.adapter.JugadoresAlineacionAdapter
 import com.example.futboldata.data.model.Jugador
-import com.example.futboldata.data.model.ParticipacionJugador
 import com.example.futboldata.databinding.FragmentAlineacionBinding
 
 class AlineacionFragment : Fragment() {
     private var _binding: FragmentAlineacionBinding? = null
     private val binding get() = _binding!!
     private lateinit var adapter: JugadoresAlineacionAdapter
-    private val seleccionados = mutableListOf<ParticipacionJugador>()
-    private var _jugadores: List<Jugador> = emptyList()
+    private val jugadoresSeleccionados = mutableMapOf<String, Boolean>() // JugadorId -> EsTitular
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,18 +29,8 @@ class AlineacionFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         adapter = JugadoresAlineacionAdapter { jugador, esTitular ->
-            val participacion = ParticipacionJugador(
-                jugadorId = jugador.id,
-                esTitular = esTitular,
-                goles = 0,
-                asistencias = 0,
-                minutosJugados = if (esTitular) 90 else 0,
-                tarjetasAmarillas = 0,
-                tarjetasRojas = 0
-            )
-
-            seleccionados.removeAll { it.jugadorId == jugador.id }
-            seleccionados.add(participacion)
+            // Actualizamos el mapa de seleccionados
+            jugadoresSeleccionados[jugador.id] = esTitular
         }
 
         binding.recyclerViewAlineacion.apply {
@@ -52,16 +40,27 @@ class AlineacionFragment : Fragment() {
     }
 
     fun updateJugadores(jugadores: List<Jugador>) {
-        _jugadores = jugadores
         if (::adapter.isInitialized) {
             // Actualizar las selecciones en el adapter
-            adapter.setSelecciones(seleccionados)
-            adapter.submitList(jugadores.toList())
+            adapter.setSeleccionesIniciales(jugadoresSeleccionados.keys.toList())
+            adapter.submitList(jugadores)
         }
     }
 
-    fun getAlineacionSeleccionada(): List<ParticipacionJugador> {
-        return seleccionados.toList()
+    fun getAlineacionSeleccionada(): List<String> {
+        // Devuelve solo los IDs de los jugadores titulares
+        return jugadoresSeleccionados.filter { it.value }.keys.toList()
+    }
+
+    fun setAlineacionInicial(alineacionIds: List<String>) {
+        jugadoresSeleccionados.clear()
+        alineacionIds.forEach { id ->
+            jugadoresSeleccionados[id] = true
+        }
+
+        if (::adapter.isInitialized) {
+            adapter.setSeleccionesIniciales(alineacionIds)
+        }
     }
 
     override fun onDestroyView() {

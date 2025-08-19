@@ -10,48 +10,157 @@ data class Jugador(
     val nombre: String,
     val posicion: Posicion,
     val equipoId: String,
+
+    // Estadísticas globales
+    val partidosJugados: Int = 0,
+    val goles: Int = 0,
+    val asistencias: Int = 0,
+    val porteriasImbatidas: Int = 0,
+
+    // Estadísticas por competición
     @get:Exclude
-    val golesPorCompeticion: Map<String, Int> = emptyMap()
+    val partidosPorCompeticion: Map<String, Int> = emptyMap(),
+    @get:Exclude
+    val golesPorCompeticion: Map<String, Int> = emptyMap(),
+    @get:Exclude
+    val asistenciasPorCompeticion: Map<String, Int> = emptyMap(),
+    @get:Exclude
+    val porteriasImbatidasPorCompeticion: Map<String, Int> = emptyMap()
 ) : Parcelable {
 
-    @get:Exclude
-    val golesTotales: Int
-        get() = golesPorCompeticion.values.sum()
-
-    // Constructor para Firestore
     constructor() : this("", "", Posicion.PO, "")
 
     companion object {
+        @Exclude
         fun fromFirestore(
             id: String,
-            nombre: String,
-            posicion: String,
-            equipoId: String,
-            goles: Map<String, Int>?
+            data: Map<String, Any>
         ): Jugador {
+            // Función de ayuda para convertir mapas de competición de forma segura
+            fun safeCastToIntMap(value: Any?): Map<String, Int> {
+                return when (value) {
+                    is Map<*, *> -> value.mapNotNull { (key, v) ->
+                        when {
+                            key !is String -> null
+                            v is Int -> key to v
+                            v is Long -> key to v.toInt()
+                            else -> null
+                        }
+                    }.toMap()
+                    else -> emptyMap()
+                }
+            }
+
             return Jugador(
                 id = id,
-                nombre = nombre,
-                posicion = Posicion.valueOf(posicion),
-                equipoId = equipoId,
-                golesPorCompeticion = goles ?: emptyMap()
+                nombre = data["nombre"] as? String ?: "",
+                posicion = Posicion.valueOf(data["posicion"] as? String ?: "PO"),
+                equipoId = data["equipoId"] as? String ?: "",
+                partidosJugados = (data["partidosJugados"] as? Long)?.toInt() ?: 0,
+                goles = (data["goles"] as? Long)?.toInt() ?: 0,
+                asistencias = (data["asistencias"] as? Long)?.toInt() ?: 0,
+                porteriasImbatidas = (data["porteriasImbatidas"] as? Long)?.toInt() ?: 0,
+                partidosPorCompeticion = safeCastToIntMap(data["partidosPorCompeticion"]),
+                golesPorCompeticion = safeCastToIntMap(data["golesPorCompeticion"]),
+                asistenciasPorCompeticion = safeCastToIntMap(data["asistenciasPorCompeticion"]),
+                porteriasImbatidasPorCompeticion = safeCastToIntMap(data["porteriasImbatidasPorCompeticion"])
             )
         }
     }
 
-    fun toFirestoreMap(): Map<String, Any> {
-        return mapOf(
-            "id" to id,
-            "nombre" to nombre,
-            "posicion" to posicion.name,
-            "equipoId" to equipoId,
-            "golesPorCompeticion" to golesPorCompeticion
+    @Exclude
+    fun actualizarEstadisticasPartido(partido: Partido): Jugador {
+        val jugoEnPartido = partido.alineacionIds.contains(id)
+        val goles = partido.goleadoresIds.count { it == id }
+        val asistencias = partido.asistentesIds.count { it == id }
+        val porteriaImbatida = id == partido.porteroImbatidoId
+
+        return if (!jugoEnPartido) {
+            this
+        } else {
+            this.copy(
+                partidosJugados = partidosJugados + 1,
+                goles = goles + goles,
+                asistencias = asistencias + asistencias,
+                porteriasImbatidas = porteriasImbatidas + (if (porteriaImbatida) 1 else 0)
+            ).actualizarEstadisticasCompeticion(
+                competicionId = partido.competicionId,
+                goles = goles,
+                asistencias = asistencias,
+                porteriaImbatida = porteriaImbatida
+            )
+        }
+    }
+
+    private fun actualizarEstadisticasCompeticion(
+        competicionId: String,
+        goles: Int,
+        asistencias: Int,
+        porteriaImbatida: Boolean
+    ): Jugador {
+        val nuevosPartidos = partidosPorCompeticion.incrementar(competicionId)
+        val nuevosGoles = golesPorCompeticion.incrementar(competicionId, goles)
+        val nuevasAsistencias = asistenciasPorCompeticion.incrementar(competicionId, asistencias)
+        val nuevasPorterias = porteriasImbatidasPorCompeticion.incrementar(
+            competicionId,
+            if (porteriaImbatida) 1 else 0
+        )
+
+        return this.copy(
+            partidosPorCompeticion = nuevosPartidos,
+            golesPorCompeticion = nuevosGoles,
+            asistenciasPorCompeticion = nuevasAsistencias,
+            porteriasImbatidasPorCompeticion = nuevasPorterias
         )
     }
 
-    fun agregarGoles(competicionId: String, cantidad: Int): Jugador {
-        val nuevosGoles = golesPorCompeticion.toMutableMap()
-        nuevosGoles[competicionId] = (nuevosGoles[competicionId] ?: 0) + cantidad
-        return this.copy(golesPorCompeticion = nuevosGoles)
+    @Exclude
+    fun getEstadisticasCompeticion(competicionId: String): EstadisticasCompeticion {
+        return EstadisticasCompeticion(
+            partidos = partidosPorCompeticion[competicionId] ?: 0,
+            goles = golesPorCompeticion[competicionId] ?: 0,
+            asistencias = asistenciasPorCompeticion[competicionId] ?: 0,
+            porteriasImbatidas = porteriasImbatidasPorCompeticion[competicionId] ?: 0
+        )
+    }
+}
+
+// Extensión de ayuda
+private fun Map<String, Int>.incrementar(key: String, valor: Int = 1): Map<String, Int> {
+    return this.toMutableMap().apply {
+        this[key] = (this[key] ?: 0) + valor
+    }
+}
+
+data class EstadisticasCompeticion(
+    val partidos: Int,
+    val goles: Int,
+    val asistencias: Int,
+    val porteriasImbatidas: Int
+) {
+    @Exclude
+    val promedioGoles: Float = if (partidos > 0) goles.toFloat() / partidos else 0f
+
+    @Exclude
+    val promedioAsistencias: Float = if (partidos > 0) asistencias.toFloat() / partidos else 0f
+}
+
+// Extensión para convertir Jugador a mapa de Firestore
+@Exclude
+fun Jugador.toFirestoreMap(): Map<String, Any> {
+    return mutableMapOf<String, Any>(
+        "nombre" to nombre,
+        "posicion" to posicion.name,
+        "equipoId" to equipoId,
+        "partidosJugados" to partidosJugados,
+        "goles" to goles,
+        "asistencias" to asistencias,
+        "porteriasImbatidas" to porteriasImbatidas
+    ).apply {
+        // Añadir mapas de competiciones solo si no están vacíos
+        if (partidosPorCompeticion.isNotEmpty()) put("partidosPorCompeticion", partidosPorCompeticion)
+        if (golesPorCompeticion.isNotEmpty()) put("golesPorCompeticion", golesPorCompeticion)
+        if (asistenciasPorCompeticion.isNotEmpty()) put("asistenciasPorCompeticion", asistenciasPorCompeticion)
+        if (porteriasImbatidasPorCompeticion.isNotEmpty()) put("porteriasImbatidasPorCompeticion", porteriasImbatidasPorCompeticion)
     }
 }

@@ -2,25 +2,30 @@ package com.example.futboldata.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import com.example.futboldata.adapter.diffcallbacks.JugadorDiffCallback
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.futboldata.adapter.diffcallbacks.JugadorDiffCallback
 import com.example.futboldata.data.model.Jugador
-import com.example.futboldata.data.model.ParticipacionJugador
 import com.example.futboldata.databinding.ItemJugadorAlineacionBinding
 
 class JugadoresAlineacionAdapter(
     private val onSelectionChanged: (Jugador, Boolean) -> Unit
 ) : ListAdapter<Jugador, JugadoresAlineacionAdapter.ViewHolder>(JugadorDiffCallback()) {
 
-    // Mapa para mantener el estado de selección de cada jugador
+    // Mapa para mantener el estado de selección de cada jugador (jugadorId -> esTitular)
     private val seleccionadosMap = mutableMapOf<String, Boolean>()
 
-    fun setSelecciones(selecciones: List<ParticipacionJugador>) {
+    // Método actualizado para establecer selecciones iniciales usando la alineación del partido
+    fun setSeleccionesIniciales(alineacionIds: List<String>) {
         seleccionadosMap.clear()
-        selecciones.forEach {
-            seleccionadosMap[it.jugadorId] = it.esTitular
+        currentList.forEach { jugador ->
+            seleccionadosMap[jugador.id] = alineacionIds.contains(jugador.id)
         }
+    }
+
+    // Método para obtener los IDs de los jugadores seleccionados
+    fun getJugadoresSeleccionados(): List<String> {
+        return seleccionadosMap.filter { it.value }.keys.toList()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -41,20 +46,22 @@ class JugadoresAlineacionAdapter(
         fun bind(jugador: Jugador) {
             currentJugador = jugador
 
-            binding.tvNombre.text = jugador.nombre
-            binding.tvPosicion.text = jugador.posicion.toString()
+            with(binding) {
+                tvNombre.text = jugador.nombre
+                tvPosicion.text = jugador.posicion.toString()
 
-            // Eliminar listener anterior para evitar múltiples llamadas
-            binding.switchTitular.setOnCheckedChangeListener(null)
+                // Eliminar listener anterior para evitar múltiples llamadas
+                switchTitular.setOnCheckedChangeListener(null)
 
-            // Establecer el estado actual del Switch
-            binding.switchTitular.isChecked = seleccionadosMap[jugador.id] == true
+                // Establecer el estado actual del Switch
+                switchTitular.isChecked = seleccionadosMap[jugador.id] == true
 
-            // Configurar nuevo listener
-            binding.switchTitular.setOnCheckedChangeListener { _, isChecked ->
-                currentJugador?.let { jugador ->
-                    seleccionadosMap[jugador.id] = isChecked
-                    onSelectionChanged(jugador, isChecked)
+                // Configurar nuevo listener
+                switchTitular.setOnCheckedChangeListener { _, isChecked ->
+                    jugador.id.let { jugadorId ->
+                        seleccionadosMap[jugadorId] = isChecked
+                        onSelectionChanged(jugador, isChecked)
+                    }
                 }
             }
         }

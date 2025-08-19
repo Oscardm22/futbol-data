@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.futboldata.data.model.Asistencia
 import com.example.futboldata.data.model.Gol
 import com.example.futboldata.data.model.Jugador
-import com.example.futboldata.data.model.ParticipacionJugador
 import com.example.futboldata.data.model.Partido
 import com.example.futboldata.data.repository.JugadorRepository
 import com.example.futboldata.data.repository.PartidoRepository
@@ -21,7 +20,10 @@ class PartidoViewModel(
     private val _jugadores = MutableLiveData<List<Jugador>>()
     val jugadores: LiveData<List<Jugador>> = _jugadores
 
-    private val participaciones = mutableMapOf<String, ParticipacionJugador>()
+    // Almacena los IDs de los jugadores titulares
+    private val jugadoresTitulares = mutableSetOf<String>()
+
+    // Almacena los goles y asistencias
     private val goles = mutableListOf<Gol>()
     private val asistencias = mutableListOf<Asistencia>()
 
@@ -31,29 +33,39 @@ class PartidoViewModel(
         }
     }
 
-    fun actualizarParticipacion(jugadorId: String, participacion: ParticipacionJugador) {
-        participaciones[jugadorId] = participacion
+    fun actualizarTitularidad(jugadorId: String, esTitular: Boolean) {
+        if (esTitular) {
+            jugadoresTitulares.add(jugadorId)
+        } else {
+            jugadoresTitulares.remove(jugadorId)
+        }
     }
 
-    fun obtenerAlineacionActual(): List<ParticipacionJugador> {
-        return _jugadores.value?.map { jugador ->
-            participaciones[jugador.id] ?: ParticipacionJugador(
-                jugadorId = jugador.id,
-                esTitular = false,
-                minutosJugados = 0,
-                goles = 0,
-                asistencias = 0
-            )
-        } ?: emptyList()
+    fun obtenerAlineacionActual(): List<String> {
+        return jugadoresTitulares.toList()
     }
 
-    fun obtenerGoles(): List<Gol> = goles
+    fun agregarGol(gol: Gol) {
+        goles.add(gol)
+    }
 
-    fun obtenerAsistencias(): List<Asistencia> = asistencias
+    fun agregarAsistencia(asistencia: Asistencia) {
+        asistencias.add(asistencia)
+    }
+
+    fun obtenerGoles(): List<Gol> = goles.toList()
+
+    fun obtenerAsistencias(): List<Asistencia> = asistencias.toList()
 
     fun guardarPartido(partido: Partido) {
         viewModelScope.launch {
-            partidoRepository.addPartido(partido)
+            // Actualizamos el partido con la alineación actual
+            val partidoActualizado = partido.copy(
+                alineacionIds = obtenerAlineacionActual(),
+                goleadoresIds = goles.map { it.jugadorId },
+                asistentesIds = asistencias.map { it.jugadorId }
+            )
+            partidoRepository.addPartido(partidoActualizado)
         }
     }
 }

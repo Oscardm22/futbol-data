@@ -19,7 +19,8 @@ data class Partido(
     val jugadorDelPartido: String? = null,
     val alineacionIds: List<String> = emptyList(),
     val goleadoresIds: List<String> = emptyList(),
-    val asistentesIds: List<String> = emptyList()
+    val asistentesIds: List<String> = emptyList(),
+    val porteroImbatidoId: String? = null
 ) {
     @get:Exclude
     val resultado: String
@@ -38,10 +39,13 @@ data class Partido(
     @Exclude
     fun getDiferenciaGoles(): Int = golesEquipo - golesRival
 
-    // Nuevo método para validación
+    @Exclude
+    fun fuePorteriaImbatida(): Boolean = porteroImbatidoId != null
+
     @Exclude
     fun esValido(): Boolean {
         return equipoId.isNotBlank() && rival.isNotBlank() &&
-                competicionId.isNotBlank() && temporada.isNotBlank()
+                competicionId.isNotBlank() && temporada.isNotBlank() &&
+                golesEquipo >= 0 && golesRival >= 0
     }
 }

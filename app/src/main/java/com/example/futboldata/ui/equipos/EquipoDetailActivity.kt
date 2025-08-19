@@ -28,7 +28,6 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.example.futboldata.data.model.Asistencia
 import com.example.futboldata.data.model.Gol
-import com.example.futboldata.data.model.ParticipacionJugador
 import com.example.futboldata.data.model.Posicion
 import com.example.futboldata.data.repository.impl.CompeticionRepositoryImpl
 import com.example.futboldata.data.repository.impl.JugadorRepositoryImpl
@@ -120,7 +119,7 @@ open class EquipoDetailActivity : AppCompatActivity() {
 
     private fun showJugadoresPartidoDialog(
         equipoId: String,
-        onAlineacionSelected: (List<ParticipacionJugador>) -> Unit,
+        onAlineacionSelected: (List<String>) -> Unit, // Cambiado a List<String>
         onGoleadoresSelected: (List<Gol>) -> Unit,
         onAsistenciasSelected: (List<Asistencia>) -> Unit,
         onMvpSelected: (String?) -> Unit
@@ -128,13 +127,11 @@ open class EquipoDetailActivity : AppCompatActivity() {
         val dialog = BottomSheetDialog(this)
         val binding = DialogJugadoresPartidoBinding.inflate(layoutInflater)
 
-        // 1. Crear fragments primero y mantener referencias
         val alineacionFragment = AlineacionFragment()
         val goleadoresFragment = GoleadoresFragment()
         val asistenciasFragment = AsistenciasFragment()
         val mvpFragment = MVPFragment()
 
-        // 2. Configurar ViewPager
         val adapter = ViewPagerAdapter(this).apply {
             addFragment(alineacionFragment, "Alineación")
             addFragment(goleadoresFragment, "Goles")
@@ -147,7 +144,6 @@ open class EquipoDetailActivity : AppCompatActivity() {
             tab.text = adapter.getTitle(position)
         }.attach()
 
-        // 3. Cargar jugadores y observar cambios
         viewModel.jugadores.observe(this) { jugadores ->
             if (jugadores.isNotEmpty()) {
                 alineacionFragment.updateJugadores(jugadores)
@@ -157,7 +153,6 @@ open class EquipoDetailActivity : AppCompatActivity() {
             }
         }
 
-        // 4. Forzar carga inicial
         viewModel.cargarJugadores(equipoId)
 
         binding.btnConfirm.setOnClickListener {
@@ -166,7 +161,7 @@ open class EquipoDetailActivity : AppCompatActivity() {
             val asistencias = asistenciasFragment.getAsistencias()
             val mvp = mvpFragment.getMVP()
 
-            if (alineacion.count { it.esTitular } < 11) {
+            if (alineacion.size < 11) {
                 Toast.makeText(this, "Debes seleccionar al menos 11 titulares", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -190,7 +185,7 @@ open class EquipoDetailActivity : AppCompatActivity() {
         val competicionMap = mutableMapOf<String, String>()
 
         // Variables para almacenar las selecciones
-        var alineacionSeleccionada = mutableListOf<ParticipacionJugador>()
+        var alineacionSeleccionada = mutableListOf<String>()
         var goleadoresSeleccionados = mutableListOf<Gol>()
         var asistenciasSeleccionadas = mutableListOf<Asistencia>()
         var jugadorDelPartido: String? = null
@@ -303,7 +298,7 @@ open class EquipoDetailActivity : AppCompatActivity() {
                     fase = binding.etFase.text.toString().takeIf { it.isNotBlank() },
                     jornada = binding.etJornada.text.toString().toIntOrNull(),
                     esLocal = binding.switchLocal.isChecked,
-                    alineacionIds = alineacionSeleccionada.map { it.jugadorId },
+                    alineacionIds = alineacionSeleccionada,
                     goleadoresIds = goleadoresSeleccionados.map { it.jugadorId },
                     asistentesIds = asistenciasSeleccionadas.map { it.jugadorId },
                     jugadorDelPartido = jugadorDelPartido

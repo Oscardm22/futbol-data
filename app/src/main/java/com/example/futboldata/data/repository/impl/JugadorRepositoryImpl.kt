@@ -2,6 +2,7 @@ package com.example.futboldata.data.repository.impl
 
 import android.util.Log
 import com.example.futboldata.data.model.Jugador
+import com.example.futboldata.data.model.toFirestoreMap
 import com.example.futboldata.data.repository.JugadorRepository
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
@@ -28,19 +29,28 @@ class JugadorRepositoryImpl(
 
             Log.d("DEBUG_REPO", "✓ [Firestore] Documentos encontrados: ${querySnapshot.documents.size}")
             querySnapshot.documents.mapNotNull { document ->
-                val golesMap = when (val goles = document.get("golesPorCompeticion")) {
-                    is Map<*, *> -> goles.mapNotNull { (key, value) ->
-                        if (key is String && value is Int) key to value else null
-                    }.toMap()
-                    else -> null
+                // Crear mapa con los datos del documento
+                val data = hashMapOf<String, Any>().apply {
+                    put("nombre", document.getString("nombre") ?: "")
+                    put("posicion", document.getString("posicion") ?: "PO")
+                    put("equipoId", document.getString("equipoId") ?: "")
+
+                    // Manejar campos numéricos
+                    document.getLong("partidosJugados")?.let { put("partidosJugados", it) }
+                    document.getLong("goles")?.let { put("goles", it) }
+                    document.getLong("asistencias")?.let { put("asistencias", it) }
+                    document.getLong("porteriasImbatidas")?.let { put("porteriasImbatidas", it) }
+
+                    // Manejar mapas de competiciones
+                    document.get("partidosPorCompeticion")?.let { put("partidosPorCompeticion", it) }
+                    document.get("golesPorCompeticion")?.let { put("golesPorCompeticion", it) }
+                    document.get("asistenciasPorCompeticion")?.let { put("asistenciasPorCompeticion", it) }
+                    document.get("porteriasImbatidasPorCompeticion")?.let { put("porteriasImbatidasPorCompeticion", it) }
                 }
 
                 Jugador.fromFirestore(
                     id = document.id,
-                    nombre = document.getString("nombre") ?: "",
-                    posicion = document.getString("posicion") ?: "PO",
-                    equipoId = document.getString("equipoId") ?: "",
-                    goles = golesMap
+                    data = data
                 )
             }
         } catch (e: Exception) {
