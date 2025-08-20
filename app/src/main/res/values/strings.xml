@@ -7,6 +7,7 @@
     <string name="tab_estadisticas">Estadísticas</string>
     <string name="tab_partidos">Partidos</string>
     <string name="tab_jugadores">Jugadores</string>
+    <string name="tab_destacados">Destacados</string>
     <string name="zero">0</string>
     <string name="dash">-</string>
     <string name="error_required">Este campo es obligatorio</string>
@@ -15,10 +16,6 @@
     <string name="Resultado">Resultado</string>
     <string name="Nombre_Jugador">Nombre Jugador</string>
     <string name="Posición">Posición</string>
-    <string name="error_campo_obligatorio">Este campo es obligatorio</string>
-    <string name="error_competicion_invalida">Seleccione una competición válida</string>
-    <string name="error_generico">Error al guardar los datos</string>
-    <string name="error_formato_resultado" tools:ignore="TypographyDashes">Formato de resultado inválido (ej: 2-1)</string>
     <string name="anadir_nuevo_partido">Añadir nuevo partido</string>
     <string name="menu_competiciones">Competiciones</string>
     <string name="competiciones_title">Competiciones</string>
@@ -145,4 +142,8 @@
     <string name="error_minuto_vacio">Debes ingresar un minuto</string>
     <string name="error_minuto_invalido">Debe ser un número válido</string>
     <string name="error_minuto_rango">Debe estar entre 1 y 120</string>
+    <string name="error_campo_obligatorio">Este campo es obligatorio</string>
+    <string name="error_competicion_invalida">Seleccione una competición válida</string>
+    <string name="error_generico">Error al guardar los datos</string>
+    <string name="error_formato_resultado" tools:ignore="TypographyDashes">Formato de resultado inválido (ej: 2-1)</string>
 </resources>

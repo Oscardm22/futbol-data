@@ -37,6 +37,7 @@ import com.example.futboldata.databinding.DialogAddPartidoBinding
 import com.example.futboldata.databinding.DialogJugadoresPartidoBinding
 import com.example.futboldata.ui.equipos.fragments.AlineacionFragment
 import com.example.futboldata.ui.equipos.fragments.AsistenciasFragment
+import com.example.futboldata.ui.equipos.fragments.DestacadosFragment
 import com.example.futboldata.ui.equipos.fragments.GoleadoresFragment
 import com.example.futboldata.ui.equipos.fragments.MVPFragment
 import java.util.Date
@@ -68,6 +69,7 @@ open class EquipoDetailActivity : AppCompatActivity() {
         adapter.addFragment(StatsFragment.newInstance(), getString(R.string.tab_estadisticas))
         adapter.addFragment(PartidosFragment.newInstance(), getString(R.string.tab_partidos))
         adapter.addFragment(JugadoresFragment.newInstance(), getString(R.string.tab_jugadores))
+        adapter.addFragment(DestacadosFragment.newInstance(), getString(R.string.tab_destacados))
 
         binding.viewPager.adapter = adapter
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
@@ -96,6 +98,7 @@ open class EquipoDetailActivity : AppCompatActivity() {
                     0 -> binding.fabAddMatch.hide()
                     1 -> showFabForPartidos()
                     2 -> showFabForJugadores()
+                    3 -> binding.fabAddMatch.hide()
                 }
             }
         })

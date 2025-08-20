@@ -42,4 +42,5 @@
     <color name="win_color">#4CAF50</color>
     <color name="lose_color">#F44336</color>
     <color name="draw_color">#FF9800</color>
+    <color name="blue_munsell">#0091AD</color>
 </resources>

@@ -1,4 +1,4 @@
-package com.example.futboldata.adapter
+package com.example.futboldata.adapter.diffcallbacks
 
 import androidx.recyclerview.widget.DiffUtil
 import com.example.futboldata.data.model.Competicion
