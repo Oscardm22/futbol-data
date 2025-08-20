@@ -62,6 +62,9 @@
     <string name="promedio_goles">Promedio goles: %1$.2f</string>
     <string name="porcentaje_victorias">Victorias: %1$.1f%%</string>
     <string name="jornada_template">Jornada %d</string>
+    <string name="marcador_template">%1$d - %2$d</string>
+    <string name="equipo_local">%1$s</string>
+    <string name="equipo_visitante">%1$s</string>
 
     //Descripciones
     <string name="desc_logo">Logo de la aplicación</string>
@@ -77,6 +80,9 @@
     <string name="desc_ic_assist">Icono de asistencia</string>
     <string name="position_icon_desc">Icono de posición</string>
     <string name="portero_icon_desc">Icono de portero</string>
+    <string name="desc_ic_goal">Icono de gol</string>
+    <string name="desc_ic_calendario">Icono de calendario</string>
+    <string name="desc_ic_copa">Icono de copa</string>
 
     //Hints
     <string name="hint_password">Contraseña</string>
