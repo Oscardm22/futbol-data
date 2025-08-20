@@ -46,6 +46,8 @@
     <string name="Jugadores">Jugadores</string>
     <string name="Goleadores">Goleadores</string>
     <string name="Asistentes">Asistentes</string>
+    <string name="Estadísticas_Competición">Estadísticas por Competición</string>
+    <string name="no_estadisticas_competicion">No hay estadísticas por competición</string>
 
     //Formatos
     <string name="avg_goals_format">Promedio de goles: %.1f</string>
@@ -65,6 +67,16 @@
     <string name="marcador_template">%1$d - %2$d</string>
     <string name="equipo_local">%1$s</string>
     <string name="equipo_visitante">%1$s</string>
+    <string name="posicion">Posición: %s</string>
+    <string name="partidos">Partidos: %d</string>
+    <string name="goles">Goles: %d</string>
+    <string name="asistencias">Asistencias: %d</string>
+    <string name="mvp">MVP: %d</string>
+    <string name="porterias_imbatidas">Porterías imbatidas: %d</string>
+    <string name="competicion_goles">Goles: %d</string>
+    <string name="competicion_asistencias">Asistencias: %d</string>
+    <string name="competicion_mvp">MVP: %d</string>
+    <string name="competicion_partidos">Partidos: %d</string>
 
     //Descripciones
     <string name="desc_logo">Logo de la aplicación</string>
@@ -83,6 +95,7 @@
     <string name="desc_ic_goal">Icono de gol</string>
     <string name="desc_ic_calendario">Icono de calendario</string>
     <string name="desc_ic_copa">Icono de copa</string>
+    <string name="desc_ic_partido">Icono de partido</string>
 
     //Hints
     <string name="hint_password">Contraseña</string>

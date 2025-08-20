@@ -45,9 +45,9 @@
                 android:textStyle="bold"
                 android:ellipsize="end"
                 android:maxLines="1"
-                tools:text="Lionel Messi" />
+                tools:text="Alaba" />
 
-            <!-- Contenedor de detalles (posición) -->
+            <!-- Contenedor de detalles (posición y estadísticas) -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -67,7 +67,68 @@
                     android:textColor="@color/white"
                     android:textAllCaps="true"
                     android:textStyle="bold"
-                    tools:text="DELANTERO" />
+                    tools:text="DFC" />
+
+                <!-- Estadísticas compactas con compound drawables -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <!-- Partidos jugados -->
+                    <TextView
+                        android:id="@+id/tvPartidosJugados"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:drawablePadding="1dp"
+                        android:textSize="11sp"
+                        android:textColor="?android:attr/textColorSecondary"
+                        android:textStyle="bold"
+                        app:drawableStartCompat="@drawable/ic_games"
+                        tools:text="6" />
+
+                <!-- Goles -->
+                <TextView
+                    android:id="@+id/tvGoles"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="4dp"
+                    android:drawablePadding="1dp"
+                    android:textSize="11sp"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:textStyle="bold"
+                    app:drawableStartCompat="@drawable/ic_gol"
+                    tools:text="1" />
+
+                <!-- Asistencias -->
+                <TextView
+                    android:id="@+id/tvAsistencias"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="4dp"
+                    android:drawablePadding="1dp"
+                    android:textSize="11sp"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:textStyle="bold"
+                    app:drawableStartCompat="@drawable/ic_asistencia"
+                    tools:text="1" />
+
+                <!-- MVP -->
+                <TextView
+                    android:id="@+id/tvMVP"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="4dp"
+                    android:drawablePadding="1dp"
+                    android:textSize="11sp"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:textStyle="bold"
+                    app:drawableStartCompat="@drawable/ic_mvp_selected"
+                    tools:text="0" />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
 

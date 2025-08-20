@@ -147,4 +147,8 @@ class EquipoDetailViewModel(
             }
         }
     }
+
+    fun getCompetitionName(compId: String): String {
+        return competiciones.value?.find { it.id == compId }?.nombre ?: "Competición $compId"
+    }
 }
