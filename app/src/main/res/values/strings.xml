@@ -45,6 +45,7 @@
     <string name="Asistentes">Asistentes</string>
     <string name="Estadísticas_Competición">Estadísticas por Competición</string>
     <string name="no_estadisticas_competicion">No hay estadísticas por competición</string>
+    <string name="Filtrar_Competición">Filtrar por Competición</string>
 
     //Formatos
     <string name="avg_goals_format">Promedio de goles: %.1f</string>
@@ -74,6 +75,7 @@
     <string name="competicion_asistencias">Asistencias: %d</string>
     <string name="competicion_mvp">MVP: %d</string>
     <string name="competicion_partidos">Partidos: %d</string>
+    <string name="competicion_formato">Competición: %s</string>
 
     //Descripciones
     <string name="desc_logo">Logo de la aplicación</string>
@@ -93,6 +95,7 @@
     <string name="desc_ic_calendario">Icono de calendario</string>
     <string name="desc_ic_copa">Icono de copa</string>
     <string name="desc_ic_partido">Icono de partido</string>
+    <string name="fabFiltrar">botón de filtro</string>
 
     //Hints
     <string name="hint_password">Contraseña</string>
@@ -132,6 +135,7 @@
     <string name="agregar_jugadores">Agregar jugadores</string>
     <string name="btnAddGol">Gol</string>
     <string name="btnAddAsistencia">Asist</string>
+    <string name="btnTodas">Ver Todas las Competiciones</string>
 
     //Errores
     <string name="error_empty_name">Ingresa un nombre para la competición</string>

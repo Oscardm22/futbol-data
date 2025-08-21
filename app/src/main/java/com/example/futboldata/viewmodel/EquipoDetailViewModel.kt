@@ -43,6 +43,9 @@ class EquipoDetailViewModel(
 
     private val _jugadorAdded = MutableLiveData<String>()
 
+    private val _competicionSeleccionada = MutableLiveData<Competicion?>()
+    val competicionSeleccionada: LiveData<Competicion?> get() = _competicionSeleccionada
+
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> = _errorMessage
 
@@ -150,5 +153,9 @@ class EquipoDetailViewModel(
 
     fun getCompetitionName(compId: String): String {
         return competiciones.value?.find { it.id == compId }?.nombre ?: "Competición $compId"
+    }
+
+    fun seleccionarCompeticion(competicion: Competicion?) {
+        _competicionSeleccionada.value = competicion
     }
 }

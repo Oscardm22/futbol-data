@@ -24,8 +24,10 @@ import com.example.futboldata.viewmodel.EquipoDetailViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.tabs.TabLayoutMediator
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import com.example.futboldata.adapter.CompeticionAdapter
 import com.example.futboldata.data.model.Asistencia
 import com.example.futboldata.data.model.Gol
 import com.example.futboldata.data.model.Posicion
@@ -35,6 +37,7 @@ import com.example.futboldata.data.repository.impl.PartidoRepositoryImpl
 import com.example.futboldata.databinding.DialogAddJugadorBinding
 import com.example.futboldata.databinding.DialogAddPartidoBinding
 import com.example.futboldata.databinding.DialogJugadoresPartidoBinding
+import com.example.futboldata.databinding.DialogSeleccionarCompeticionBinding
 import com.example.futboldata.ui.equipos.fragments.AlineacionFragment
 import com.example.futboldata.ui.equipos.fragments.AsistenciasFragment
 import com.example.futboldata.ui.equipos.fragments.DestacadosFragment
@@ -98,7 +101,7 @@ open class EquipoDetailActivity : AppCompatActivity() {
                     0 -> binding.fabAddMatch.hide()
                     1 -> showFabForPartidos()
                     2 -> showFabForJugadores()
-                    3 -> binding.fabAddMatch.hide()
+                    3 -> showFabForDestacados()
                 }
             }
         })
@@ -118,6 +121,57 @@ open class EquipoDetailActivity : AppCompatActivity() {
             setOnClickListener { showAddJugadorDialog() }
             show()
         }
+    }
+
+    private fun showFabForDestacados() {
+        binding.fabAddMatch.apply {
+            setImageResource(R.drawable.ic_filter)
+            setOnClickListener {
+                // Mostrar diálogo de filtrado por competición
+                mostrarDialogoFiltroCompeticion()
+            }
+            show()
+        }
+    }
+
+    private fun mostrarDialogoFiltroCompeticion() {
+        val dialog = BottomSheetDialog(this)
+        val binding = DialogSeleccionarCompeticionBinding.inflate(layoutInflater)
+
+        val rvCompeticiones = binding.rvCompeticiones
+        val btnTodas = binding.btnTodas
+
+        rvCompeticiones.layoutManager = LinearLayoutManager(this)
+
+        // Usa CompeticionAdapter (singular) en lugar de CompeticionesAdapter (plural)
+        val adapter = CompeticionAdapter(
+            competiciones = emptyList(),
+            onItemClick = { competicion ->
+                val destacadosFragment = getDestacadosFragment()
+                destacadosFragment?.filtrarPorCompeticion(competicion)
+                dialog.dismiss()
+            },
+            onDeleteClick = {}
+        )
+
+        btnTodas.setOnClickListener {
+            val destacadosFragment = getDestacadosFragment()
+            destacadosFragment?.filtrarPorCompeticion(null)
+            dialog.dismiss()
+        }
+
+        // Cargar competiciones
+        viewModel.competiciones.observe(this) { competiciones ->
+            adapter.updateList(competiciones) // Usa updateList en lugar de submitList
+        }
+
+        rvCompeticiones.adapter = adapter
+        dialog.setContentView(binding.root)
+        dialog.show()
+    }
+
+    private fun getDestacadosFragment(): DestacadosFragment? {
+        return supportFragmentManager.findFragmentByTag("f${binding.viewPager.currentItem}") as? DestacadosFragment
     }
 
     private fun showJugadoresPartidoDialog(
