@@ -6,19 +6,18 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.futboldata.R
 import com.example.futboldata.adapter.diffcallbacks.JugadorDiffCallback
-import com.example.futboldata.data.model.Gol
 import com.example.futboldata.data.model.Jugador
 import com.example.futboldata.databinding.ItemJugadorGoleadorBinding
 
 class GoleadoresAdapter(
-    private val onGolClicked: (String, String) -> Unit
+    private val onGolAdded: (String, String) -> Unit,
+    private val onGolRemoved: (String, String) -> Unit
 ) : ListAdapter<Jugador, GoleadoresAdapter.ViewHolder>(JugadorDiffCallback()) {
 
-    private var golesRegistrados: List<Gol> = emptyList()
+    private var golesMap: Map<String, Int> = emptyMap()
 
-    fun updateGoles(nuevosGoles: List<Gol>) {
-        this.golesRegistrados = nuevosGoles
-        submitList(currentList.toList())
+    fun updateGoles(nuevosGoles: Map<String, Int>) {
+        this.golesMap = nuevosGoles
         notifyItemRangeChanged(0, itemCount)
     }
 
@@ -27,15 +26,32 @@ class GoleadoresAdapter(
 
         fun bind(jugador: Jugador) {
             binding.tvNombre.text = jugador.nombre
-            val golesJugador = golesRegistrados.count { gol -> gol.jugadorId == jugador.id }
-            binding.tvGoles.text = binding.root.context.getString(
-                R.string.label_goles,
-                golesJugador
-            )
 
+            val golesJugador = golesMap[jugador.id] ?: 0
+            binding.tvGoles.text = golesJugador.toString()
 
+            // Botón para añadir gol
             binding.btnAddGol.setOnClickListener {
-                onGolClicked(jugador.id, jugador.nombre)
+                onGolAdded(jugador.id, jugador.nombre)
+            }
+
+            // Botón para quitar gol
+            binding.btnRemoveGol.setOnClickListener {
+                if (golesJugador > 0) {
+                    onGolRemoved(jugador.id, jugador.nombre)
+                }
+            }
+
+            // Deshabilitar botón de quitar si no hay goles
+            binding.btnRemoveGol.isEnabled = golesJugador > 0
+
+            // Cambiar color del botón de quitar según si está habilitado
+            if (golesJugador > 0) {
+                binding.btnRemoveGol.setIconTintResource(R.color.botones_negativos)
+                binding.btnRemoveGol.strokeColor = binding.root.resources.getColorStateList(R.color.botones_negativos, null)
+            } else {
+                binding.btnRemoveGol.setIconTintResource(R.color.gray)
+                binding.btnRemoveGol.strokeColor = binding.root.resources.getColorStateList(R.color.gray, null)
             }
         }
     }

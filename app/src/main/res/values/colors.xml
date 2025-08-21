@@ -12,6 +12,7 @@
     <color name="Fondo">#0C2F3A</color>
     <color name="botones_positivos">#3A8D3D</color>
     <color name="botones_positivos_presionados">#29652B</color>
+    <color name="botones_negativos">#FF5252</color>
     <color name="Estadísticas">#2C78B1</color>
     <color name="Goles">#F0B420</color>
     <color name="Texto_sobre_fondo_claro">#222222</color>

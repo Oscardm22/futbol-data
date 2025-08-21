@@ -28,8 +28,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.example.futboldata.adapter.CompeticionAdapter
-import com.example.futboldata.data.model.Asistencia
-import com.example.futboldata.data.model.Gol
 import com.example.futboldata.data.model.Posicion
 import com.example.futboldata.data.repository.impl.CompeticionRepositoryImpl
 import com.example.futboldata.data.repository.impl.JugadorRepositoryImpl
@@ -178,9 +176,9 @@ open class EquipoDetailActivity : AppCompatActivity() {
 
     private fun showJugadoresPartidoDialog(
         equipoId: String,
-        onAlineacionSelected: (List<String>) -> Unit, // Cambiado a List<String>
-        onGoleadoresSelected: (List<Gol>) -> Unit,
-        onAsistenciasSelected: (List<Asistencia>) -> Unit,
+        onAlineacionSelected: (List<String>) -> Unit,
+        onGoleadoresSelected: (Map<String, Int>) -> Unit,
+        onAsistenciasSelected: (Map<String, Int>) -> Unit,
         onMvpSelected: (String?) -> Unit
     ) {
         val dialog = BottomSheetDialog(this)
@@ -243,10 +241,9 @@ open class EquipoDetailActivity : AppCompatActivity() {
         val equipoId = intent.getStringExtra("equipo_id") ?: return
         val competicionMap = mutableMapOf<String, String>()
 
-        // Variables para almacenar las selecciones
         var alineacionSeleccionada = mutableListOf<String>()
-        var goleadoresSeleccionados = mutableListOf<Gol>()
-        var asistenciasSeleccionadas = mutableListOf<Asistencia>()
+        var goleadoresMap = mutableMapOf<String, Int>()
+        var asistenciasMap = mutableMapOf<String, Int>()
         var jugadorDelPartido: String? = null
 
         binding.spinnerCompeticion.setOnClickListener {
@@ -279,10 +276,10 @@ open class EquipoDetailActivity : AppCompatActivity() {
                     alineacionSeleccionada = alineacion.toMutableList()
                 },
                 onGoleadoresSelected = { goleadores ->
-                    goleadoresSeleccionados = goleadores.toMutableList()
+                    goleadoresMap = goleadores.toMutableMap()
                 },
                 onAsistenciasSelected = { asistencias ->
-                    asistenciasSeleccionadas = asistencias.toMutableList()
+                    asistenciasMap = asistencias.toMutableMap()
                 },
                 onMvpSelected = { mvp ->
                     jugadorDelPartido = mvp
@@ -345,12 +342,30 @@ open class EquipoDetailActivity : AppCompatActivity() {
                     return@setOnClickListener
                 }
 
+                val goleadoresIds = goleadoresMap.flatMap { (jugadorId, cantidad) ->
+                    List(cantidad) { jugadorId }
+                }
+
+                // Convertir el mapa de asistencias a una lista de IDs
+                val asistentesIds = asistenciasMap.flatMap { (jugadorId, cantidad) ->
+                    List(cantidad) { jugadorId }
+                }
+
+                // Calcular el total de goles
+                val totalGoles = goleadoresMap.values.sum()
+
+                // Validar que los goles coincidan
+                if (totalGoles != (binding.etGolesEquipo.text.toString().toIntOrNull() ?: 0)) {
+                    Toast.makeText(this, "La cantidad de goles no coincide con los goleadores registrados", Toast.LENGTH_LONG).show()
+                    return@setOnClickListener
+                }
+
                 val nuevoPartido = Partido(
                     equipoId = equipoId,
                     fecha = Date(),
                     rival = binding.etRival.text.toString(),
-                    golesEquipo = golesEquipo ?: 0,
-                    golesRival = golesRival ?: 0,
+                    golesEquipo = totalGoles,
+                    golesRival = binding.etGolesRival.text.toString().toIntOrNull() ?: 0,
                     competicionId = competicionId,
                     competicionNombre = competicionNombre,
                     temporada = binding.etTemporada.text.toString(),
@@ -358,16 +373,10 @@ open class EquipoDetailActivity : AppCompatActivity() {
                     jornada = binding.etJornada.text.toString().toIntOrNull(),
                     esLocal = binding.switchLocal.isChecked,
                     alineacionIds = alineacionSeleccionada,
-                    goleadoresIds = goleadoresSeleccionados.map { it.jugadorId },
-                    asistentesIds = asistenciasSeleccionadas.map { it.jugadorId },
+                    goleadoresIds = goleadoresIds, // Lista de IDs
+                    asistentesIds = asistentesIds, // Lista de IDs
                     jugadorDelPartido = jugadorDelPartido
                 )
-
-                // Validar que los goles coincidan con los goleadores
-                if (goleadoresSeleccionados.size != (golesEquipo ?: 0)) {
-                    Toast.makeText(this, "La cantidad de goles no coincide con los goleadores registrados", Toast.LENGTH_LONG).show()
-                    return@setOnClickListener
-                }
 
                 viewModel.addPartido(nuevoPartido)
                 dialog.dismiss()

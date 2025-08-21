@@ -2,19 +2,20 @@ package com.example.futboldata.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.futboldata.R
-import com.example.futboldata.data.model.Asistencia
 import com.example.futboldata.data.model.Jugador
 import com.example.futboldata.databinding.ItemAsistenciaBinding
 
 class AsistenciasAdapter(
-    private val onAsistenciaClick: (jugadorId: String, jugadorNombre: String) -> Unit
+    private val onAsistenciaAdded: (String, String) -> Unit,
+    private val onAsistenciaRemoved: (String, String) -> Unit
 ) : RecyclerView.Adapter<AsistenciasAdapter.JugadorViewHolder>() {
 
     private var jugadores: List<Jugador> = emptyList()
-    private var asistencias: List<Asistencia> = emptyList()
+    private var asistenciasMap: Map<String, Int> = emptyMap()
 
     inner class JugadorViewHolder(private val binding: ItemAsistenciaBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -23,14 +24,32 @@ class AsistenciasAdapter(
             binding.apply {
                 tvNombre.text = jugador.nombre
 
-                // Mostrar conteo de asistencias
-                val numAsistencias = asistencias.count { it.jugadorId == jugador.id }
-                binding.tvAsistencias.text = binding.root.context.getString(
-                    R.string.label_asistencias,
-                    numAsistencias
-                )
+                val numAsistencias = asistenciasMap[jugador.id] ?: 0
+                tvAsistencias.text = numAsistencias.toString()
+
+                // Botón para añadir asistencia
                 btnAddAsistencia.setOnClickListener {
-                    onAsistenciaClick(jugador.id, jugador.nombre)
+                    onAsistenciaAdded(jugador.id, jugador.nombre)
+                }
+
+                // Botón para quitar asistencia
+                btnRemoveAsistencia.setOnClickListener {
+                    if (numAsistencias > 0) {
+                        onAsistenciaRemoved(jugador.id, jugador.nombre)
+                    }
+                }
+
+                // Deshabilitar botón de quitar si no hay asistencias
+                btnRemoveAsistencia.isEnabled = numAsistencias > 0
+
+                // Cambiar color del botón de quitar según si está habilitado
+                val context = binding.root.context
+                if (numAsistencias > 0) {
+                    btnRemoveAsistencia.setIconTintResource(R.color.botones_negativos)
+                    btnRemoveAsistencia.strokeColor = ContextCompat.getColorStateList(context, R.color.botones_negativos)
+                } else {
+                    btnRemoveAsistencia.setIconTintResource(R.color.gray)
+                    btnRemoveAsistencia.strokeColor = ContextCompat.getColorStateList(context, R.color.gray)
                 }
             }
         }
@@ -59,6 +78,11 @@ class AsistenciasAdapter(
         diffResult.dispatchUpdatesTo(this)
     }
 
+    fun updateAsistencias(nuevasAsistencias: Map<String, Int>) {
+        this.asistenciasMap = nuevasAsistencias
+        notifyItemRangeChanged(0, itemCount)
+    }
+
     private class JugadorDiffCallback(
         private val oldList: List<Jugador>,
         private val newList: List<Jugador>
@@ -75,10 +99,5 @@ class AsistenciasAdapter(
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             return oldList[oldItemPosition] == newList[newItemPosition]
         }
-    }
-
-    fun updateAsistencias(nuevasAsistencias: List<Asistencia>) {
-        this.asistencias = nuevasAsistencias
-        notifyItemRangeChanged(0, itemCount)
     }
 }

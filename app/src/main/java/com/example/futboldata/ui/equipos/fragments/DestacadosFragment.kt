@@ -201,7 +201,7 @@ class DestacadosFragment : Fragment() {
                 tipo = "TOP 5 PARTIDOS",
                 jugador = "",
                 valor = "",
-                icono = R.drawable.ic_match,
+                icono = R.drawable.ic_games,
                 esHeader = true
             ))
             topPartidos.forEachIndexed { index, jugador ->
