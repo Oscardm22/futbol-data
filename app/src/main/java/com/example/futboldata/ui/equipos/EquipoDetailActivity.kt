@@ -143,7 +143,6 @@ open class EquipoDetailActivity : AppCompatActivity() {
 
         rvCompeticiones.layoutManager = LinearLayoutManager(this)
 
-        // Usa CompeticionAdapter (singular) en lugar de CompeticionesAdapter (plural)
         val adapter = CompeticionAdapter(
             competiciones = emptyList(),
             onItemClick = { competicion ->
@@ -151,7 +150,10 @@ open class EquipoDetailActivity : AppCompatActivity() {
                 destacadosFragment?.filtrarPorCompeticion(competicion)
                 dialog.dismiss()
             },
-            onDeleteClick = {}
+            onDeleteClick = {
+                // No hacer nada en modo filtro
+            },
+            modoFiltro = true // Activar modo filtro para ocultar botón de eliminar
         )
 
         btnTodas.setOnClickListener {
@@ -162,7 +164,7 @@ open class EquipoDetailActivity : AppCompatActivity() {
 
         // Cargar competiciones
         viewModel.competiciones.observe(this) { competiciones ->
-            adapter.updateList(competiciones) // Usa updateList en lugar de submitList
+            adapter.updateList(competiciones)
         }
 
         rvCompeticiones.adapter = adapter

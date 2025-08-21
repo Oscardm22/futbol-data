@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
@@ -16,7 +17,8 @@ import kotlinx.coroutines.Job
 class CompeticionAdapter(
     private var competiciones: List<Competicion>,
     private val onItemClick: (Competicion) -> Unit,
-    private val onDeleteClick: (Competicion) -> Unit
+    private val onDeleteClick: (Competicion) -> Unit,
+    private val modoFiltro: Boolean = false // Nuevo parámetro para modo filtro
 ) : RecyclerView.Adapter<CompeticionAdapter.CompeticionViewHolder>() {
 
     private val imageJobs = mutableMapOf<ImageView, Job>()
@@ -39,6 +41,14 @@ class CompeticionAdapter(
             tvNombre.text = competicion.nombre
             tvTipo.text = competicion.tipo.toDisplayName()
 
+            // Ocultar botón de eliminar si está en modo filtro
+            if (modoFiltro) {
+                btnDelete.visibility = View.GONE
+            } else {
+                btnDelete.visibility = View.VISIBLE
+                btnDelete.setOnClickListener { onDeleteClick(competicion) }
+            }
+
             // Carga del logo
             if (competicion.imagenBase64.isNotEmpty()) {
                 try {
@@ -53,7 +63,6 @@ class CompeticionAdapter(
             }
 
             root.setOnClickListener { onItemClick(competicion) }
-            btnDelete.setOnClickListener { onDeleteClick(competicion) }
         }
     }
 
