@@ -16,7 +16,7 @@ class GoleadoresFragment : Fragment() {
     private var _binding: FragmentGoleadoresBinding? = null
     private val binding get() = _binding!!
     private lateinit var adapter: GoleadoresAdapter
-    private val golesMap = mutableMapOf<String, Int>() // Cambiado a Map
+    private val golesMap = mutableMapOf<String, Int>()
     private var _jugadores: List<Jugador> = emptyList()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

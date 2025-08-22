@@ -433,12 +433,29 @@ open class EquipoDetailActivity : AppCompatActivity() {
                 val totalAsistencias = asistenciasMap.values.sum()
 
                 if (totalGoles != (binding.etGolesEquipo.text.toString().toIntOrNull() ?: 0)) {
-                    Toast.makeText(this, "La cantidad de goles no coincide con los goleadores registrados", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this,
+                        "La cantidad de goles no coincide con los goleadores registrados",
+                        Toast.LENGTH_LONG
+                    ).show()
                     return@setOnClickListener
                 }
 
                 if (totalAsistencias > totalGoles) {
-                    Toast.makeText(this, "No puede haber más asistencias que goles", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this,
+                        "No puede haber más asistencias que goles",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    return@setOnClickListener
+                }
+
+                if (alineacionSeleccionada.size < 11) {
+                    Toast.makeText(
+                        this,
+                        "Debes seleccionar al menos 11 jugadores en la alineación",
+                        Toast.LENGTH_LONG
+                    ).show()
                     return@setOnClickListener
                 }
 
