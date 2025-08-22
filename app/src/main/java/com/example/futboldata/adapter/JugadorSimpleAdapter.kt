@@ -9,31 +9,15 @@ import com.example.futboldata.data.model.Posicion
 import com.example.futboldata.databinding.ItemJugadorSimpleBinding
 
 class JugadorSimpleAdapter(
-    jugadores: List<JugadorAlineacion>, // Sin val/var - solo parámetro
+    jugadores: List<JugadorAlineacion>,
     private val nombresJugadores: Map<String, String>,
     private val posicionesJugadores: Map<String, Posicion>
 ) : RecyclerView.Adapter<JugadorSimpleAdapter.ViewHolder>() {
 
-    // Orden de prioridad de las posiciones
-    private val ordenPosiciones = listOf(
-        Posicion.PO,    // 1. Porteros
-        Posicion.DFC,   // 2. Defensas centrales
-        Posicion.LD,    // 3. Laterales derechos
-        Posicion.LI,    // 4. Laterales izquierdos
-        Posicion.MCD,   // 5. Mediocentros defensivos
-        Posicion.MC,    // 6. Mediocentros
-        Posicion.MCO,   // 7. Mediocentros ofensivos
-        Posicion.MD,    // 8. Mediocentros derechos
-        Posicion.MI,    // 9. Mediocentros izquierdos
-        Posicion.ED,    // 10. Extremos derechos
-        Posicion.EI,    // 11. Extremos izquierdos
-        Posicion.DC     // 12. Delanteros centros
-    )
-
-    // Lista ordenada de jugadores (usa el parámetro jugadores)
+    // Lista ordenada de jugadores usando JugadorUtils
     private val jugadoresOrdenados = jugadores.sortedBy { jugador ->
         val posicion = posicionesJugadores[jugador.id]
-        ordenPosiciones.indexOf(posicion).takeIf { it != -1 } ?: ordenPosiciones.size
+        Posicion.entries.indexOf(posicion)
     }
 
     class ViewHolder(val binding: ItemJugadorSimpleBinding) : RecyclerView.ViewHolder(binding.root)

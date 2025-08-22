@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.futboldata.adapter.JugadoresAlineacionAdapter
 import com.example.futboldata.data.model.Jugador
 import com.example.futboldata.databinding.FragmentAlineacionBinding
+import com.example.futboldata.utils.JugadorUtils
 
 class AlineacionFragment : Fragment() {
     private var _binding: FragmentAlineacionBinding? = null
@@ -41,9 +42,9 @@ class AlineacionFragment : Fragment() {
 
     fun updateJugadores(jugadores: List<Jugador>) {
         if (::adapter.isInitialized) {
-            // Actualizar las selecciones en el adapter
+            val jugadoresOrdenados = JugadorUtils.ordenarJugadoresPorPosicion(jugadores)
             adapter.setSeleccionesIniciales(jugadoresSeleccionados.keys.toList())
-            adapter.submitList(jugadores)
+            adapter.submitList(jugadoresOrdenados)
         }
     }
 

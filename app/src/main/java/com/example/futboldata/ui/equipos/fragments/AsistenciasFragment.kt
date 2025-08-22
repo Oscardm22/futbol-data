@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.futboldata.adapter.AsistenciasAdapter
 import com.example.futboldata.data.model.Jugador
 import com.example.futboldata.databinding.FragmentAsistenciasBinding
+import com.example.futboldata.utils.JugadorUtils
 
 class AsistenciasFragment : Fragment() {
     private var _binding: FragmentAsistenciasBinding? = null
@@ -58,10 +59,11 @@ class AsistenciasFragment : Fragment() {
 
     fun updateJugadores(jugadores: List<Jugador>) {
         Log.d("DEBUG_FRAGMENT", "updateJugadores - ${this::class.simpleName} - Jugadores: ${jugadores.size}")
-        _jugadores = jugadores
+        val jugadoresOrdenados = JugadorUtils.ordenarJugadoresPorPosicion(jugadores)
+        _jugadores = jugadoresOrdenados
         if (::adapter.isInitialized) {
             Log.d("DEBUG_ADAPTER", "Enviando lista al adapter")
-            adapter.submitList(jugadores.toList())
+            adapter.submitList(jugadoresOrdenados.toList())
             adapter.updateAsistencias(asistenciasMap)
         }
     }

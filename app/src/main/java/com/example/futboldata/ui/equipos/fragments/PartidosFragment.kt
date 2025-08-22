@@ -173,22 +173,7 @@ class PartidosFragment : Fragment() {
         val golesPorJugador = partido.goleadoresIds.groupingBy { it }.eachCount()
         val asistenciasPorJugador = partido.asistentesIds.groupingBy { it }.eachCount()
 
-        // ORDENAR la alineación por posición
-        val ordenPosiciones = listOf(
-            Posicion.PO,    // 1. Porteros
-            Posicion.DFC,   // 2. Defensas centrales
-            Posicion.LD,    // 3. Laterales derechos
-            Posicion.LI,    // 4. Laterales izquierdos
-            Posicion.MCD,   // 5. Mediocentros defensivos
-            Posicion.MC,    // 6. Mediocentros
-            Posicion.MCO,   // 7. Mediocentros ofensivos
-            Posicion.MD,    // 8. Mediocentros derechos
-            Posicion.MI,    // 9. Mediocentros izquierdos
-            Posicion.ED,    // 10. Extremos derechos
-            Posicion.EI,    // 11. Extremos izquierdos
-            Posicion.DC     // 12. Delanteros centros
-        )
-
+        // ORDENAR la alineación por posición (usando orden natural del enum)
         val alineacion = partido.alineacionIds.map { id ->
             JugadorSimpleAdapter.JugadorAlineacion(
                 id = id,
@@ -199,7 +184,7 @@ class PartidosFragment : Fragment() {
             )
         }.sortedBy { jugador ->
             val posicion = posicionesJugadores[jugador.id]
-            ordenPosiciones.indexOf(posicion).takeIf { it != -1 } ?: ordenPosiciones.size
+            Posicion.entries.indexOf(posicion)
         }
 
         binding.rvAlineacion.apply {

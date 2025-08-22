@@ -9,7 +9,7 @@ import com.example.futboldata.data.model.Jugador
 import com.example.futboldata.databinding.ItemJugadorMvpBinding
 
 class MVPAdapter(
-    private val onJugadorSelected: (String) -> Unit
+    private val onJugadorSelected: (String?) -> Unit
 ) : RecyclerView.Adapter<MVPAdapter.JugadorViewHolder>() {
 
     private var jugadores: List<Jugador> = emptyList()
@@ -24,11 +24,28 @@ class MVPAdapter(
                 tvPosicion.text = jugador.posicion.name
 
                 // Mostrar/ocultar el badge de MVP según la selección
-                ivSelected.visibility = if (jugador.id == selectedJugadorId) View.VISIBLE else View.INVISIBLE
+                val isSelected = jugador.id == selectedJugadorId
+                ivSelected.visibility = if (isSelected) View.VISIBLE else View.INVISIBLE
 
                 root.setOnClickListener {
-                    onJugadorSelected(jugador.id)
-                    ivSelected.visibility = View.VISIBLE
+                    if (isSelected) {
+                        // Si ya está seleccionado, deseleccionar
+                        selectedJugadorId = null
+                        onJugadorSelected(null)
+                        notifyItemChanged(adapterPosition)
+                    } else {
+                        // Seleccionar nuevo jugador
+                        val previousSelected = selectedJugadorId
+                        selectedJugadorId = jugador.id
+                        onJugadorSelected(jugador.id)
+
+                        // Notificar cambios para actualizar ambos items
+                        previousSelected?.let { oldId ->
+                            val oldPosition = jugadores.indexOfFirst { it.id == oldId }
+                            if (oldPosition != -1) notifyItemChanged(oldPosition)
+                        }
+                        notifyItemChanged(adapterPosition)
+                    }
                 }
             }
         }
@@ -60,7 +77,7 @@ class MVPAdapter(
         val previousSelected = selectedJugadorId
         selectedJugadorId = jugadorId
 
-        // Notificar cambios para actualizar la UI de ambos items (anterior y nuevo seleccionado)
+        // Notificar cambios para actualizar la UI
         previousSelected?.let { oldId ->
             val oldPosition = jugadores.indexOfFirst { it.id == oldId }
             if (oldPosition != -1) notifyItemChanged(oldPosition)

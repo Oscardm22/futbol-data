@@ -176,6 +176,7 @@ open class EquipoDetailActivity : AppCompatActivity() {
 
     private fun showJugadoresPartidoDialog(
         equipoId: String,
+        golesEquipoInput: Int,
         onAlineacionSelected: (List<String>) -> Unit,
         onGoleadoresSelected: (Map<String, Int>) -> Unit,
         onAsistenciasSelected: (Map<String, Int>) -> Unit,
@@ -218,11 +219,79 @@ open class EquipoDetailActivity : AppCompatActivity() {
             val asistencias = asistenciasFragment.getAsistencias()
             val mvp = mvpFragment.getMVP()
 
+            // 1. VALIDACIÓN DE ALINEACIÓN - Mínimo 11 titulares
             if (alineacion.size < 11) {
                 Toast.makeText(this, "Debes seleccionar al menos 11 titulares", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
+            // 2. VALIDACIÓN DE ALINEACIÓN - Máximo 14 jugadores
+            if (alineacion.size > 14) {
+                Toast.makeText(this, "Máximo 14 jugadores en la alineación", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // 3. CALCULAR TOTALES
+            val totalGolesRegistrados = goleadores.values.sum()
+            val totalAsistenciasRegistradas = asistencias.values.sum()
+
+            // 4. VALIDACIÓN DE CONSISTENCIA DE GOLES
+            if (totalGolesRegistrados != golesEquipoInput) {
+                Toast.makeText(
+                    this,
+                    "Error: Registraste $totalGolesRegistrados goles en goleadores pero ingresaste $golesEquipoInput goles en el marcador",
+                    Toast.LENGTH_LONG
+                ).show()
+                return@setOnClickListener
+            }
+
+            // 5. VALIDACIÓN DE CONSISTENCIA DE ASISTENCIAS
+            if (totalAsistenciasRegistradas > totalGolesRegistrados) {
+                Toast.makeText(
+                    this,
+                    "Error: No puede haber más asistencias ($totalAsistenciasRegistradas) que goles ($totalGolesRegistrados)",
+                    Toast.LENGTH_LONG
+                ).show()
+                return@setOnClickListener
+            }
+
+            // 6. VALIDACIÓN: JUGADORES NO EN ALINEACIÓN NO PUEDEN TENER GOLES
+            val jugadoresConGoles = goleadores.filter { it.value > 0 }.keys
+            val jugadoresConGolesNoAlineados = jugadoresConGoles - alineacion.toSet()
+
+            if (jugadoresConGolesNoAlineados.isNotEmpty()) {
+                Toast.makeText(
+                    this,
+                    "Error: Los jugadores con goles tienen que estar en la alineación",
+                    Toast.LENGTH_LONG
+                ).show()
+                return@setOnClickListener
+            }
+
+            // 7. VALIDACIÓN: JUGADORES NO EN ALINEACIÓN NO PUEDEN TENER ASISTENCIAS
+            val jugadoresConAsistencias = asistencias.filter { it.value > 0 }.keys
+            val jugadoresConAsistenciasNoAlineados = jugadoresConAsistencias - alineacion.toSet()
+
+            if (jugadoresConAsistenciasNoAlineados.isNotEmpty()) {
+                Toast.makeText(
+                    this,
+                    "Error: Los jugadores con asistencias tienen que estar en la alineación",
+                    Toast.LENGTH_LONG
+                ).show()
+                return@setOnClickListener
+            }
+
+            // 8. VALIDACIÓN: MVP DEBE ESTAR EN ALINEACIÓN
+            if (mvp != null && !alineacion.contains(mvp)) {
+                Toast.makeText(
+                    this,
+                    "Error: El MVP debe estar en la alineación",
+                    Toast.LENGTH_LONG
+                ).show()
+                return@setOnClickListener
+            }
+
+            // Si pasa todas las validaciones, proceder
             onAlineacionSelected(alineacion)
             onGoleadoresSelected(goleadores)
             onAsistenciasSelected(asistencias)
@@ -270,8 +339,16 @@ open class EquipoDetailActivity : AppCompatActivity() {
         dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
 
         binding.btnAddJugadores.setOnClickListener {
+            // Obtener goles del equipo primero
+            val golesEquipoInput = try {
+                binding.etGolesEquipo.text.toString().toInt()
+            } catch (e: NumberFormatException) {
+                0
+            }
+
             showJugadoresPartidoDialog(
                 equipoId = equipoId,
+                golesEquipoInput = golesEquipoInput, // <- Nuevo parámetro
                 onAlineacionSelected = { alineacion ->
                     alineacionSeleccionada = alineacion.toMutableList()
                 },
@@ -351,12 +428,17 @@ open class EquipoDetailActivity : AppCompatActivity() {
                     List(cantidad) { jugadorId }
                 }
 
-                // Calcular el total de goles
+                // VALIDACIÓN FINAL DE CONSISTENCIA (por si el usuario modificó los goles después de cerrar el diálogo)
                 val totalGoles = goleadoresMap.values.sum()
+                val totalAsistencias = asistenciasMap.values.sum()
 
-                // Validar que los goles coincidan
                 if (totalGoles != (binding.etGolesEquipo.text.toString().toIntOrNull() ?: 0)) {
                     Toast.makeText(this, "La cantidad de goles no coincide con los goleadores registrados", Toast.LENGTH_LONG).show()
+                    return@setOnClickListener
+                }
+
+                if (totalAsistencias > totalGoles) {
+                    Toast.makeText(this, "No puede haber más asistencias que goles", Toast.LENGTH_LONG).show()
                     return@setOnClickListener
                 }
 
@@ -373,8 +455,8 @@ open class EquipoDetailActivity : AppCompatActivity() {
                     jornada = binding.etJornada.text.toString().toIntOrNull(),
                     esLocal = binding.switchLocal.isChecked,
                     alineacionIds = alineacionSeleccionada,
-                    goleadoresIds = goleadoresIds, // Lista de IDs
-                    asistentesIds = asistentesIds, // Lista de IDs
+                    goleadoresIds = goleadoresIds,
+                    asistentesIds = asistentesIds,
                     jugadorDelPartido = jugadorDelPartido
                 )
 

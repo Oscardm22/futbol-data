@@ -25,7 +25,6 @@
     <string name="Seleccion_Jugadores">Selección de Jugadores</string>
     <string name="tvGoles">Goles: 0</string>
     <string name="tvAsistencias">Asistencias: 0</string>
-    <string name="switchTitular">Titular</string>
     <string name="no_players_found">No se encontraron jugadores</string>
     <string name="Resumen_Estadístico">Resumen Estadístico</string>
     <string name="Distribución_Resultados">Distribución de Resultados</string>
@@ -136,6 +135,7 @@
     <string name="btnAddGol">Gol</string>
     <string name="btnAddAsistencia">Asist</string>
     <string name="btnTodas">Ver Todas las Competiciones</string>
+    <string name="switchTitular">Alineado</string>
 
     //Errores
     <string name="error_empty_name">Ingresa un nombre para la competición</string>

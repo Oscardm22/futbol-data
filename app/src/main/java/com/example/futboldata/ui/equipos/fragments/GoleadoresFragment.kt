@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.futboldata.adapter.GoleadoresAdapter
 import com.example.futboldata.data.model.Jugador
 import com.example.futboldata.databinding.FragmentGoleadoresBinding
+import com.example.futboldata.utils.JugadorUtils
 
 class GoleadoresFragment : Fragment() {
     private var _binding: FragmentGoleadoresBinding? = null
@@ -54,9 +55,10 @@ class GoleadoresFragment : Fragment() {
 
     fun updateJugadores(jugadores: List<Jugador>) {
         Log.d("DEBUG_FRAGMENT", "updateJugadores - ${this::class.simpleName} - Jugadores: ${jugadores.size}")
-        _jugadores = jugadores
+        val jugadoresOrdenados = JugadorUtils.ordenarJugadoresPorPosicion(jugadores)
+        _jugadores = jugadoresOrdenados
         if (::adapter.isInitialized) {
-            adapter.submitList(jugadores.toList())
+            adapter.submitList(jugadoresOrdenados.toList())
             adapter.updateGoles(golesMap)
         }
     }

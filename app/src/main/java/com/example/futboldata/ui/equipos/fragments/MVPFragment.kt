@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.futboldata.adapter.MVPAdapter
 import com.example.futboldata.data.model.Jugador
 import com.example.futboldata.databinding.FragmentMvpBinding
+import com.example.futboldata.utils.JugadorUtils
 
 class MVPFragment : Fragment() {
     private var _binding: FragmentMvpBinding? = null
@@ -32,7 +33,6 @@ class MVPFragment : Fragment() {
 
         adapter = MVPAdapter { jugadorId ->
             jugadorSeleccionado = jugadorId
-            adapter.setSelectedJugador(jugadorId)
         }
 
         binding.rvJugadores.apply {
@@ -47,10 +47,20 @@ class MVPFragment : Fragment() {
 
     fun updateJugadores(jugadores: List<Jugador>) {
         Log.d("DEBUG_FRAGMENT", "updateJugadores - ${this::class.simpleName} - Jugadores: ${jugadores.size}")
-        _jugadores = jugadores
+        val jugadoresOrdenados = JugadorUtils.ordenarJugadoresPorPosicion(jugadores)
+        _jugadores = jugadoresOrdenados
         if (::adapter.isInitialized) {
             Log.d("DEBUG_ADAPTER", "Enviando lista al adapter")
-            adapter.submitList(jugadores.toList())
+            adapter.submitList(jugadoresOrdenados.toList())
+
+            // Restaurar selección si existe
+            jugadorSeleccionado?.let { selectedId ->
+                if (jugadoresOrdenados.any { it.id == selectedId }) {
+                    adapter.setSelectedJugador(selectedId)
+                } else {
+                    jugadorSeleccionado = null
+                }
+            }
         }
     }
 
