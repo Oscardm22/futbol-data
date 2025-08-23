@@ -10,6 +10,9 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.airbnb.lottie.LottieAnimationView
 import com.example.futboldata.ui.auth.LoginActivity
+import com.example.futboldata.ui.equipos.EquiposActivity
+import com.example.futboldata.utils.SessionManager
+import com.google.firebase.auth.FirebaseAuth
 
 class SplashActivity : AppCompatActivity() {
     private val splashDelay = 3000L
@@ -57,8 +60,23 @@ class SplashActivity : AppCompatActivity() {
     private fun proceedToLogin() {
         if (!isFinishing) {
             handler.removeCallbacksAndMessages(null)
-            val intent = Intent(this, LoginActivity::class.java)
 
+            val auth = FirebaseAuth.getInstance()
+            val sessionManager = SessionManager(this)
+
+            val hasFirebaseUser = auth.currentUser != null
+            val hasSessionUser = sessionManager.isUserLoggedIn()
+
+            Log.d("SplashActivity", "Firebase user: ${auth.currentUser?.uid}")
+            Log.d("SplashActivity", "Session user: ${sessionManager.getCurrentUserUid()}")
+
+            val intent = if (hasFirebaseUser || hasSessionUser) {
+                Log.d("SplashActivity", "✅ USUARIO ENCONTRADO - Redirigiendo a Equipos")
+                Intent(this, EquiposActivity::class.java)
+            } else {
+                Log.d("SplashActivity", "❌ NO HAY USUARIO - Redirigiendo a Login")
+                Intent(this, LoginActivity::class.java)
+            }
 
             val options = ActivityOptions.makeCustomAnimation(
                 this,

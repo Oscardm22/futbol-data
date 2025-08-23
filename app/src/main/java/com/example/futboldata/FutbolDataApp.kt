@@ -6,6 +6,7 @@ import com.example.futboldata.data.repository.impl.CompeticionRepositoryImpl
 import com.example.futboldata.data.repository.impl.EquipoRepositoryImpl
 import com.example.futboldata.data.repository.impl.JugadorRepositoryImpl
 import com.example.futboldata.data.repository.impl.PartidoRepositoryImpl
+import com.example.futboldata.utils.SessionManager
 import com.example.futboldata.utils.StatsCalculator
 import com.example.futboldata.viewmodel.SharedViewModelFactory
 import com.google.firebase.FirebaseApp
@@ -24,17 +25,13 @@ class FutbolDataApp : Application() {
     }
 
     private fun setupDependencies() {
-        val firestore = FirebaseFirestore.getInstance()
         val firebaseAuth = FirebaseAuth.getInstance()
+        val firestore = FirebaseFirestore.getInstance()
         val statsCalculator = StatsCalculator
+        val sessionManager = SessionManager(this)
 
         val jugadorRepository = JugadorRepositoryImpl(firestore)
-
-        val equipoRepository = EquipoRepositoryImpl(
-            db = firestore,
-            statsCalculator = statsCalculator
-        )
-
+        val equipoRepository = EquipoRepositoryImpl(db = firestore, statsCalculator = statsCalculator)
         val authRepository = AuthRepositoryImpl(firebaseAuth)
         val partidoRepository = PartidoRepositoryImpl(db = firestore, jugadorRepository = jugadorRepository)
         val competicionRepository = CompeticionRepositoryImpl(firestore)
@@ -44,7 +41,8 @@ class FutbolDataApp : Application() {
             authRepository = authRepository,
             partidoRepository = partidoRepository,
             jugadorRepository = jugadorRepository,
-            competicionRepository = competicionRepository
+            competicionRepository = competicionRepository,
+            sessionManager = sessionManager
         )
     }
 }

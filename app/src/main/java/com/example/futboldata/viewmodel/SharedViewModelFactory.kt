@@ -7,13 +7,15 @@ import com.example.futboldata.data.repository.CompeticionRepository
 import com.example.futboldata.data.repository.EquipoRepository
 import com.example.futboldata.data.repository.JugadorRepository
 import com.example.futboldata.data.repository.PartidoRepository
+import com.example.futboldata.utils.SessionManager
 
 class SharedViewModelFactory(
     private val equipoRepository: EquipoRepository,
     private val authRepository: AuthRepository,
     private val partidoRepository: PartidoRepository,
     private val jugadorRepository: JugadorRepository,
-    private val competicionRepository: CompeticionRepository
+    private val competicionRepository: CompeticionRepository,
+    private val sessionManager: SessionManager
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -34,7 +36,7 @@ class SharedViewModelFactory(
                 StatsViewModel(equipoRepository) as T
             }
             modelClass.isAssignableFrom(LoginViewModel::class.java) -> {
-                LoginViewModel(authRepository) as T
+                LoginViewModel(authRepository,sessionManager) as T
             }
             modelClass.isAssignableFrom(PartidoViewModel::class.java) -> {
                 PartidoViewModel(partidoRepository, jugadorRepository) as T

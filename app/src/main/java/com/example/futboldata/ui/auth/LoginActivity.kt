@@ -2,6 +2,7 @@ package com.example.futboldata.ui.auth
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -11,6 +12,7 @@ import com.example.futboldata.FutbolDataApp
 import com.example.futboldata.databinding.ActivityLoginBinding
 import com.example.futboldata.ui.equipos.EquiposActivity
 import com.example.futboldata.viewmodel.LoginViewModel
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import kotlinx.coroutines.flow.launchIn
@@ -29,9 +31,17 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        if (viewModel.isUserLoggedIn) {
+        val auth = FirebaseAuth.getInstance()
+        Log.d("LoginActivity", "=== LOGIN ACTIVITY ===")
+        Log.d("LoginActivity", "Current user: ${auth.currentUser}")
+        Log.d("LoginActivity", "Current user UID: ${auth.currentUser?.uid}")
+
+        if (auth.currentUser != null) {
+            Log.d("LoginActivity", "✅ Usuario ya autenticado, navegando a Equipos")
             navigateToEquipos()
             return
+        } else {
+            Log.d("LoginActivity", "❌ No hay usuario, mostrando formulario de login")
         }
 
         setupObservers()

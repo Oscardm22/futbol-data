@@ -22,35 +22,21 @@ import com.example.futboldata.R
 import com.example.futboldata.adapter.CompeticionAdapter
 import com.example.futboldata.data.model.Competicion
 import com.example.futboldata.data.model.TipoCompeticion
-import com.example.futboldata.data.repository.impl.AuthRepositoryImpl
-import com.example.futboldata.data.repository.impl.CompeticionRepositoryImpl
-import com.example.futboldata.data.repository.impl.EquipoRepositoryImpl
-import com.example.futboldata.data.repository.impl.JugadorRepositoryImpl
-import com.example.futboldata.data.repository.impl.PartidoRepositoryImpl
 import com.example.futboldata.databinding.ActivityCompeticionesBinding
 import com.example.futboldata.databinding.DialogAddCompeticionBinding
-import com.example.futboldata.utils.StatsCalculator
 import com.example.futboldata.viewmodel.CompeticionViewModel
-import com.example.futboldata.viewmodel.SharedViewModelFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import android.Manifest
 import android.provider.Settings
+import com.example.futboldata.FutbolDataApp
 import com.example.futboldata.data.model.toDisplayName
 
 class CompeticionesActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityCompeticionesBinding
     private val viewModel: CompeticionViewModel by viewModels {
-        SharedViewModelFactory(
-            equipoRepository = EquipoRepositoryImpl(FirebaseFirestore.getInstance(), StatsCalculator),
-            authRepository = AuthRepositoryImpl(FirebaseAuth.getInstance()),
-            partidoRepository = PartidoRepositoryImpl(db = FirebaseFirestore.getInstance(), jugadorRepository = JugadorRepositoryImpl(FirebaseFirestore.getInstance())),
-            jugadorRepository = JugadorRepositoryImpl(FirebaseFirestore.getInstance()),
-            competicionRepository = CompeticionRepositoryImpl(FirebaseFirestore.getInstance())
-        )
+        (application as FutbolDataApp).viewModelFactory
     }
 
     private lateinit var adapter: CompeticionAdapter

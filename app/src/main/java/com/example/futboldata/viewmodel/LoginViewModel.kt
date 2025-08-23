@@ -3,6 +3,7 @@ package com.example.futboldata.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.futboldata.data.repository.AuthRepository
+import com.example.futboldata.utils.SessionManager
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseUser
@@ -10,7 +11,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
+class LoginViewModel(
+    private val authRepository: AuthRepository,
+    private val sessionManager: SessionManager
+) : ViewModel() {
+
     sealed class LoginState {
         object Idle : LoginState()
         object Loading : LoginState()
@@ -26,6 +31,7 @@ class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
         viewModelScope.launch {
             authRepository.login(email, password)
                 .onSuccess { user ->
+                    sessionManager.saveUser(user.uid, user.email ?: "")
                     _loginState.value = LoginState.Success(user)
                 }
                 .onFailure { e ->
@@ -40,11 +46,4 @@ class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
     }
 
     fun sendPasswordResetEmail(email: String) = authRepository.sendPasswordResetEmail(email)
-
-    fun logout() {
-        authRepository.logout()
-    }
-
-    val isUserLoggedIn: Boolean
-        get() = authRepository.currentUser != null
 }

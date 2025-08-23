@@ -19,38 +19,44 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FutbolData"
         tools:targetApi="34">
-        <activity
-            android:name=".ui.competiciones.CompeticionDetailActivity"
-            android:exported="false" />
-        <!-- Actividades -->
-        <activity
-            android:name=".ui.jugadores.AddJugadorActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.competiciones.CompeticionesActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.partidos.AddPartidoActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.equipos.EquipoDetailActivity"
-            android:exported="false" /> <!-- Splash Screen -->
+
+        <meta-data
+            android:name="firebase_auto_init_enabled"
+            android:value="true" />
+        <meta-data
+            android:name="com.google.firebase.auth.package"
+            android:value="com.example.futboldata" />
+
+        <!-- ACTIVITIES -->
         <activity
             android:name=".SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.App.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity> <!-- Login -->
+        </activity>
+
         <activity
             android:name=".ui.auth.LoginActivity"
-            android:exported="false" /> <!-- Equipos -->
+            android:exported="false"
+            android:theme="@style/Theme.FutbolData" />
+
         <activity
             android:name=".ui.equipos.EquiposActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.FutbolData" />
+
+        <activity
+            android:name=".ui.competiciones.CompeticionesActivity"
+            android:exported="false"
+            android:theme="@style/Theme.FutbolData" />
+        <activity
+            android:name=".ui.equipos.EquipoDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.FutbolData" />
+
     </application>
 
 </manifest>
