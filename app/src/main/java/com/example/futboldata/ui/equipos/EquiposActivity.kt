@@ -44,6 +44,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlin.jvm.java
 import androidx.core.view.size
 import androidx.core.view.get
+import com.example.futboldata.utils.SessionManager
 
 class EquiposActivity : AppCompatActivity() {
 
@@ -122,9 +123,17 @@ class EquiposActivity : AppCompatActivity() {
     }
 
     private fun logout() {
+        // 1. Cerrar sesión en Firebase
         auth.signOut()
+
+        // 2. LIMPIAR SessionManager
+        val sessionManager = SessionManager(this)
+        sessionManager.clearUser()
+
+        // 3. Redirigir al login con flag de logout
         startActivity(Intent(this, LoginActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            putExtra("LOGOUT", true) // <- Añadir este flag
         })
         finish()
     }
