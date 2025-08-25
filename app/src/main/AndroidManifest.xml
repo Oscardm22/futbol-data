@@ -31,6 +31,7 @@
         <activity
             android:name=".ui.auth.LoginActivity"
             android:exported="true"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.FutbolData">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -41,15 +42,19 @@
         <activity
             android:name=".ui.equipos.EquiposActivity"
             android:exported="false"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.FutbolData" />
 
         <activity
             android:name=".ui.competiciones.CompeticionesActivity"
             android:exported="false"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.FutbolData" />
+
         <activity
             android:name=".ui.equipos.EquipoDetailActivity"
             android:exported="false"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.FutbolData" />
 
     </application>
