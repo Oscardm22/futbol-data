@@ -7,10 +7,12 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.example.futboldata.FutbolDataApp
 import com.example.futboldata.databinding.ActivityLoginBinding
 import com.example.futboldata.ui.equipos.EquiposActivity
+import com.example.futboldata.utils.SessionManager
 import com.example.futboldata.viewmodel.LoginViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
@@ -22,31 +24,58 @@ import kotlinx.coroutines.launch
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
+    private lateinit var sessionManager: SessionManager
     private val viewModel: LoginViewModel by viewModels {
         (application as FutbolDataApp).viewModelFactory
     }
+    private var keepSplashOnScreen = true // Controla cuándo ocultar el splash
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Instala el Splash Screen antes de super.onCreate()
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+
+        // Mantén el splash visible hasta que terminemos de verificar la autenticación
+        splashScreen.setKeepOnScreenCondition { keepSplashOnScreen }
+
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        sessionManager = SessionManager(this)
+
         val auth = FirebaseAuth.getInstance()
         Log.d("LoginActivity", "=== LOGIN ACTIVITY ===")
-        Log.d("LoginActivity", "Current user: ${auth.currentUser}")
-        Log.d("LoginActivity", "Current user UID: ${auth.currentUser?.uid}")
+        Log.d("LoginActivity", "Firebase user: ${auth.currentUser?.uid}")
+        Log.d("LoginActivity", "Session user: ${sessionManager.getCurrentUserUid()}")
 
-        if (auth.currentUser != null) {
-            Log.d("LoginActivity", "✅ Usuario ya autenticado, navegando a Equipos")
-            navigateToEquipos()
-            return
-        } else {
-            Log.d("LoginActivity", "❌ No hay usuario, mostrando formulario de login")
-        }
+        // Verifica si el usuario ya está autenticado (igual que en tu SplashActivity)
+        checkAuthState()
 
         setupObservers()
         setupLoginButton()
         setupForgotPasswordButton()
+    }
+
+    private fun checkAuthState() {
+        val auth = FirebaseAuth.getInstance()
+
+        val hasFirebaseUser = auth.currentUser != null
+        val hasSessionUser = sessionManager.isUserLoggedIn()
+
+        Log.d("LoginActivity", "Firebase user: ${auth.currentUser?.uid}")
+        Log.d("LoginActivity", "Session user: ${sessionManager.getCurrentUserUid()}")
+
+        if (hasFirebaseUser || hasSessionUser) {
+            Log.d("LoginActivity", "✅ USUARIO ENCONTRADO - Redirigiendo a Equipos")
+            // Pequeño delay para mostrar el splash screen
+            binding.root.postDelayed({
+                navigateToEquipos()
+            }, 1000) // 1 segundo de delay
+        } else {
+            Log.d("LoginActivity", "❌ NO HAY USUARIO - Mostrando formulario de login")
+            // Una vez que sabemos que no hay usuario autenticado, ocultamos el splash
+            keepSplashOnScreen = false
+        }
     }
 
     private fun setupObservers() {
@@ -55,6 +84,12 @@ class LoginActivity : AppCompatActivity() {
                 is LoginViewModel.LoginState.Loading -> showLoading(true)
                 is LoginViewModel.LoginState.Success -> {
                     showLoading(false)
+                    // Guardar sesión después de login exitoso
+                    val user = FirebaseAuth.getInstance().currentUser
+                    user?.let {
+                        sessionManager.saveUser(it.uid, it.email ?: "")
+                        Log.d("LoginActivity", "Sesión guardada: UID=${it.uid}, Email=${it.email}")
+                    }
                     navigateToEquipos()
                 }
                 is LoginViewModel.LoginState.Error -> {
