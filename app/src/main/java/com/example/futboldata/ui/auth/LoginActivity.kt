@@ -31,11 +31,9 @@ class LoginActivity : AppCompatActivity() {
     private var keepSplashOnScreen = true // Controla cuándo ocultar el splash
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Instala el Splash Screen antes de super.onCreate()
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
 
-        // Mantén el splash visible hasta que terminemos de verificar la autenticación
         splashScreen.setKeepOnScreenCondition { keepSplashOnScreen }
 
         binding = ActivityLoginBinding.inflate(layoutInflater)
@@ -48,7 +46,7 @@ class LoginActivity : AppCompatActivity() {
         Log.d("LoginActivity", "Firebase user: ${auth.currentUser?.uid}")
         Log.d("LoginActivity", "Session user: ${sessionManager.getCurrentUserUid()}")
 
-        // Verifica si el usuario ya está autenticado (igual que en tu SplashActivity)
+        // Verifica si el usuario ya está autenticado
         checkAuthState()
 
         setupObservers()
