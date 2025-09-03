@@ -38,19 +38,19 @@ class JugadorSimpleAdapter(
         // Limpiar iconos anteriores
         holder.binding.containerIconos.removeAllViews()
 
-        // Agregar iconos de goles (⚽)
+        // Agregar iconos de goles
         repeat(jugador.cantidadGoles) {
             val imageView = createIconImageView(holder, R.drawable.ic_gol)
             holder.binding.containerIconos.addView(imageView)
         }
 
-        // Agregar iconos de asistencias (🎯)
+        // Agregar iconos de asistencias
         repeat(jugador.cantidadAsistencias) {
             val imageView = createIconImageView(holder, R.drawable.ic_asistencia)
             holder.binding.containerIconos.addView(imageView)
         }
 
-        // Agregar icono de MVP (⭐) - solo uno
+        // Agregar icono de MVP - solo uno
         if (jugador.esMvp) {
             val imageView = createIconImageView(holder, R.drawable.ic_mvp_selected)
             holder.binding.containerIconos.addView(imageView)
