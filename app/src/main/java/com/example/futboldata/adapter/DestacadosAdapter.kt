@@ -11,7 +11,9 @@ import com.example.futboldata.databinding.ItemEstadisticaDestacadaBinding
 import com.example.futboldata.databinding.ItemHeaderDestacadoBinding
 import com.example.futboldata.ui.equipos.fragments.EstadisticaDestacada
 
-class DestacadosAdapter : ListAdapter<EstadisticaDestacada, RecyclerView.ViewHolder>(DestacadosDiffCallback()) {
+class DestacadosAdapter(
+    private val onJugadorClick: (String) -> Unit
+) : ListAdapter<EstadisticaDestacada, RecyclerView.ViewHolder>(DestacadosDiffCallback()) {
 
     companion object {
         private const val TYPE_HEADER = 0
@@ -30,14 +32,26 @@ class DestacadosAdapter : ListAdapter<EstadisticaDestacada, RecyclerView.ViewHol
         }
     }
 
-    inner class ItemViewHolder(private val binding: ItemEstadisticaDestacadaBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    inner class ItemViewHolder(
+        private val binding: ItemEstadisticaDestacadaBinding,
+        private val onJugadorClick: (String) -> Unit
+    ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(estadistica: EstadisticaDestacada) {
             binding.tvTipo.text = estadistica.tipo
             binding.tvJugador.text = estadistica.jugador
             binding.tvValor.text = estadistica.valor
             binding.ivIcono.visibility = View.GONE
+
+            // Agregar click listener solo si es un item de jugador (no header)
+            if (!estadistica.esHeader && estadistica.jugador.isNotBlank()) {
+                binding.root.setOnClickListener {
+                    onJugadorClick(estadistica.jugador)
+                }
+                binding.root.isClickable = true
+            } else {
+                binding.root.isClickable = false
+            }
         }
     }
 
@@ -61,7 +75,7 @@ class DestacadosAdapter : ListAdapter<EstadisticaDestacada, RecyclerView.ViewHol
                     parent,
                     false
                 )
-                ItemViewHolder(binding)
+                ItemViewHolder(binding, onJugadorClick) // ← Pasa el callback al ItemViewHolder
             }
         }
     }

@@ -1,9 +1,13 @@
 package com.example.futboldata.ui.equipos.fragments
 
-import android.os.Bundle
+import android.content.Context
+import android.widget.LinearLayout
+import android.widget.TextView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -46,9 +50,88 @@ class DestacadosFragment : Fragment() {
 
     private fun setupRecyclerView() {
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        adapter = DestacadosAdapter()
+        adapter = DestacadosAdapter(
+            onJugadorClick = { nombreJugador -> // ← Nuevo callback
+                // Buscar el jugador por nombre en la lista actual
+                viewModel.jugadores.value?.find { it.nombre == nombreJugador }?.let { jugador ->
+                    showPlayerDetails(jugador)
+                }
+            }
+        )
         binding.recyclerView.adapter = adapter
     }
+
+    private fun showPlayerDetails(jugador: Jugador) {
+        val dialog = MaterialAlertDialogBuilder(requireContext())
+            .setTitle(jugador.nombre)
+            .setView(createPlayerDetailsView(jugador))
+            .create()
+
+        dialog.show()
+    }
+
+    private fun createPlayerDetailsView(jugador: Jugador): View {
+        val inflater = LayoutInflater.from(requireContext())
+        val view = inflater.inflate(R.layout.dialog_player_details, binding.root, false)
+
+        // Configurar todas las estadísticas usando recursos de string
+        view.findViewById<TextView>(R.id.tvPosicion).text = getString(R.string.posicion, jugador.posicion.toString())
+        view.findViewById<TextView>(R.id.tvPartidos).text = getString(R.string.partidos, jugador.partidosJugados)
+        view.findViewById<TextView>(R.id.tvGoles).text = getString(R.string.goles, jugador.goles)
+        view.findViewById<TextView>(R.id.tvAsistencias).text = getString(R.string.asistencias, jugador.asistencias)
+        view.findViewById<TextView>(R.id.tvMVP).text = getString(R.string.mvp, jugador.mvp)
+        view.findViewById<TextView>(R.id.tvPorterias).text = getString(R.string.porterias_imbatidas, jugador.porteriasImbatidas)
+
+        // Mostrar estadísticas por competición
+        setupCompetitionStats(view, jugador)
+
+        return view
+    }
+
+    private fun setupCompetitionStats(view: View, jugador: Jugador) {
+        val container = view.findViewById<LinearLayout>(R.id.containerStatsCompeticion)
+        container.removeAllViews()
+
+        // Verificar que el mapa no sea null antes de iterar
+        jugador.golesPorCompeticion.forEach { (compId, goles) ->
+            val statView = LayoutInflater.from(view.context)
+                .inflate(R.layout.item_stat_competicion, container, false)
+
+            // Usar el ViewModel para obtener el nombre de la competición
+            val compName = viewModel.getCompetitionName(compId)
+            statView.findViewById<TextView>(R.id.tvCompeticion).text = compName
+
+            // Usar recursos de string para las estadísticas
+            statView.findViewById<TextView>(R.id.tvGoles).text = getString(R.string.competicion_goles, goles)
+            statView.findViewById<TextView>(R.id.tvAsistencias).text = getString(
+                R.string.competicion_asistencias,
+                jugador.asistenciasPorCompeticion[compId] ?: 0
+            )
+            statView.findViewById<TextView>(R.id.tvMVP).text = getString(
+                R.string.competicion_mvp,
+                jugador.mvpPorCompeticion[compId] ?: 0
+            )
+            statView.findViewById<TextView>(R.id.tvPartidos).text = getString(
+                R.string.competicion_partidos,
+                jugador.partidosPorCompeticion[compId] ?: 0
+            )
+
+            container.addView(statView)
+        }
+
+        // Mensaje si no hay estadísticas por competición
+        if (jugador.golesPorCompeticion.isEmpty()) {
+            val emptyView = TextView(view.context).apply {
+                text = getString(R.string.no_estadisticas_competicion)
+                setTextAppearance(android.R.style.TextAppearance_Medium)
+                setPadding(0, 16.dpToPx(view.context), 0, 0)
+            }
+            container.addView(emptyView)
+        }
+    }
+
+    // AÑADE ESTA EXTENSIÓN
+    private fun Int.dpToPx(context: Context): Int = (this * context.resources.displayMetrics.density).toInt()
 
     private fun setupObservers() {
         viewModel.jugadores.observe(viewLifecycleOwner) { jugadores ->
