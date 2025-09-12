@@ -153,7 +153,7 @@ class JugadoresFragment : Fragment() {
             .setTitle(getString(R.string.delete_dialog_title_player))
             .setMessage(getString(R.string.delete_dialog_message_player, jugador.nombre))
             .setPositiveButton(getString(R.string.delete_button)) { _, _ ->
-                viewModel.eliminarJugador(jugador)
+                viewModel.desactivarJugador(jugador)
             }
             .setNegativeButton(getString(R.string.cancel_button), null)
             .create()

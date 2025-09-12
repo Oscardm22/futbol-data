@@ -129,24 +129,15 @@ class EquipoDetailViewModel(
         }
     }
 
-    fun eliminarJugador(jugador: Jugador) {
+    fun desactivarJugador(jugador: Jugador) {
         viewModelScope.launch {
             try {
-                // 1. Eliminar el jugador del repositorio
                 jugadorRepository.eliminarJugador(jugador.id)
-
-                // 2. Actualizar la lista local de jugadores
-                _jugadores.value = _jugadores.value?.filter { it.id != jugador.id }
-
-                // 3. Actualizar estadísticas si es necesario
-                _equipo.value?.id?.let { equipoId ->
-                    cargarEquipo(equipoId)
-                }
-
-                Log.d("DEBUG_VM", "✓ Jugador eliminado: ${jugador.nombre}")
+                cargarJugadores(jugador.equipoId)
+                Log.d("DEBUG_VIEWMODEL", "Jugador desactivado: ${jugador.nombre}")
             } catch (e: Exception) {
-                Log.e("DEBUG_VM", "✕ Error al eliminar jugador", e)
-                _errorMessage.postValue("Error al eliminar jugador: ${e.message}")
+                Log.e("DEBUG_VIEWMODEL", "Error al desactivar jugador", e)
+                _errorMessage.value = "Error al desactivar jugador: ${e.message}"
             }
         }
     }

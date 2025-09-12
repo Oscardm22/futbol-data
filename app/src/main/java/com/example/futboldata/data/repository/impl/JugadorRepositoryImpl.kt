@@ -24,6 +24,7 @@ class JugadorRepositoryImpl(
         return try {
             val querySnapshot = db.collection("jugadores")
                 .whereEqualTo("equipoId", equipoId)
+                .whereEqualTo("activo", true)
                 .get()
                 .await()
 
@@ -34,6 +35,7 @@ class JugadorRepositoryImpl(
                     put("nombre", document.getString("nombre") ?: "")
                     put("posicion", document.getString("posicion") ?: "PO")
                     put("equipoId", document.getString("equipoId") ?: "")
+                    put("activo", document.getBoolean("activo") != false)
 
                     // Manejar campos numéricos
                     document.getLong("partidosJugados")?.let { put("partidosJugados", it) }
@@ -63,12 +65,14 @@ class JugadorRepositoryImpl(
 
     override suspend fun eliminarJugador(jugadorId: String) {
         try {
-            Log.d("DEBUG_REPO", "▶ [Firestore] Eliminando jugador con ID: $jugadorId")
-            db.collection("jugadores").document(jugadorId).delete().await()
-            Log.d("DEBUG_REPO", "✓ [Firestore] Jugador eliminado correctamente")
+            Log.d("DEBUG_REPO", "▶ [Firestore] Desactivando jugador con ID: $jugadorId")
+            db.collection("jugadores").document(jugadorId)
+                .update("activo", false)
+                .await()
+            Log.d("DEBUG_REPO", "✓ [Firestore] Jugador desactivado correctamente")
         } catch (e: Exception) {
-            Log.e("DEBUG_REPO", "✕ [Firestore] Error al eliminar jugador: ${e.message}")
-            throw Exception("No se pudo eliminar el jugador: ${e.message}")
+            Log.e("DEBUG_REPO", "✕ [Firestore] Error al desactivar jugador: ${e.message}")
+            throw Exception("No se pudo desactivar el jugador: ${e.message}")
         }
     }
 

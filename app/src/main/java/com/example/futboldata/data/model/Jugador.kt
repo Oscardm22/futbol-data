@@ -10,6 +10,7 @@ data class Jugador(
     val nombre: String,
     val posicion: Posicion,
     val equipoId: String,
+    val activo: Boolean = true,
 
     // Estadísticas globales
     val partidosJugados: Int = 0,
@@ -32,7 +33,7 @@ data class Jugador(
 
 ) : Parcelable {
 
-    constructor() : this("", "", Posicion.PO, "")
+    constructor() : this("", "", Posicion.PO, "", true)
 
     companion object {
         @Exclude
@@ -60,6 +61,7 @@ data class Jugador(
                 nombre = data["nombre"] as? String ?: "",
                 posicion = Posicion.valueOf(data["posicion"] as? String ?: "PO"),
                 equipoId = data["equipoId"] as? String ?: "",
+                activo = data["activo"] as? Boolean != false,
                 partidosJugados = (data["partidosJugados"] as? Long)?.toInt() ?: 0,
                 goles = (data["goles"] as? Long)?.toInt() ?: 0,
                 asistencias = (data["asistencias"] as? Long)?.toInt() ?: 0,
@@ -166,6 +168,7 @@ fun Jugador.toFirestoreMap(): Map<String, Any> {
         "nombre" to nombre,
         "posicion" to posicion.name,
         "equipoId" to equipoId,
+        "activo" to activo,
         "partidosJugados" to partidosJugados,
         "goles" to goles,
         "asistencias" to asistencias,
