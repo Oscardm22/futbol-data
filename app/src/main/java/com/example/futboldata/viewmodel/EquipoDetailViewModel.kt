@@ -190,4 +190,12 @@ class EquipoDetailViewModel(
 
         Log.d("DEBUG_VIEWMODEL", "Estadísticas revertidas para ${jugadoresParticipantes.size} jugadores")
     }
+
+    suspend fun getTodosLosJugadoresPorEquipo(equipoId: String): List<Jugador> {
+        return try {
+            jugadorRepository.getTodosLosJugadoresPorEquipo(equipoId)
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
 }

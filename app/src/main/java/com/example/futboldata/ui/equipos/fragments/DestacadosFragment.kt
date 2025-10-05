@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.futboldata.R
 import com.example.futboldata.adapter.DestacadosAdapter
@@ -18,6 +19,7 @@ import com.example.futboldata.data.model.Posicion
 import com.example.futboldata.databinding.FragmentDestacadosBinding
 import com.example.futboldata.viewmodel.EquipoDetailViewModel
 import com.example.futboldata.data.model.Competicion
+import kotlinx.coroutines.launch
 
 class DestacadosFragment : Fragment() {
 
@@ -25,6 +27,7 @@ class DestacadosFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: EquipoDetailViewModel by activityViewModels()
     private lateinit var adapter: DestacadosAdapter
+    private var todosLosJugadores: List<Jugador> = emptyList() // ← Almacena TODOS los jugadores
 
     companion object {
         fun newInstance(): DestacadosFragment {
@@ -46,14 +49,32 @@ class DestacadosFragment : Fragment() {
 
         setupRecyclerView()
         setupObservers()
+        cargarTodosLosJugadores() // ← NUEVO: Cargar todos los jugadores
+    }
+
+    private fun cargarTodosLosJugadores() {
+        lifecycleScope.launch {
+            try {
+                val equipoId = viewModel.equipo.value?.id
+                equipoId?.let {
+                    // Obtener todos los jugadores del equipo (sin filtrar por activo)
+                    todosLosJugadores = viewModel.getTodosLosJugadoresPorEquipo(it)
+                    actualizarDestacados()
+                }
+            } catch (e: Exception) {
+                // En caso de error, usar los jugadores activos como fallback
+                todosLosJugadores = viewModel.jugadores.value ?: emptyList()
+                actualizarDestacados()
+            }
+        }
     }
 
     private fun setupRecyclerView() {
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         adapter = DestacadosAdapter(
-            onJugadorClick = { nombreJugador -> // ← Nuevo callback
-                // Buscar el jugador por nombre en la lista actual
-                viewModel.jugadores.value?.find { it.nombre == nombreJugador }?.let { jugador ->
+            onJugadorClick = { nombreJugador ->
+                // Buscar el jugador por nombre en TODOS los jugadores
+                todosLosJugadores.find { it.nombre == nombreJugador }?.let { jugador ->
                     showPlayerDetails(jugador)
                 }
             }
@@ -130,38 +151,34 @@ class DestacadosFragment : Fragment() {
         }
     }
 
-    // AÑADE ESTA EXTENSIÓN
     private fun Int.dpToPx(context: Context): Int = (this * context.resources.displayMetrics.density).toInt()
 
     private fun setupObservers() {
-        viewModel.jugadores.observe(viewLifecycleOwner) { jugadores ->
-            jugadores?.let {
-                val competicionId = viewModel.competicionSeleccionada.value?.id
-                val destacados = obtenerEstadisticasDestacadas(it, competicionId)
-                adapter.submitList(destacados)
-            }
-        }
-
+        // Observar cambios en la competición seleccionada
         viewModel.competicionSeleccionada.observe(viewLifecycleOwner) { competicion ->
             competicion?.let {
                 binding.tvTituloCompeticion.text = getString(R.string.competicion_formato, it.nombre)
                 binding.tvTituloCompeticion.visibility = View.VISIBLE
-
-                // Recargar estadísticas cuando cambia la competición
-                viewModel.jugadores.value?.let { jugadores ->
-                    val destacados = obtenerEstadisticasDestacadas(jugadores, it.id)
-                    adapter.submitList(destacados)
-                }
+                actualizarDestacados()
             } ?: run {
                 binding.tvTituloCompeticion.visibility = View.GONE
-
-                // Mostrar todas las competiciones
-                viewModel.jugadores.value?.let { jugadores ->
-                    val destacados = obtenerEstadisticasDestacadas(jugadores, null)
-                    adapter.submitList(destacados)
-                }
+                actualizarDestacados()
             }
         }
+
+        viewModel.jugadores.observe(viewLifecycleOwner) { jugadoresActivos ->
+            // Actualizar la lista de todos los jugadores si hay cambios
+            if (todosLosJugadores.isEmpty()) {
+                todosLosJugadores = jugadoresActivos ?: emptyList()
+                actualizarDestacados()
+            }
+        }
+    }
+
+    private fun actualizarDestacados() {
+        val competicionId = viewModel.competicionSeleccionada.value?.id
+        val destacados = obtenerEstadisticasDestacadas(todosLosJugadores, competicionId)
+        adapter.submitList(destacados)
     }
 
     private fun obtenerEstadisticasDestacadas(
@@ -331,12 +348,6 @@ class DestacadosFragment : Fragment() {
 
     fun filtrarPorCompeticion(competicion: Competicion?) {
         viewModel.seleccionarCompeticion(competicion)
-
-        viewModel.jugadores.value?.let { jugadores ->
-            val competicionId = competicion?.id
-            val destacados = obtenerEstadisticasDestacadas(jugadores, competicionId)
-            adapter.submitList(destacados)
-        }
     }
 }
 

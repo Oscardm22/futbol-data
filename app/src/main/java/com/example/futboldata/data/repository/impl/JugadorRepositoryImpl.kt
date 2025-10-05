@@ -132,4 +132,47 @@ class JugadorRepositoryImpl(
             emptyList()
         }
     }
+
+    override suspend fun getTodosLosJugadoresPorEquipo(equipoId: String): List<Jugador> {
+        Log.d("DEBUG_REPO", "▶ [Firestore] Consultando TODOS los jugadores para equipoId: $equipoId")
+        return try {
+            val querySnapshot = db.collection("jugadores")
+                .whereEqualTo("equipoId", equipoId)
+                .get()
+                .await()
+
+            Log.d("DEBUG_REPO", "✓ [Firestore] TODOS los jugadores encontrados: ${querySnapshot.documents.size}")
+            querySnapshot.documents.mapNotNull { document ->
+                // Crear mapa con los datos del documento
+                val data = hashMapOf<String, Any>().apply {
+                    put("nombre", document.getString("nombre") ?: "")
+                    put("posicion", document.getString("posicion") ?: "PO")
+                    put("equipoId", document.getString("equipoId") ?: "")
+                    put("activo", document.getBoolean("activo") != false)
+
+                    // Manejar campos numéricos
+                    document.getLong("partidosJugados")?.let { put("partidosJugados", it) }
+                    document.getLong("goles")?.let { put("goles", it) }
+                    document.getLong("asistencias")?.let { put("asistencias", it) }
+                    document.getLong("porteriasImbatidas")?.let { put("porteriasImbatidas", it) }
+                    document.getLong("mvp")?.let { put("mvp", it) }
+
+                    // Manejar mapas de competiciones
+                    document.get("partidosPorCompeticion")?.let { put("partidosPorCompeticion", it) }
+                    document.get("golesPorCompeticion")?.let { put("golesPorCompeticion", it) }
+                    document.get("asistenciasPorCompeticion")?.let { put("asistenciasPorCompeticion", it) }
+                    document.get("porteriasImbatidasPorCompeticion")?.let { put("porteriasImbatidasPorCompeticion", it) }
+                    document.get("mvpPorCompeticion")?.let { put("mvpPorCompeticion", it) }
+                }
+
+                Jugador.fromFirestore(
+                    id = document.id,
+                    data = data
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("DEBUG_REPO", "✕ [Firestore] Error obteniendo TODOS los jugadores: ${e.message}")
+            emptyList()
+        }
+    }
 }
