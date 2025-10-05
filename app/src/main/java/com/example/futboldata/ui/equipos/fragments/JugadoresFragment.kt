@@ -74,13 +74,15 @@ class JugadoresFragment : Fragment() {
         val inflater = LayoutInflater.from(requireContext())
         val view = inflater.inflate(R.layout.dialog_player_details, binding.root, false)
 
-        // Configurar todas las estadísticas usando recursos de string
+        // Configurar posición
         view.findViewById<TextView>(R.id.tvPosicion).text = getString(R.string.posicion, jugador.posicion.toString())
-        view.findViewById<TextView>(R.id.tvPartidos).text = getString(R.string.partidos, jugador.partidosJugados)
-        view.findViewById<TextView>(R.id.tvGoles).text = getString(R.string.goles, jugador.goles)
-        view.findViewById<TextView>(R.id.tvAsistencias).text = getString(R.string.asistencias, jugador.asistencias)
-        view.findViewById<TextView>(R.id.tvMVP).text = getString(R.string.mvp, jugador.mvp)
-        view.findViewById<TextView>(R.id.tvPorterias).text = getString(R.string.porterias_imbatidas, jugador.porteriasImbatidas)
+
+        // Configurar valores de estadísticas (solo los números)
+        view.findViewById<TextView>(R.id.tvPartidosValor).text = jugador.partidosJugados.toString()
+        view.findViewById<TextView>(R.id.tvGolesValor).text = jugador.goles.toString()
+        view.findViewById<TextView>(R.id.tvAsistenciasValor).text = jugador.asistencias.toString()
+        view.findViewById<TextView>(R.id.tvMVPValor).text = jugador.mvp.toString()
+        view.findViewById<TextView>(R.id.tvPorteriasValor).text = jugador.porteriasImbatidas.toString()
 
         // Mostrar estadísticas por competición
         setupCompetitionStats(view, jugador)

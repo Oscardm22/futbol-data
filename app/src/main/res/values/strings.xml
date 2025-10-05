@@ -68,11 +68,11 @@
     <string name="equipo_local">%1$s</string>
     <string name="equipo_visitante">%1$s</string>
     <string name="posicion">Posición: %s</string>
-    <string name="partidos">Partidos: %d</string>
-    <string name="goles">Goles: %d</string>
-    <string name="asistencias">Asistencias: %d</string>
-    <string name="mvp">MVP: %d</string>
-    <string name="porterias_imbatidas">Porterías imbatidas: %d</string>
+    <string name="partidos">Partidos</string>
+    <string name="goles">Goles</string>
+    <string name="asistencias">Asistencias</string>
+    <string name="mvp">MVP</string>
+    <string name="porterias_imbatidas">Porterías imbatidas</string>
     <string name="competicion_goles">Goles: %d</string>
     <string name="competicion_asistencias">Asistencias: %d</string>
     <string name="competicion_mvp">MVP: %d</string>

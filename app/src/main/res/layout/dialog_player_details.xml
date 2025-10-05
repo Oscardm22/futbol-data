@@ -17,74 +17,161 @@
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:layout_marginBottom="8dp"/>
+            android:gravity="center"
+            android:layout_marginBottom="16dp"/>
 
+        <!-- Fila 1 de estadísticas -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:baselineAligned="false"
             android:orientation="horizontal"
-            android:gravity="center">
+            android:layout_marginBottom="16dp">
 
-            <TextView
-                android:id="@+id/tvPartidos"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:layout_marginEnd="16dp"
-                android:maxLines="1"/>
-
-            <View
+            <!-- Partidos -->
+            <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1"/>
-
-            <TextView
-                android:id="@+id/tvGoles"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:layout_marginEnd="16dp"
-                android:maxLines="1"/>
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
 
-            <View
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/partidos"
+                    android:textSize="12sp"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:gravity="center"/>
+
+                <TextView
+                    android:id="@+id/tvPartidosValor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:maxLines="1"/>
+            </LinearLayout>
+
+            <!-- Goles -->
+            <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1"/>
-
-            <TextView
-                android:id="@+id/tvAsistencias"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:maxLines="1"/>
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/goles"
+                    android:textSize="12sp"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:gravity="center"/>
+
+                <TextView
+                    android:id="@+id/tvGolesValor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:maxLines="1"/>
+            </LinearLayout>
+
+            <!-- Asistencias -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/asistencias"
+                    android:textSize="12sp"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:gravity="center"/>
+
+                <TextView
+                    android:id="@+id/tvAsistenciasValor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:maxLines="1"/>
+            </LinearLayout>
+
         </LinearLayout>
 
+        <!-- Fila 2 de estadísticas -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center"
-            android:layout_marginTop="8dp">
+            android:layout_marginBottom="16dp">
 
-            <TextView
-                android:id="@+id/tvMVP"
-                android:layout_width="wrap_content"
+            <!-- MVP -->
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:layout_marginEnd="16dp"
-                android:maxLines="1"/>
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/mvp"
+                    android:textSize="12sp"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:gravity="center"/>
+
+                <TextView
+                    android:id="@+id/tvMVPValor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:maxLines="1"/>
+            </LinearLayout>
+
+            <!-- Porterías Imbatidas -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/porterias_imbatidas"
+                    android:textSize="12sp"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:gravity="center"/>
+
+                <TextView
+                    android:id="@+id/tvPorteriasValor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:maxLines="1"/>
+            </LinearLayout>
+
+            <!-- Espacio vacío para mantener la alineación -->
             <View
                 android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1"/>
-
-            <TextView
-                android:id="@+id/tvPorterias"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:maxLines="1"/>
+                android:layout_weight="1"/>
         </LinearLayout>
 
         <!-- Estadísticas por competición -->
@@ -94,7 +181,7 @@
             android:text="@string/Estadísticas_Competición"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:layout_marginTop="16dp"
+            android:gravity="center"
             android:layout_marginBottom="8dp"/>
 
         <LinearLayout
