@@ -5,15 +5,32 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <TextView
-        android:id="@+id/title"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/Detalles_Partido"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/Detalles_Partido"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:gravity="center" />
+
+        <ImageButton
+            android:id="@+id/btnEliminarPartido"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/ic_delete"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/eliminar_partido"
+            android:padding="8dp"
+            android:visibility="gone" />
+
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

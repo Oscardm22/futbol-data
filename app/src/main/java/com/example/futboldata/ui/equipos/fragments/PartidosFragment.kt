@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -19,6 +21,7 @@ import com.example.futboldata.databinding.DialogPartidoDetalleBinding
 import com.example.futboldata.databinding.FragmentPartidosBinding
 import com.example.futboldata.viewmodel.EquipoDetailViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -99,6 +102,9 @@ class PartidosFragment : Fragment() {
                         competitionTypes = competitionTypesMap,
                         onPartidoClickListener = { partido ->
                             mostrarBottomSheetPartido(partido, equipo.nombre)
+                        },
+                        onPartidoDeleteListener = { partido ->
+                            mostrarDialogoConfirmacionEliminar(partido)
                         }
                     )
                 }
@@ -140,7 +146,16 @@ class PartidosFragment : Fragment() {
         // Obtener el mapa de tipos de competición
         val competitionTypesMap = viewModel.competiciones.value?.associate { it.id to it.tipo } ?: emptyMap()
 
-        // Primero configurar la información básica del partido
+        // Hacer visible el botón de eliminar
+        bindingSheet.btnEliminarPartido.visibility = View.VISIBLE
+
+        // Configurar el listener del botón eliminar
+        bindingSheet.btnEliminarPartido.setOnClickListener {
+            bottomSheetDialog.dismiss()
+            mostrarDialogoConfirmacionEliminar(partido)
+        }
+
+        // Configurar la información básica del partido
         configurarInfoBasicaPartido(bindingSheet, partido, nombreEquipo, competitionTypesMap)
 
         // Luego cargar los jugadores históricos y configurar la alineación
@@ -150,6 +165,37 @@ class PartidosFragment : Fragment() {
 
         // Mostrar el diálogo
         bottomSheetDialog.show()
+    }
+
+    private fun mostrarDialogoConfirmacionEliminar(partido: Partido) {
+        val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+        val fechaFormateada = dateFormat.format(partido.fecha)
+
+        val mensaje = if (partido.esLocal) {
+            getString(R.string.delete_dialog_message_match_local, partido.rival, fechaFormateada, partido.alineacionIds.size)
+        } else {
+            getString(R.string.delete_dialog_message_match_away, partido.rival, fechaFormateada, partido.alineacionIds.size)
+        }
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.delete_dialog_title_match))
+            .setMessage(mensaje)
+            .setPositiveButton(getString(R.string.delete_button)) { _, _ ->
+                viewModel.eliminarPartido(partido)
+            }
+            .setNegativeButton(getString(R.string.cancel_button), null)
+            .create()
+            .apply {
+                setOnShowListener {
+                    getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(
+                        ContextCompat.getColor(requireContext(), R.color.error_color)
+                    )
+                    getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(
+                        ContextCompat.getColor(requireContext(), R.color.Fondo)
+                    )
+                }
+                show()
+            }
     }
 
     private fun configurarInfoBasicaPartido(

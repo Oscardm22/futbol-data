@@ -45,6 +45,9 @@
     <string name="Estadísticas_Competición">Estadísticas por Competición</string>
     <string name="no_estadisticas_competicion">No hay estadísticas por competición</string>
     <string name="Filtrar_Competición">Filtrar por Competición</string>
+    <string name="delete_dialog_title_match">Eliminar Partido</string>
+    <string name="delete_dialog_message_match_local">¿Eliminar partido vs %s del %s?\n\nSe revertirán las estadísticas de %d jugadores.</string>
+    <string name="delete_dialog_message_match_away">¿Eliminar partido en %s del %s?\n\nSe revertirán las estadísticas de %d jugadores.</string>
 
     //Formatos
     <string name="avg_goals_format">Promedio de goles: %.1f</string>
@@ -136,6 +139,7 @@
     <string name="btnAddAsistencia">Asist</string>
     <string name="btnTodas">Ver Todas las Competiciones</string>
     <string name="switchTitular">Alineado</string>
+    <string name="eliminar_partido">Eliminar Partido</string>
 
     //Errores
     <string name="error_empty_name">Ingresa un nombre para la competición</string>

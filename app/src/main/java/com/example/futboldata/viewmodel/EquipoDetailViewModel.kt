@@ -157,4 +157,37 @@ class EquipoDetailViewModel(
             emptyList()
         }
     }
+
+    fun eliminarPartido(partido: Partido) {
+        viewModelScope.launch {
+            try {
+                // 1. Revertir estadísticas de todos los jugadores que participaron
+                revertirEstadisticasJugadores(partido)
+
+                // 2. Eliminar el partido de Firestore
+                partidoRepository.eliminarPartido(partido.id)
+
+                // 3. Recargar los datos del equipo
+                cargarEquipo(partido.equipoId)
+
+                Log.d("DEBUG_VIEWMODEL", "Partido eliminado y estadísticas revertidas: ${partido.id}")
+            } catch (e: Exception) {
+                Log.e("DEBUG_VIEWMODEL", "Error al eliminar partido", e)
+                _errorMessage.value = "Error al eliminar partido: ${e.message}"
+            }
+        }
+    }
+
+    private suspend fun revertirEstadisticasJugadores(partido: Partido) {
+        // Obtener todos los jugadores que participaron en el partido
+        val jugadoresParticipantes = jugadorRepository.getJugadoresPorIds(partido.alineacionIds)
+
+        // Revertir estadísticas para cada jugador
+        jugadoresParticipantes.forEach { jugador ->
+            val jugadorActualizado = jugador.revertirEstadisticasPartido(partido)
+            jugadorRepository.updateJugador(jugadorActualizado)
+        }
+
+        Log.d("DEBUG_VIEWMODEL", "Estadísticas revertidas para ${jugadoresParticipantes.size} jugadores")
+    }
 }

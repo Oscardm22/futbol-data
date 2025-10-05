@@ -22,12 +22,13 @@ class PartidosAdapter(
     private val teamNames: Map<String, String>,
     private val competitionNames: Map<String, String>,
     private val competitionTypes: Map<String, TipoCompeticion>,
-    private val onPartidoClickListener: (Partido) -> Unit
+    private val onPartidoClickListener: (Partido) -> Unit,
+    private val onPartidoDeleteListener: (Partido) -> Unit
 ) : RecyclerView.Adapter<PartidosAdapter.MatchViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MatchViewHolder {
         val binding = ItemMatchBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return MatchViewHolder(binding, teamNames, competitionNames, competitionTypes, onPartidoClickListener)
+        return MatchViewHolder(binding, teamNames, competitionNames, competitionTypes, onPartidoClickListener, onPartidoDeleteListener)
     }
 
     override fun onBindViewHolder(holder: MatchViewHolder, position: Int) {
@@ -41,7 +42,8 @@ class PartidosAdapter(
         private val teamNames: Map<String, String>,
         private val competitionNames: Map<String, String>,
         private val competitionTypes: Map<String, TipoCompeticion>,
-        private val onPartidoClickListener: (Partido) -> Unit
+        private val onPartidoClickListener: (Partido) -> Unit,
+        private val onPartidoDeleteListener: (Partido) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(match: Partido, competitionImage: String?) {
@@ -49,6 +51,12 @@ class PartidosAdapter(
             binding.root.setOnClickListener {
                 onPartidoClickListener(match)
             }
+
+            binding.root.setOnLongClickListener {
+                onPartidoDeleteListener(match)
+                true
+            }
+
             // Formatear fecha
             val dateFormat = SimpleDateFormat("dd MMM yyyy - hh:mm a", Locale.getDefault())
             binding.textViewFecha.text = dateFormat.format(match.fecha)

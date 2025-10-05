@@ -3,6 +3,7 @@ package com.example.futboldata.data.model
 import android.os.Parcelable
 import com.google.firebase.firestore.Exclude
 import kotlinx.parcelize.Parcelize
+import kotlin.math.max
 
 @Parcelize
 data class Jugador(
@@ -139,12 +140,77 @@ data class Jugador(
             porteriasImbatidas = porteriasImbatidasPorCompeticion[competicionId] ?: 0
         )
     }
+
+    @Exclude
+    fun revertirEstadisticasPartido(partido: Partido): Jugador {
+        val jugoEnPartido = partido.alineacionIds.contains(id)
+        val golesAnteriores = partido.goleadoresIds.count { it == id }
+        val asistenciasAnteriores = partido.asistentesIds.count { it == id }
+        val porteriaImbatidaAnterior = id == partido.porteroImbatidoId
+        val mvpAnterior = id == partido.jugadorDelPartido
+
+        return if (!jugoEnPartido) {
+            this
+        } else {
+            this.copy(
+                partidosJugados = max(0, partidosJugados - 1),
+                goles = max(0, goles - golesAnteriores),
+                asistencias = max(0, asistencias - asistenciasAnteriores),
+                porteriasImbatidas = max(0, porteriasImbatidas - (if (porteriaImbatidaAnterior) 1 else 0)),
+                mvp = max(0, mvp - (if (mvpAnterior) 1 else 0))
+            ).revertirEstadisticasCompeticion(
+                competicionId = partido.competicionId,
+                goles = golesAnteriores,
+                asistencias = asistenciasAnteriores,
+                porteriaImbatida = porteriaImbatidaAnterior,
+                esMVP = mvpAnterior
+            )
+        }
+    }
+
+    private fun revertirEstadisticasCompeticion(
+        competicionId: String,
+        goles: Int,
+        asistencias: Int,
+        porteriaImbatida: Boolean,
+        esMVP: Boolean
+    ): Jugador {
+        val nuevosPartidos = partidosPorCompeticion.decrementar(competicionId)
+        val nuevosGoles = golesPorCompeticion.decrementar(competicionId, goles)
+        val nuevasAsistencias = asistenciasPorCompeticion.decrementar(competicionId, asistencias)
+        val nuevasPorterias = porteriasImbatidasPorCompeticion.decrementar(
+            competicionId,
+            if (porteriaImbatida) 1 else 0
+        )
+        val nuevosMVP = mvpPorCompeticion.decrementar(
+            competicionId,
+            if (esMVP) 1 else 0
+        )
+        return this.copy(
+            partidosPorCompeticion = nuevosPartidos,
+            golesPorCompeticion = nuevosGoles,
+            asistenciasPorCompeticion = nuevasAsistencias,
+            porteriasImbatidasPorCompeticion = nuevasPorterias,
+            mvpPorCompeticion = nuevosMVP
+        )
+    }
 }
 
 // Extensión de ayuda
 private fun Map<String, Int>.incrementar(key: String, valor: Int = 1): Map<String, Int> {
     return this.toMutableMap().apply {
         this[key] = (this[key] ?: 0) + valor
+    }
+}
+
+private fun Map<String, Int>.decrementar(key: String, valor: Int = 1): Map<String, Int> {
+    return this.toMutableMap().apply {
+        val currentValue = this[key] ?: 0
+        this[key] = max(0, currentValue - valor)
+        // Si queda en 0, eliminar la entrada para mantener limpio el mapa
+        if (this[key] == 0) {
+            remove(key)
+        }
     }
 }
 

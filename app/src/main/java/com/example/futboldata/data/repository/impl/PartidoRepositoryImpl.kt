@@ -99,11 +99,15 @@ class PartidoRepositoryImpl(
             .mapNotNull { it.toPartido() }
     }
 
-    override suspend fun deletePartido(partidoId: String) {
-        db.collection("partidos")
-            .document(partidoId)
-            .delete()
-            .await()
+    override suspend fun eliminarPartido(partidoId: String) {
+        try {
+            Log.d("DEBUG_REPO", "▶ [Firestore] Eliminando partido con ID: $partidoId")
+            db.collection("partidos").document(partidoId).delete().await()
+            Log.d("DEBUG_REPO", "✓ [Firestore] Partido eliminado correctamente")
+        } catch (e: Exception) {
+            Log.e("DEBUG_REPO", "✕ [Firestore] Error al eliminar partido: ${e.message}")
+            throw Exception("No se pudo eliminar el partido: ${e.message}")
+        }
     }
 
     /* Métodos de conversión y parseo */
