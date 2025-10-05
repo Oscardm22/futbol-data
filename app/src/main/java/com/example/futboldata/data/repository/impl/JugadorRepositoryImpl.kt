@@ -88,4 +88,48 @@ class JugadorRepositoryImpl(
             throw Exception("No se pudo actualizar el jugador: ${e.message}")
         }
     }
+
+    override suspend fun getJugadoresPorIds(jugadorIds: List<String>): List<Jugador> {
+        if (jugadorIds.isEmpty()) return emptyList()
+
+        Log.d("DEBUG_REPO", "▶ [Firestore] Consultando jugadores por IDs: ${jugadorIds.size} IDs")
+        return try {
+            val querySnapshot = db.collection("jugadores")
+                .whereIn(com.google.firebase.firestore.FieldPath.documentId(), jugadorIds)
+                .get()
+                .await()
+
+            Log.d("DEBUG_REPO", "✓ [Firestore] Jugadores históricos encontrados: ${querySnapshot.documents.size}")
+            querySnapshot.documents.mapNotNull { document ->
+                val data = hashMapOf<String, Any>().apply {
+                    put("nombre", document.getString("nombre") ?: "")
+                    put("posicion", document.getString("posicion") ?: "PO")
+                    put("equipoId", document.getString("equipoId") ?: "")
+                    put("activo", document.getBoolean("activo") != false)
+
+                    // Manejar campos numéricos
+                    document.getLong("partidosJugados")?.let { put("partidosJugados", it) }
+                    document.getLong("goles")?.let { put("goles", it) }
+                    document.getLong("asistencias")?.let { put("asistencias", it) }
+                    document.getLong("porteriasImbatidas")?.let { put("porteriasImbatidas", it) }
+                    document.getLong("mvp")?.let { put("mvp", it) }
+
+                    // Manejar mapas de competiciones
+                    document.get("partidosPorCompeticion")?.let { put("partidosPorCompeticion", it) }
+                    document.get("golesPorCompeticion")?.let { put("golesPorCompeticion", it) }
+                    document.get("asistenciasPorCompeticion")?.let { put("asistenciasPorCompeticion", it) }
+                    document.get("porteriasImbatidasPorCompeticion")?.let { put("porteriasImbatidasPorCompeticion", it) }
+                    document.get("mvpPorCompeticion")?.let { put("mvpPorCompeticion", it) }
+                }
+
+                Jugador.fromFirestore(
+                    id = document.id,
+                    data = data
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("DEBUG_REPO", "✕ [Firestore] Error obteniendo jugadores por IDs: ${e.message}")
+            emptyList()
+        }
+    }
 }

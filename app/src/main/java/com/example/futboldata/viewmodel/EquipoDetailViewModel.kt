@@ -149,4 +149,12 @@ class EquipoDetailViewModel(
     fun seleccionarCompeticion(competicion: Competicion?) {
         _competicionSeleccionada.value = competicion
     }
+
+    suspend fun getJugadoresPorIds(jugadorIds: List<String>): List<Jugador> {
+        return try {
+            jugadorRepository.getJugadoresPorIds(jugadorIds)
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
 }

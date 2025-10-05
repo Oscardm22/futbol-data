@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.futboldata.R
 import com.example.futboldata.adapter.JugadorSimpleAdapter
@@ -18,6 +19,7 @@ import com.example.futboldata.databinding.DialogPartidoDetalleBinding
 import com.example.futboldata.databinding.FragmentPartidosBinding
 import com.example.futboldata.viewmodel.EquipoDetailViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -50,10 +52,10 @@ class PartidosFragment : Fragment() {
         // Observador del equipo para cargar jugadores
         viewModel.equipo.observe(viewLifecycleOwner) { equipo ->
             equipo?.let {
-                // Cargar jugadores del equipo
+                // Cargar jugadores del equipo (solo activos para la lista general)
                 viewModel.cargarJugadores(it.id)
 
-                // Observar los jugadores
+                // Observar los jugadores activos (para la lista general)
                 viewModel.jugadores.observe(viewLifecycleOwner) { jugadores ->
                     jugadores?.forEach { jugador ->
                         nombresJugadores[jugador.id] = jugador.nombre
@@ -104,6 +106,31 @@ class PartidosFragment : Fragment() {
         }
     }
 
+    private fun cargarJugadoresHistoricos(
+        partido: Partido,
+        onComplete: (Map<String, String>, Map<String, Posicion>) -> Unit
+    ) {
+        lifecycleScope.launch {
+            try {
+                // Obtener TODOS los jugadores de la alineación histórica (activos e inactivos)
+                val jugadoresHistoricos = viewModel.getJugadoresPorIds(partido.alineacionIds)
+
+                val nombresHistoricos = mutableMapOf<String, String>()
+                val posicionesHistoricas = mutableMapOf<String, Posicion>()
+
+                jugadoresHistoricos.forEach { jugador ->
+                    nombresHistoricos[jugador.id] = jugador.nombre
+                    posicionesHistoricas[jugador.id] = jugador.posicion
+                }
+
+                onComplete(nombresHistoricos, posicionesHistoricas)
+            } catch (e: Exception) {
+                // En caso de error, usar los jugadores activos como fallback
+                onComplete(nombresJugadores, posicionesJugadores)
+            }
+        }
+    }
+
     private fun mostrarBottomSheetPartido(partido: Partido, nombreEquipo: String) {
         // Crear el BottomSheetDialog
         val bottomSheetDialog = BottomSheetDialog(requireContext())
@@ -113,14 +140,19 @@ class PartidosFragment : Fragment() {
         // Obtener el mapa de tipos de competición
         val competitionTypesMap = viewModel.competiciones.value?.associate { it.id to it.tipo } ?: emptyMap()
 
-        // Configurar la UI del BottomSheet
-        configurarBottomSheetUI(bindingSheet, partido, nombreEquipo, competitionTypesMap)
+        // Primero configurar la información básica del partido
+        configurarInfoBasicaPartido(bindingSheet, partido, nombreEquipo, competitionTypesMap)
+
+        // Luego cargar los jugadores históricos y configurar la alineación
+        cargarJugadoresHistoricos(partido) { nombresHistoricos, posicionesHistoricas ->
+            configurarAlineacionPartido(bindingSheet, partido, nombresHistoricos, posicionesHistoricas)
+        }
 
         // Mostrar el diálogo
         bottomSheetDialog.show()
     }
 
-    private fun configurarBottomSheetUI(
+    private fun configurarInfoBasicaPartido(
         binding: DialogPartidoDetalleBinding,
         partido: Partido,
         nombreEquipo: String,
@@ -168,7 +200,14 @@ class PartidosFragment : Fragment() {
                 }
             }
         }
+    }
 
+    private fun configurarAlineacionPartido(
+        binding: DialogPartidoDetalleBinding,
+        partido: Partido,
+        nombresJugadoresPartido: Map<String, String>,
+        posicionesJugadoresPartido: Map<String, Posicion>
+    ) {
         // Calcular cantidad de goles y asistencias por jugador
         val golesPorJugador = partido.goleadoresIds.groupingBy { it }.eachCount()
         val asistenciasPorJugador = partido.asistentesIds.groupingBy { it }.eachCount()
@@ -183,13 +222,13 @@ class PartidosFragment : Fragment() {
                 esPorteroImbatido = partido.porteroImbatidoId == id
             )
         }.sortedBy { jugador ->
-            val posicion = posicionesJugadores[jugador.id]
+            val posicion = posicionesJugadoresPartido[jugador.id]
             Posicion.entries.indexOf(posicion)
         }
 
         binding.rvAlineacion.apply {
             layoutManager = LinearLayoutManager(requireContext())
-            adapter = JugadorSimpleAdapter(alineacion, nombresJugadores, posicionesJugadores)
+            adapter = JugadorSimpleAdapter(alineacion, nombresJugadoresPartido, posicionesJugadoresPartido)
         }
     }
 
