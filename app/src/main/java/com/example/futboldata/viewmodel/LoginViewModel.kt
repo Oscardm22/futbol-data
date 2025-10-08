@@ -45,5 +45,9 @@ class LoginViewModel(
         }
     }
 
+    fun getCurrentUser(): FirebaseUser? {
+        return authRepository.currentUser
+    }
+
     fun sendPasswordResetEmail(email: String) = authRepository.sendPasswordResetEmail(email)
 }

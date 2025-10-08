@@ -55,24 +55,16 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun checkAuthState() {
-        val auth = FirebaseAuth.getInstance()
+        lifecycleScope.launch {
+            val currentUser = viewModel.getCurrentUser()
 
-        val hasFirebaseUser = auth.currentUser != null
-        val hasSessionUser = sessionManager.isUserLoggedIn()
-
-        Log.d("LoginActivity", "Firebase user: ${auth.currentUser?.uid}")
-        Log.d("LoginActivity", "Session user: ${sessionManager.getCurrentUserUid()}")
-
-        if (hasFirebaseUser || hasSessionUser) {
-            Log.d("LoginActivity", "✅ USUARIO ENCONTRADO - Redirigiendo a Equipos")
-            // Pequeño delay para mostrar el splash screen
-            binding.root.postDelayed({
+            if (currentUser != null) {
+                Log.d("LoginActivity", "✅ USUARIO AUTENTICADO - Redirigiendo a Equipos")
                 navigateToEquipos()
-            }, 1000) // 1 segundo de delay
-        } else {
-            Log.d("LoginActivity", "❌ NO HAY USUARIO - Mostrando formulario de login")
-            // Una vez que sabemos que no hay usuario autenticado, ocultamos el splash
-            keepSplashOnScreen = false
+            } else {
+                Log.d("LoginActivity", "❌ NO HAY USUARIO - Mostrando login")
+                keepSplashOnScreen = false
+            }
         }
     }
 
