@@ -20,7 +20,9 @@ data class Partido(
     val alineacionIds: List<String> = emptyList(),
     val goleadoresIds: List<String> = emptyList(),
     val asistentesIds: List<String> = emptyList(),
-    val porteroImbatidoId: String? = null
+    val porteroImbatidoId: String? = null,
+    val autogolesFavor: Int = 0
+
 ) {
     @get:Exclude
     val resultado: String

@@ -120,6 +120,7 @@
     <string name="hint_tipo_competicion">Tipo de competición</string>
     <string name="hint_minuto">Minuto</string>
     <string name="hint_penalti">¿Fue penalti?</string>
+    <string name="hint_autogoles_favor">Autogoles a favor</string>
 
     //Botones
     <string name="btn_login">Iniciar Sesión</string>

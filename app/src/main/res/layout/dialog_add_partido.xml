@@ -93,6 +93,27 @@
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
+        <!-- NUEVO: Autogoles a favor -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilAutogolesFavor"
+            style="@style/BaseTextInputLayoutDialog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            app:errorEnabled="true"
+            app:helperText="Goles en propia puerta del rival">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etAutogolesFavor"
+                style="@style/TextInputEditTextStyleDark"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_autogoles_favor"
+                android:inputType="number"
+                android:text="@string/zero"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
         <!-- Competición -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilCompeticion"

@@ -177,6 +177,7 @@ open class EquipoDetailActivity : AppCompatActivity() {
     private fun showJugadoresPartidoDialog(
         equipoId: String,
         golesEquipoInput: Int,
+        autogolesFavor: Int = 0,
         onAlineacionSelected: (List<String>) -> Unit,
         onGoleadoresSelected: (Map<String, Int>) -> Unit,
         onAsistenciasSelected: (Map<String, Int>) -> Unit,
@@ -234,12 +235,13 @@ open class EquipoDetailActivity : AppCompatActivity() {
             // 3. CALCULAR TOTALES
             val totalGolesRegistrados = goleadores.values.sum()
             val totalAsistenciasRegistradas = asistencias.values.sum()
+            val golesTotales = totalGolesRegistrados + autogolesFavor
 
             // 4. VALIDACIÓN DE CONSISTENCIA DE GOLES
-            if (totalGolesRegistrados != golesEquipoInput) {
+            if (golesTotales != golesEquipoInput) {
                 Toast.makeText(
                     this,
-                    "Error: Registraste $totalGolesRegistrados goles en goleadores pero ingresaste $golesEquipoInput goles en el marcador",
+                    "Error: Registraste $golesTotales goles (jugadores: $totalGolesRegistrados + autogoles: $autogolesFavor) pero ingresaste $golesEquipoInput goles en el marcador",
                     Toast.LENGTH_LONG
                 ).show()
                 return@setOnClickListener
@@ -249,7 +251,7 @@ open class EquipoDetailActivity : AppCompatActivity() {
             if (totalAsistenciasRegistradas > totalGolesRegistrados) {
                 Toast.makeText(
                     this,
-                    "Error: No puede haber más asistencias ($totalAsistenciasRegistradas) que goles ($totalGolesRegistrados)",
+                    "Error: No puede haber más asistencias ($totalAsistenciasRegistradas) que goles de jugadores ($totalGolesRegistrados)",
                     Toast.LENGTH_LONG
                 ).show()
                 return@setOnClickListener
@@ -346,9 +348,17 @@ open class EquipoDetailActivity : AppCompatActivity() {
                 0
             }
 
+            // Obtener autogoles a favor
+            val autogolesFavor = try {
+                binding.etAutogolesFavor.text.toString().toInt()
+            } catch (e: NumberFormatException) {
+                0
+            }
+
             showJugadoresPartidoDialog(
                 equipoId = equipoId,
-                golesEquipoInput = golesEquipoInput, // <- Nuevo parámetro
+                golesEquipoInput = golesEquipoInput,
+                autogolesFavor = autogolesFavor,
                 onAlineacionSelected = { alineacion ->
                     alineacionSeleccionada = alineacion.toMutableList()
                 },
@@ -428,14 +438,23 @@ open class EquipoDetailActivity : AppCompatActivity() {
                     List(cantidad) { jugadorId }
                 }
 
-                // VALIDACIÓN FINAL DE CONSISTENCIA (por si el usuario modificó los goles después de cerrar el diálogo)
+                // Obtener autogoles a favor
+                val autogolesFavor = try {
+                    binding.etAutogolesFavor.text.toString().toInt()
+                } catch (e: NumberFormatException) {
+                    0
+                }
+
+                // VALIDACIÓN FINAL DE CONSISTENCIA
                 val totalGoles = goleadoresMap.values.sum()
                 val totalAsistencias = asistenciasMap.values.sum()
+                val golesTotales = totalGoles + autogolesFavor
 
-                if (totalGoles != (binding.etGolesEquipo.text.toString().toIntOrNull() ?: 0)) {
+                if (golesTotales != (binding.etGolesEquipo.text.toString().toIntOrNull() ?: 0)) {
                     Toast.makeText(
                         this,
-                        "La cantidad de goles no coincide con los goleadores registrados",
+                        "Error: Goles totales ($golesTotales) no coinciden con marcador. " +
+                                "Incluye $totalGoles goles de jugadores + $autogolesFavor autogoles",
                         Toast.LENGTH_LONG
                     ).show()
                     return@setOnClickListener
@@ -444,7 +463,7 @@ open class EquipoDetailActivity : AppCompatActivity() {
                 if (totalAsistencias > totalGoles) {
                     Toast.makeText(
                         this,
-                        "No puede haber más asistencias que goles",
+                        "No puede haber más asistencias que goles de jugadores",
                         Toast.LENGTH_LONG
                     ).show()
                     return@setOnClickListener
@@ -463,7 +482,7 @@ open class EquipoDetailActivity : AppCompatActivity() {
                     equipoId = equipoId,
                     fecha = Date(),
                     rival = binding.etRival.text.toString(),
-                    golesEquipo = totalGoles,
+                    golesEquipo = binding.etGolesEquipo.text.toString().toIntOrNull() ?: 0,
                     golesRival = binding.etGolesRival.text.toString().toIntOrNull() ?: 0,
                     competicionId = competicionId,
                     competicionNombre = competicionNombre,
@@ -474,7 +493,8 @@ open class EquipoDetailActivity : AppCompatActivity() {
                     alineacionIds = alineacionSeleccionada,
                     goleadoresIds = goleadoresIds,
                     asistentesIds = asistentesIds,
-                    jugadorDelPartido = jugadorDelPartido
+                    jugadorDelPartido = jugadorDelPartido,
+                    autogolesFavor = autogolesFavor
                 )
 
                 viewModel.addPartido(nuevoPartido)
@@ -490,7 +510,8 @@ open class EquipoDetailActivity : AppCompatActivity() {
             binding.etGolesEquipo,
             binding.etGolesRival,
             binding.etTemporada,
-            binding.spinnerCompeticion
+            binding.spinnerCompeticion,
+            binding.etAutogolesFavor
         ).forEach { view ->
             view.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
@@ -500,6 +521,7 @@ open class EquipoDetailActivity : AppCompatActivity() {
                         binding.etGolesRival -> binding.tilGolesRival.error = null
                         binding.etTemporada -> binding.tilTemporada.error = null
                         binding.spinnerCompeticion -> binding.tilCompeticion.error = null
+                        binding.etAutogolesFavor -> binding.tilAutogolesFavor.error = null
                     }
                 }
             }
