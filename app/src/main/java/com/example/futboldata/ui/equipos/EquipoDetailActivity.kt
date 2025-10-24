@@ -142,7 +142,6 @@ open class EquipoDetailActivity : AppCompatActivity() {
         rvCompeticiones.layoutManager = LinearLayoutManager(this)
 
         val adapter = CompeticionAdapter(
-            competiciones = emptyList(),
             onItemClick = { competicion ->
                 val destacadosFragment = getDestacadosFragment()
                 destacadosFragment?.filtrarPorCompeticion(competicion)

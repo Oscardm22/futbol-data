@@ -1,25 +1,25 @@
 package com.example.futboldata.adapter
 
-import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.futboldata.R
 import com.example.futboldata.data.model.Competicion
 import com.example.futboldata.data.model.toDisplayName
+import com.example.futboldata.adapter.diffcallbacks.CompeticionDiffCallback
 import com.example.futboldata.databinding.ItemCompeticionBinding
 import kotlinx.coroutines.Job
 
 class CompeticionAdapter(
-    private var competiciones: List<Competicion>,
     private val onItemClick: (Competicion) -> Unit,
     private val onDeleteClick: (Competicion) -> Unit,
-    private val modoFiltro: Boolean = false // Nuevo parámetro para modo filtro
-) : RecyclerView.Adapter<CompeticionAdapter.CompeticionViewHolder>() {
+    private val modoFiltro: Boolean = false
+) : ListAdapter<Competicion, CompeticionAdapter.CompeticionViewHolder>(CompeticionDiffCallback()) {
 
     private val imageJobs = mutableMapOf<ImageView, Job>()
 
@@ -36,7 +36,7 @@ class CompeticionAdapter(
     }
 
     override fun onBindViewHolder(holder: CompeticionViewHolder, position: Int) {
-        val competicion = competiciones[position]
+        val competicion = getItem(position)
         holder.binding.apply {
             tvNombre.text = competicion.nombre
             tvTipo.text = competicion.tipo.toDisplayName()
@@ -49,15 +49,8 @@ class CompeticionAdapter(
                 btnDelete.setOnClickListener { onDeleteClick(competicion) }
             }
 
-            // Carga del logo
             if (competicion.imagenBase64.isNotEmpty()) {
-                try {
-                    val decodedBytes = android.util.Base64.decode(competicion.imagenBase64, android.util.Base64.DEFAULT)
-                    val bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
-                    ivLogo.setImageBitmap(bitmap)
-                } catch (e: Exception) {
-                    ivLogo.setImageResource(R.drawable.ic_default_trophy)
-                }
+                loadImageFromBase64(competicion.imagenBase64, ivLogo)
             } else {
                 ivLogo.setImageResource(R.drawable.ic_default_trophy)
             }
@@ -67,8 +60,20 @@ class CompeticionAdapter(
     }
 
     private fun loadImageFromBase64(base64: String, imageView: ImageView) {
+        // Verificar si la cadena base64 está vacía primero
+        if (base64.isEmpty()) {
+            imageView.setImageResource(R.drawable.ic_default_trophy)
+            return
+        }
+
         try {
             val decodedBytes = android.util.Base64.decode(base64, android.util.Base64.DEFAULT)
+
+            // Verificar si los bytes decodificados están vacíos
+            if (decodedBytes.isEmpty()) {
+                imageView.setImageResource(R.drawable.ic_default_trophy)
+                return
+            }
 
             // Calcular el tamaño de muestra óptimo
             val options = BitmapFactory.Options().apply {
@@ -76,13 +81,24 @@ class CompeticionAdapter(
             }
             BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size, options)
 
+            // Si no se pudieron obtener las dimensiones, usar icono por defecto
+            if (options.outWidth <= 0 || options.outHeight <= 0) {
+                imageView.setImageResource(R.drawable.ic_default_trophy)
+                return
+            }
+
             options.inSampleSize = calculateInSampleSize(options, 200, 200)
             options.inJustDecodeBounds = false
 
             val bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size, options)
-            imageView.setImageBitmap(bitmap)
+
+            if (bitmap != null) {
+                imageView.setImageBitmap(bitmap)
+            } else {
+                imageView.setImageResource(R.drawable.ic_default_trophy)
+            }
         } catch (e: Exception) {
-            Log.e("CompeticionAdapter", "Error al cargar imagen Base64", e)
+            Log.e("CompeticionAdapter", "Error al cargar imagen Base64: ${e.message}", e)
             imageView.setImageResource(R.drawable.ic_default_trophy)
         }
     }
@@ -107,11 +123,7 @@ class CompeticionAdapter(
         imageJobs.remove(holder.binding.ivLogo)?.cancel()
     }
 
-    override fun getItemCount() = competiciones.size
-
-    @SuppressLint("NotifyDataSetChanged")
     fun updateList(newCompeticiones: List<Competicion>) {
-        competiciones = newCompeticiones
-        notifyDataSetChanged()
+        submitList(newCompeticiones)
     }
 }

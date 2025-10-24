@@ -170,11 +170,13 @@ class CompeticionesActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         adapter = CompeticionAdapter(
-            emptyList(),
-            onItemClick = { showEditCompeticionDialog(it) },
+            onItemClick = { competicion ->
+                showEditCompeticionDialog(competicion)
+            },
             onDeleteClick = { competicion ->
                 showDeleteConfirmationDialog(competicion)
-            }        )
+            }
+        )
 
         binding.rvCompeticiones.apply {
             layoutManager = LinearLayoutManager(this@CompeticionesActivity)
@@ -204,6 +206,14 @@ class CompeticionesActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 dialogBinding.ivCompeticionPhoto.setImageResource(R.drawable.ic_default_trophy)
             }
+        } else {
+            dialogBinding.ivCompeticionPhoto.setImageResource(R.drawable.ic_default_trophy)
+        }
+
+        // Configurar el FAB para cambiar foto - AÑADIDO
+        dialogBinding.fabAddPhoto.setOnClickListener {
+            competicionPhotoUri = null // Resetear para nueva selección
+            checkAndRequestPhotoPermissions()
         }
 
         val dialog = MaterialAlertDialogBuilder(this)
@@ -264,10 +274,19 @@ class CompeticionesActivity : AppCompatActivity() {
                     }
                 }
 
+                // Determinar la nueva imagen - AÑADIDO
+                val nuevaImagenBase64 = if (competicionPhotoUri != null) {
+                    // Si se seleccionó una nueva imagen, convertirla
+                    convertImageToBase64(competicionPhotoUri!!)
+                } else {
+                    // Si no se seleccionó nueva imagen, mantener la existente
+                    competicion.imagenBase64
+                }
+
                 val competicionActualizada = competicion.copy(
                     nombre = nombre,
                     tipo = tipoSeleccionado ?: competicion.tipo,
-                    imagenBase64 = competicionPhotoUri?.let { convertImageToBase64(it) } ?: competicion.imagenBase64
+                    imagenBase64 = nuevaImagenBase64 ?: competicion.imagenBase64 // AÑADIDO
                 )
 
                 viewModel.actualizarCompeticion(competicionActualizada)
