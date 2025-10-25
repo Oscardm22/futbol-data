@@ -13,11 +13,4 @@ enum class Posicion(val displayName: String) {
     ED("Extremo Derecho"),
     EI("Extremo Izquierdo"),
     DC("Delantero Centro");
-
-    companion object {
-        fun getAll(): List<Posicion> = Posicion.entries
-        fun fromDisplayName(displayName: String): Posicion? {
-            return Posicion.entries.find { it.displayName == displayName }
-        }
-    }
 }

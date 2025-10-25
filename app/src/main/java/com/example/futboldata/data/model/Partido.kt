@@ -24,9 +24,6 @@ data class Partido(
     val autogolesFavor: Int = 0
 
 ) {
-    @get:Exclude
-    val resultado: String
-        get() = "$golesEquipo-$golesRival"
 
     @Exclude
     fun obtenerEstadoPartido(): String = when {
@@ -37,17 +34,4 @@ data class Partido(
 
     @Exclude
     fun fueVictoria(): Boolean = golesEquipo > golesRival
-
-    @Exclude
-    fun getDiferenciaGoles(): Int = golesEquipo - golesRival
-
-    @Exclude
-    fun fuePorteriaImbatida(): Boolean = porteroImbatidoId != null
-
-    @Exclude
-    fun esValido(): Boolean {
-        return equipoId.isNotBlank() && rival.isNotBlank() &&
-                competicionId.isNotBlank() && temporada.isNotBlank() &&
-                golesEquipo >= 0 && golesRival >= 0
-    }
 }

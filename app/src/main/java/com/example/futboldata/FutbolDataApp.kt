@@ -29,7 +29,6 @@ class FutbolDataApp : Application() {
         val firestore = FirebaseFirestore.getInstance()
         val statsCalculator = StatsCalculator
         val sessionManager = SessionManager(this)
-
         val jugadorRepository = JugadorRepositoryImpl(firestore)
         val equipoRepository = EquipoRepositoryImpl(db = firestore, statsCalculator = statsCalculator)
         val authRepository = AuthRepositoryImpl(firebaseAuth)

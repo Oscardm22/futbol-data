@@ -53,17 +53,6 @@ class AlineacionFragment : Fragment() {
         return jugadoresSeleccionados.filter { it.value }.keys.toList()
     }
 
-    fun setAlineacionInicial(alineacionIds: List<String>) {
-        jugadoresSeleccionados.clear()
-        alineacionIds.forEach { id ->
-            jugadoresSeleccionados[id] = true
-        }
-
-        if (::adapter.isInitialized) {
-            adapter.setSeleccionesIniciales(alineacionIds)
-        }
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

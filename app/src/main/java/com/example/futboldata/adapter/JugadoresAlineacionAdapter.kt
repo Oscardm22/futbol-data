@@ -15,17 +15,12 @@ class JugadoresAlineacionAdapter(
     // Mapa para mantener el estado de selección de cada jugador (jugadorId -> esTitular)
     private val seleccionadosMap = mutableMapOf<String, Boolean>()
 
-    // Método actualizado para establecer selecciones iniciales usando la alineación del partido
+    // Establecer selecciones iniciales usando la alineación del partido
     fun setSeleccionesIniciales(alineacionIds: List<String>) {
         seleccionadosMap.clear()
         currentList.forEach { jugador ->
             seleccionadosMap[jugador.id] = alineacionIds.contains(jugador.id)
         }
-    }
-
-    // Método para obtener los IDs de los jugadores seleccionados
-    fun getJugadoresSeleccionados(): List<String> {
-        return seleccionadosMap.filter { it.value }.keys.toList()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

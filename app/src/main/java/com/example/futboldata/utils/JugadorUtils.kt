@@ -9,11 +9,4 @@ object JugadorUtils {
             Posicion.entries.indexOf(jugador.posicion)
         }
     }
-
-    fun ordenarJugadoresPorPosicionYNombre(jugadores: List<Jugador>): List<Jugador> {
-        return jugadores.sortedWith(compareBy(
-            { Posicion.entries.indexOf(it.posicion) },
-            { it.nombre }
-        ))
-    }
 }

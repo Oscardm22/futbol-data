@@ -22,8 +22,4 @@ data class Estadisticas(
     companion object {
         fun empty() = Estadisticas()
     }
-
-    fun getPromedioGolesDouble() = promedioGoles
-    fun getPorcentajeVictoriasDouble() = porcentajeVictorias
-    fun getPosesionPromedioDouble() = posesionPromedio
 }

@@ -46,9 +46,6 @@ class EquipoDetailViewModel(
     private val _competicionSeleccionada = MutableLiveData<Competicion?>()
     val competicionSeleccionada: LiveData<Competicion?> get() = _competicionSeleccionada
 
-    private val _errorMessage = MutableLiveData<String>()
-    val errorMessage: LiveData<String> = _errorMessage
-
     fun cargarEquipo(equipoId: String) {
         _isLoading.value = true
         viewModelScope.launch {
@@ -137,7 +134,6 @@ class EquipoDetailViewModel(
                 Log.d("DEBUG_VIEWMODEL", "Jugador desactivado: ${jugador.nombre}")
             } catch (e: Exception) {
                 Log.e("DEBUG_VIEWMODEL", "Error al desactivar jugador", e)
-                _errorMessage.value = "Error al desactivar jugador: ${e.message}"
             }
         }
     }
@@ -173,7 +169,6 @@ class EquipoDetailViewModel(
                 Log.d("DEBUG_VIEWMODEL", "Partido eliminado y estadísticas revertidas: ${partido.id}")
             } catch (e: Exception) {
                 Log.e("DEBUG_VIEWMODEL", "Error al eliminar partido", e)
-                _errorMessage.value = "Error al eliminar partido: ${e.message}"
             }
         }
     }

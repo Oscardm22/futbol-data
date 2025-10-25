@@ -19,9 +19,6 @@ class EquiposAdapter(
     private val onDeleteClick: (String) -> Unit
 ) : RecyclerView.Adapter<EquiposAdapter.EquipoViewHolder>() {
 
-    val currentList: List<Equipo>
-        get() = equiposConStats.map { it.first }
-
     private val imageJobs = mutableMapOf<ImageView, Job>()
 
     inner class EquipoViewHolder(val binding: ItemEquipoBinding) :

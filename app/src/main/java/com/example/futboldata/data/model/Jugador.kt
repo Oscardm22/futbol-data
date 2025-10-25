@@ -132,16 +132,6 @@ data class Jugador(
     }
 
     @Exclude
-    fun getEstadisticasCompeticion(competicionId: String): EstadisticasCompeticion {
-        return EstadisticasCompeticion(
-            partidos = partidosPorCompeticion[competicionId] ?: 0,
-            goles = golesPorCompeticion[competicionId] ?: 0,
-            asistencias = asistenciasPorCompeticion[competicionId] ?: 0,
-            porteriasImbatidas = porteriasImbatidasPorCompeticion[competicionId] ?: 0
-        )
-    }
-
-    @Exclude
     fun revertirEstadisticasPartido(partido: Partido): Jugador {
         val jugoEnPartido = partido.alineacionIds.contains(id)
         val golesAnteriores = partido.goleadoresIds.count { it == id }
@@ -212,19 +202,6 @@ private fun Map<String, Int>.decrementar(key: String, valor: Int = 1): Map<Strin
             remove(key)
         }
     }
-}
-
-data class EstadisticasCompeticion(
-    val partidos: Int,
-    val goles: Int,
-    val asistencias: Int,
-    val porteriasImbatidas: Int
-) {
-    @Exclude
-    val promedioGoles: Float = if (partidos > 0) goles.toFloat() / partidos else 0f
-
-    @Exclude
-    val promedioAsistencias: Float = if (partidos > 0) asistencias.toFloat() / partidos else 0f
 }
 
 // Extensión para convertir Jugador a mapa de Firestore

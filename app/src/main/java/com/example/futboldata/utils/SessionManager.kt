@@ -18,8 +18,6 @@ class SessionManager(context: Context) {
 
     fun getCurrentUserUid(): String? = sharedPref.getString("user_uid", null)
 
-    fun isUserLoggedIn(): Boolean = getCurrentUserUid() != null
-
     fun clearUser() {
         sharedPref.edit { clear() }
     }

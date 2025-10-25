@@ -10,6 +10,7 @@ import com.example.futboldata.data.model.Partido
 import com.example.futboldata.data.repository.EquipoRepository
 import com.example.futboldata.data.repository.PartidoRepository
 import kotlinx.coroutines.launch
+import android.util.Log
 
 class EquipoViewModel(
     private val repository: EquipoRepository,
@@ -20,14 +21,9 @@ class EquipoViewModel(
     private val _equiposState = MutableLiveData<EquipoState>()
     val equiposState: LiveData<EquipoState> = _equiposState
 
-    // Estados para operaciones CRUD
-    private val _operacionState = MutableLiveData<OperacionState>()
-    val operacionState: LiveData<OperacionState> = _operacionState
-
     // Estado para equipos con sus estadísticas calculadas
     private val _equiposConStats = MutableLiveData<List<Pair<Equipo, Estadisticas>>>()
     val equiposConStats: LiveData<List<Pair<Equipo, Estadisticas>>> = _equiposConStats
-
 
     init {
         cargarEquipos()
@@ -50,6 +46,7 @@ class EquipoViewModel(
                 _equiposState.value = EquipoState.Success(equipos)
             } catch (e: Exception) {
                 _equiposState.value = EquipoState.Error(e.localizedMessage ?: "Error al cargar equipos")
+                Log.e("EquipoViewModel", "Error al cargar equipos", e)
             }
         }
     }
@@ -76,37 +73,26 @@ class EquipoViewModel(
 
     fun guardarEquipo(equipo: Equipo) {
         viewModelScope.launch {
-            _operacionState.value = OperacionState.Loading
             try {
                 val id = repository.saveEquipo(equipo)
                 if (id.isNotEmpty()) {
-                    _operacionState.value = OperacionState.Success(
-                        if (equipo.id.isEmpty()) "Equipo creado con ID: $id"
-                        else "Equipo actualizado"
-                    )
                     cargarEquipos()
                 } else {
-                    _operacionState.value = OperacionState.Error("Error al obtener ID")
+                    Log.e("EquipoViewModel", "Error: ID vacío al guardar equipo")
                 }
             } catch (e: Exception) {
-                _operacionState.value = OperacionState.Error(
-                    e.localizedMessage ?: "Error al guardar equipo"
-                )
+                Log.e("EquipoViewModel", "Error al guardar equipo", e)
             }
         }
     }
 
     fun eliminarEquipo(equipoId: String) {
         viewModelScope.launch {
-            _operacionState.value = OperacionState.Loading
             try {
                 repository.deleteEquipo(equipoId)
-                _operacionState.value = OperacionState.Success("Equipo eliminado")
                 cargarEquipos() // Refrescar lista
             } catch (e: Exception) {
-                _operacionState.value = OperacionState.Error(
-                    e.localizedMessage ?: "Error al eliminar equipo"
-                )
+                Log.e("EquipoViewModel", "Error al eliminar equipo", e)
             }
         }
     }
@@ -116,17 +102,5 @@ class EquipoViewModel(
         object Loading : EquipoState()
         data class Success(val equipos: List<Equipo>) : EquipoState()
         data class Error(val mensaje: String) : EquipoState()
-    }
-
-    sealed class OperacionState {
-        object Loading : OperacionState()
-        data class Success(val mensaje: String) : OperacionState()
-        data class Error(val mensaje: String) : OperacionState()
-    }
-
-    sealed class EquipoStatsState {
-        object Loading : EquipoStatsState()
-        data class Success(val equipo: Equipo?, val stats: Estadisticas?) : EquipoStatsState()
-        data class Error(val mensaje: String) : EquipoStatsState()
     }
 }
