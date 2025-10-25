@@ -141,7 +141,7 @@ class EquiposActivity : AppCompatActivity() {
     private fun setupRecyclerView() {
         binding.rvEquipos.apply {
             layoutManager = LinearLayoutManager(this@EquiposActivity)
-            adapter = EquiposAdapter(emptyList(),
+            adapter = EquiposAdapter(
                 { equipoId -> abrirDetalleEquipo(equipoId) },
                 { equipoId -> mostrarDialogoEliminacion(equipoId) }
             )
@@ -153,14 +153,13 @@ class EquiposActivity : AppCompatActivity() {
         viewModel.equiposConStats.observe(this) { equiposConStats ->
             val adapter = binding.rvEquipos.adapter as? EquiposAdapter ?: run {
                 EquiposAdapter(
-                    emptyList(),
                     { equipoId -> abrirDetalleEquipo(equipoId) },
                     { equipoId -> mostrarDialogoEliminacion(equipoId) }
                 ).also {
                     binding.rvEquipos.adapter = it
                 }
             }
-            adapter.updateList(equiposConStats)
+            adapter.submitEquiposList(equiposConStats)
         }
 
         // Observador para estados (opcional)
