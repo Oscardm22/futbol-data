@@ -1,8 +1,5 @@
 package com.example.futboldata.adapter
 
-import android.graphics.BitmapFactory
-import android.graphics.drawable.Drawable
-import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,8 +10,8 @@ import com.example.futboldata.data.model.Partido
 import com.example.futboldata.data.model.TipoCompeticion
 import java.text.SimpleDateFormat
 import java.util.*
-import androidx.core.graphics.drawable.toDrawable
 import com.example.futboldata.databinding.ItemMatchBinding
+import com.example.futboldata.utils.ImageLoader
 
 class PartidosAdapter(
     private val matches: List<Partido>,
@@ -110,7 +107,19 @@ class PartidosAdapter(
             }
 
             // Establecer imagen de competición
-            setCompetitionImage(competitionImage)
+            val drawable = ImageLoader.loadBase64AsDrawable(
+                base64 = competitionImage ?: "",
+                context = itemView.context,
+                defaultDrawable = R.drawable.ic_liga,
+                targetSize = 72
+            )
+
+            binding.textViewCompeticion.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                drawable,
+                null,
+                null,
+                null
+            )
 
             // Cambiar color del marcador según el resultado
             val resultadoColor = when {
@@ -126,72 +135,6 @@ class PartidosAdapter(
             } else {
                 binding.textViewAwayScore.setTextColor(resultadoColor) // Tu marcador (visitante)
                 binding.textViewHomeScore.setTextColor(ContextCompat.getColor(itemView.context, android.R.color.black))
-            }
-        }
-
-        private fun setCompetitionImage(imageBase64: String?) {
-            val drawable = if (!imageBase64.isNullOrEmpty()) {
-                try {
-                    // 1. Decodificar Base64 a Bitmap
-                    val imageBytes = Base64.decode(imageBase64, Base64.DEFAULT)
-
-                    // 2. Calcular tamaño deseado en píxeles
-                    val sizeInPx = (24 * itemView.context.resources.displayMetrics.density).toInt()
-
-                    // 3. Opciones para reducir el tamaño de carga
-                    val options = BitmapFactory.Options().apply {
-                        inJustDecodeBounds = true
-                    }
-                    BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size, options)
-
-                    // 4. Calcular factor de escala
-                    val scale = calculateInSampleSize(options, sizeInPx, sizeInPx)
-
-                    // 5. Decodificar con el factor de escala
-                    val finalOptions = BitmapFactory.Options().apply {
-                        inSampleSize = scale
-                    }
-                    val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size, finalOptions)
-
-                    // 6. Crear drawable con tamaño fijo
-                    bitmap.toDrawable(itemView.resources).apply {
-                        setBounds(0, 0, sizeInPx, sizeInPx)
-                    }
-                } catch (e: Exception) {
-                    // En caso de error, usar icono por defecto
-                    createDefaultDrawable()
-                }
-            } else {
-                createDefaultDrawable()
-            }
-
-            binding.textViewCompeticion.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                drawable,
-                null,
-                null,
-                null
-            )
-        }
-
-        private fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
-            val (height: Int, width: Int) = options.run { outHeight to outWidth }
-            var inSampleSize = 1
-
-            if (height > reqHeight || width > reqWidth) {
-                val halfHeight: Int = height / 2
-                val halfWidth: Int = width / 2
-
-                while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
-                    inSampleSize *= 2
-                }
-            }
-            return inSampleSize
-        }
-
-        private fun createDefaultDrawable(): Drawable? {
-            return ContextCompat.getDrawable(itemView.context, R.drawable.ic_liga)?.apply {
-                val sizeInPx = (24 * itemView.context.resources.displayMetrics.density).toInt()
-                setBounds(0, 0, sizeInPx, sizeInPx)
             }
         }
     }
