@@ -3,48 +3,50 @@ package com.example.futboldata.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.futboldata.data.model.Jugador
 import com.example.futboldata.databinding.ItemJugadorMvpBinding
 
+data class JugadorWithSelection(
+    val jugador: Jugador,
+    val isSelected: Boolean
+)
+
+object JugadorWithSelectionDiffCallback : androidx.recyclerview.widget.DiffUtil.ItemCallback<JugadorWithSelection>() {
+    override fun areItemsTheSame(oldItem: JugadorWithSelection, newItem: JugadorWithSelection): Boolean {
+        return oldItem.jugador.id == newItem.jugador.id
+    }
+
+    override fun areContentsTheSame(oldItem: JugadorWithSelection, newItem: JugadorWithSelection): Boolean {
+        return oldItem == newItem
+    }
+}
+
 class MVPAdapter(
     private val onJugadorSelected: (String?) -> Unit
-) : RecyclerView.Adapter<MVPAdapter.JugadorViewHolder>() {
-
-    private var jugadores: List<Jugador> = emptyList()
-    private var selectedJugadorId: String? = null
+) : ListAdapter<JugadorWithSelection, MVPAdapter.JugadorViewHolder>(JugadorWithSelectionDiffCallback) {
 
     inner class JugadorViewHolder(private val binding: ItemJugadorMvpBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(jugador: Jugador) {
+        fun bind(jugadorWithSelection: JugadorWithSelection) {
+            val jugador = jugadorWithSelection.jugador
+            val isSelected = jugadorWithSelection.isSelected
+
             binding.apply {
                 tvNombre.text = jugador.nombre
                 tvPosicion.text = jugador.posicion.name
 
                 // Mostrar/ocultar el badge de MVP según la selección
-                val isSelected = jugador.id == selectedJugadorId
                 ivSelected.visibility = if (isSelected) View.VISIBLE else View.INVISIBLE
 
                 root.setOnClickListener {
+                    // Notificar la selección
                     if (isSelected) {
-                        // Si ya está seleccionado, deseleccionar
-                        selectedJugadorId = null
-                        onJugadorSelected(null)
-                        notifyItemChanged(adapterPosition)
+                        onJugadorSelected(null) // Deseleccionar
                     } else {
-                        // Seleccionar nuevo jugador
-                        val previousSelected = selectedJugadorId
-                        selectedJugadorId = jugador.id
-                        onJugadorSelected(jugador.id)
-
-                        // Notificar cambios para actualizar ambos items
-                        previousSelected?.let { oldId ->
-                            val oldPosition = jugadores.indexOfFirst { it.id == oldId }
-                            if (oldPosition != -1) notifyItemChanged(oldPosition)
-                        }
-                        notifyItemChanged(adapterPosition)
+                        onJugadorSelected(jugador.id) // Seleccionar
                     }
                 }
             }
@@ -61,45 +63,26 @@ class MVPAdapter(
     }
 
     override fun onBindViewHolder(holder: JugadorViewHolder, position: Int) {
-        holder.bind(jugadores[position])
+        holder.bind(getItem(position))
     }
 
-    override fun getItemCount(): Int = jugadores.size
-
-    fun submitList(newList: List<Jugador>) {
-        val diffCallback = JugadorDiffCallback(jugadores, newList)
-        val diffResult = DiffUtil.calculateDiff(diffCallback)
-        jugadores = newList
-        diffResult.dispatchUpdatesTo(this)
+    fun submitJugadoresList(jugadores: List<Jugador>, selectedJugadorId: String?) {
+        val jugadoresWithSelection = jugadores.map { jugador ->
+            JugadorWithSelection(
+                jugador = jugador,
+                isSelected = jugador.id == selectedJugadorId
+            )
+        }
+        submitList(jugadoresWithSelection)
     }
 
-    fun setSelectedJugador(jugadorId: String?) {
-        val previousSelected = selectedJugadorId
-        selectedJugadorId = jugadorId
-
-        // Notificar cambios para actualizar la UI
-        previousSelected?.let { oldId ->
-            val oldPosition = jugadores.indexOfFirst { it.id == oldId }
-            if (oldPosition != -1) notifyItemChanged(oldPosition)
+    // Actualizar solo la selección
+    fun updateSelection(selectedJugadorId: String?) {
+        val currentList = currentList.map { jugadorWithSelection ->
+            jugadorWithSelection.copy(
+                isSelected = jugadorWithSelection.jugador.id == selectedJugadorId
+            )
         }
-
-        selectedJugadorId?.let { newId ->
-            val newPosition = jugadores.indexOfFirst { it.id == newId }
-            if (newPosition != -1) notifyItemChanged(newPosition)
-        }
-    }
-
-    private class JugadorDiffCallback(
-        private val oldList: List<Jugador>,
-        private val newList: List<Jugador>
-    ) : DiffUtil.Callback() {
-        override fun getOldListSize(): Int = oldList.size
-        override fun getNewListSize(): Int = newList.size
-        override fun areItemsTheSame(oldPos: Int, newPos: Int): Boolean {
-            return oldList[oldPos].id == newList[newPos].id
-        }
-        override fun areContentsTheSame(oldPos: Int, newPos: Int): Boolean {
-            return oldList[oldPos] == newList[newPos]
-        }
+        submitList(currentList)
     }
 }

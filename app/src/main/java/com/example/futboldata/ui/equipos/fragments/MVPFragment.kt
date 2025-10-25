@@ -33,6 +33,7 @@ class MVPFragment : Fragment() {
 
         adapter = MVPAdapter { jugadorId ->
             jugadorSeleccionado = jugadorId
+            adapter.updateSelection(jugadorId)
         }
 
         binding.rvJugadores.apply {
@@ -41,7 +42,7 @@ class MVPFragment : Fragment() {
         }
 
         if (_jugadores.isNotEmpty()) {
-            adapter.submitList(_jugadores.toList())
+            updateJugadoresUI(_jugadores)
         }
     }
 
@@ -51,17 +52,12 @@ class MVPFragment : Fragment() {
         _jugadores = jugadoresOrdenados
         if (::adapter.isInitialized) {
             Log.d("DEBUG_ADAPTER", "Enviando lista al adapter")
-            adapter.submitList(jugadoresOrdenados.toList())
-
-            // Restaurar selección si existe
-            jugadorSeleccionado?.let { selectedId ->
-                if (jugadoresOrdenados.any { it.id == selectedId }) {
-                    adapter.setSelectedJugador(selectedId)
-                } else {
-                    jugadorSeleccionado = null
-                }
-            }
+            updateJugadoresUI(jugadoresOrdenados)
         }
+    }
+
+    private fun updateJugadoresUI(jugadores: List<Jugador>) {
+        adapter.submitJugadoresList(jugadores, jugadorSeleccionado)
     }
 
     fun getMVP(): String? {
