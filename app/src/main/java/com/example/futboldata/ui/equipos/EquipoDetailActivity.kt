@@ -14,19 +14,15 @@ import com.example.futboldata.ui.equipos.fragments.JugadoresFragment
 import com.example.futboldata.ui.equipos.fragments.PartidosFragment
 import com.example.futboldata.ui.equipos.fragments.StatsFragment
 import com.example.futboldata.viewmodel.EquipoDetailViewModel
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.tabs.TabLayoutMediator
-import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
-import com.example.futboldata.adapter.CompeticionAdapter
+import com.example.futboldata.adapter.EquipoDetailPagerAdapter
 import com.example.futboldata.data.repository.impl.CompeticionRepositoryImpl
 import com.example.futboldata.data.repository.impl.JugadorRepositoryImpl
 import com.example.futboldata.data.repository.impl.PartidoRepositoryImpl
-import com.example.futboldata.databinding.DialogSeleccionarCompeticionBinding
 import com.example.futboldata.ui.equipos.dialogs.AddJugadorDialog
 import com.example.futboldata.ui.equipos.dialogs.AddPartidoDialog
+import com.example.futboldata.ui.equipos.dialogs.FiltroCompeticionDialog
 import com.example.futboldata.ui.equipos.fragments.DestacadosFragment
 import com.example.futboldata.utils.ImageLoader
 
@@ -53,29 +49,17 @@ open class EquipoDetailActivity : AppCompatActivity() {
     }
 
     private fun setupViewPager() {
-        val adapter = ViewPagerAdapter(this)
-        adapter.addFragment(StatsFragment.newInstance(), getString(R.string.tab_estadisticas))
-        adapter.addFragment(PartidosFragment.newInstance(), getString(R.string.tab_partidos))
-        adapter.addFragment(JugadoresFragment.newInstance(), getString(R.string.tab_jugadores))
-        adapter.addFragment(DestacadosFragment.newInstance(), getString(R.string.tab_destacados))
+        val adapter = EquipoDetailPagerAdapter(this).apply {
+            addFragment(StatsFragment.newInstance(), getString(R.string.tab_estadisticas))
+            addFragment(PartidosFragment.newInstance(), getString(R.string.tab_partidos))
+            addFragment(JugadoresFragment.newInstance(), getString(R.string.tab_jugadores))
+            addFragment(DestacadosFragment.newInstance(), getString(R.string.tab_destacados))
+        }
 
         binding.viewPager.adapter = adapter
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             tab.text = adapter.getTitle(position)
         }.attach()
-    }
-
-    inner class ViewPagerAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity) {
-        val fragments = mutableListOf<Pair<Fragment, String>>()
-
-        fun addFragment(fragment: Fragment, title: String) {
-            fragments.add(Pair(fragment, title))
-        }
-
-        fun getTitle(position: Int): String = fragments[position].second
-
-        override fun getItemCount(): Int = fragments.size
-        override fun createFragment(position: Int): Fragment = fragments[position].first
     }
 
     private fun setupFabBehavior() {
@@ -120,40 +104,12 @@ open class EquipoDetailActivity : AppCompatActivity() {
     }
 
     private fun mostrarDialogoFiltroCompeticion() {
-        val dialog = BottomSheetDialog(this)
-        val binding = DialogSeleccionarCompeticionBinding.inflate(layoutInflater)
-
-        val rvCompeticiones = binding.rvCompeticiones
-        val btnTodas = binding.btnTodas
-
-        rvCompeticiones.layoutManager = LinearLayoutManager(this)
-
-        val adapter = CompeticionAdapter(
-            onItemClick = { competicion ->
-                val destacadosFragment = getDestacadosFragment()
-                destacadosFragment?.filtrarPorCompeticion(competicion)
-                dialog.dismiss()
-            },
-            onDeleteClick = {
-                // No hacer nada en modo filtro
-            },
-            modoFiltro = true // Activar modo filtro para ocultar botón de eliminar
-        )
-
-        btnTodas.setOnClickListener {
+        val dialog = FiltroCompeticionDialog.newInstance()
+        dialog.setOnCompeticionSelectedListener { competicion ->
             val destacadosFragment = getDestacadosFragment()
-            destacadosFragment?.filtrarPorCompeticion(null)
-            dialog.dismiss()
+            destacadosFragment?.filtrarPorCompeticion(competicion)
         }
-
-        // Cargar competiciones
-        viewModel.competiciones.observe(this) { competiciones ->
-            adapter.updateList(competiciones)
-        }
-
-        rvCompeticiones.adapter = adapter
-        dialog.setContentView(binding.root)
-        dialog.show()
+        dialog.show(supportFragmentManager, "FiltroCompeticionDialog")
     }
 
     private fun getDestacadosFragment(): DestacadosFragment? {
