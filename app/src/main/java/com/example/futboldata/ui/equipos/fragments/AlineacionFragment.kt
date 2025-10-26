@@ -15,7 +15,7 @@ class AlineacionFragment : Fragment() {
     private var _binding: FragmentAlineacionBinding? = null
     private val binding get() = _binding!!
     private lateinit var adapter: JugadoresAlineacionAdapter
-    private val jugadoresSeleccionados = mutableMapOf<String, Boolean>() // JugadorId -> EsTitular
+    private val jugadoresSeleccionados = mutableMapOf<String, Boolean>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
