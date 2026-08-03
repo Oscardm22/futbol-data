@@ -55,6 +55,7 @@ class AddPartidoDialog : DialogFragment() {
         setupCompeticionSpinner()
         setupFocusListeners()
         setupJugadoresClickListener()
+        setupFaseJornadaListeners()
     }
 
     private fun setupJugadoresClickListener() {
@@ -90,7 +91,9 @@ class AddPartidoDialog : DialogFragment() {
             binding.etGolesRival,
             binding.etTemporada,
             binding.spinnerCompeticion,
-            binding.etAutogolesFavor
+            binding.etAutogolesFavor,
+            binding.etJornada,
+            binding.etFase
         ).forEach { view ->
             view.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
@@ -98,6 +101,33 @@ class AddPartidoDialog : DialogFragment() {
                 }
             }
         }
+    }
+
+    private fun setupFaseJornadaListeners() {
+        binding.etJornada.addTextChangedListener(object : android.text.TextWatcher {
+            override fun afterTextChanged(s: android.text.Editable?) {
+                if (!s.isNullOrBlank()) {
+                    binding.etFase.text?.clear()
+                    // Limpiar errores de ambos campos al escribir
+                    binding.tilJornada.error = null
+                    binding.tilFase.error = null
+                }
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+
+        binding.etFase.addTextChangedListener(object : android.text.TextWatcher {
+            override fun afterTextChanged(s: android.text.Editable?) {
+                if (!s.isNullOrBlank()) {
+                    binding.etJornada.text?.clear()
+                    binding.tilJornada.error = null
+                    binding.tilFase.error = null
+                }
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
     }
 
     private fun abrirDialogoJugadoresPartido() {
@@ -170,6 +200,19 @@ class AddPartidoDialog : DialogFragment() {
                 tilCompeticion.error = "Selecciona una competición"
                 isValid = false
             }
+
+            // Validar que haya al menos jornada o fase
+            val jornada = binding.etJornada.text.toString().trim()
+            val fase = binding.etFase.text.toString().trim()
+
+            if (jornada.isEmpty() && fase.isEmpty()) {
+                binding.tilJornada.error = "Indica jornada o fase"
+                binding.tilFase.error = "Indica jornada o fase"
+                isValid = false
+            } else {
+                binding.tilJornada.error = null
+                binding.tilFase.error = null
+            }
         }
 
         return isValid
@@ -239,6 +282,8 @@ class AddPartidoDialog : DialogFragment() {
                 etTemporada -> tilTemporada.error = null
                 spinnerCompeticion -> tilCompeticion.error = null
                 etAutogolesFavor -> tilAutogolesFavor.error = null
+                etJornada -> tilJornada.error = null
+                etFase -> tilFase.error = null
             }
         }
     }

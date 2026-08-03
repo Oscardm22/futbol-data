@@ -83,26 +83,18 @@ class PartidosAdapter(
             // Obtener tipo de competición y mostrar fase o jornada según corresponda
             val tipoCompeticion = competitionTypes[match.competicionId] ?: TipoCompeticion.LIGA
 
-            when (tipoCompeticion) {
-                TipoCompeticion.LIGA -> {
-                    // Para ligas: mostrar jornada
-                    match.jornada?.let {
-                        binding.textViewJornada.text = itemView.context.getString(R.string.jornada_template, it)
-                        binding.textViewJornada.visibility = View.VISIBLE
-                    } ?: run {
-                        binding.textViewJornada.visibility = View.GONE
-                    }
+            // Mostrar jornada o fase según lo que tenga el partido (sin depender del tipo)
+            when {
+                match.jornada != null -> {
+                    binding.textViewJornada.text = itemView.context.getString(R.string.jornada_template, match.jornada)
+                    binding.textViewJornada.visibility = View.VISIBLE
                 }
-                TipoCompeticion.COPA_NACIONAL,
-                TipoCompeticion.COPA_INTERNACIONAL,
-                TipoCompeticion.SUPERCOPA -> {
-                    // Para todas las copas: mostrar fase
-                    match.fase?.let {
-                        binding.textViewJornada.text = it
-                        binding.textViewJornada.visibility = View.VISIBLE
-                    } ?: run {
-                        binding.textViewJornada.visibility = View.GONE
-                    }
+                !match.fase.isNullOrBlank() -> {
+                    binding.textViewJornada.text = match.fase
+                    binding.textViewJornada.visibility = View.VISIBLE
+                }
+                else -> {
+                    binding.textViewJornada.visibility = View.GONE
                 }
             }
 

@@ -228,22 +228,18 @@ class PartidosFragment : Fragment() {
         // Configurar jornada o fase según el tipo de competición
         binding.tvJornadaFase.visibility = View.VISIBLE
 
-        when (tipoCompeticion) {
-            TipoCompeticion.LIGA -> {
-                partido.jornada?.let {
-                    binding.tvJornadaFase.text = getString(R.string.jornada_template, it)
-                } ?: run {
-                    binding.tvJornadaFase.visibility = View.GONE
-                }
+        // Mostrar jornada o fase según lo que tenga el partido
+        when {
+            partido.jornada != null -> {
+                binding.tvJornadaFase.text = getString(R.string.jornada_template, partido.jornada)
+                binding.tvJornadaFase.visibility = View.VISIBLE
             }
-            TipoCompeticion.COPA_NACIONAL,
-            TipoCompeticion.COPA_INTERNACIONAL,
-            TipoCompeticion.SUPERCOPA -> {
-                partido.fase?.let {
-                    binding.tvJornadaFase.text = it
-                } ?: run {
-                    binding.tvJornadaFase.visibility = View.GONE
-                }
+            !partido.fase.isNullOrBlank() -> {
+                binding.tvJornadaFase.text = partido.fase
+                binding.tvJornadaFase.visibility = View.VISIBLE
+            }
+            else -> {
+                binding.tvJornadaFase.visibility = View.GONE
             }
         }
     }
