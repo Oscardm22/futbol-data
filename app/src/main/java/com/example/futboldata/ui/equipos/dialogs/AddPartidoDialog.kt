@@ -53,6 +53,7 @@ class AddPartidoDialog : DialogFragment() {
 
     private fun setupUI() {
         setupCompeticionSpinner()
+        setupTemporadaSpinner()
         setupFocusListeners()
         setupJugadoresClickListener()
         setupFaseJornadaListeners()
@@ -89,7 +90,7 @@ class AddPartidoDialog : DialogFragment() {
             binding.etRival,
             binding.etGolesEquipo,
             binding.etGolesRival,
-            binding.etTemporada,
+            binding.spinnerTemporada,
             binding.spinnerCompeticion,
             binding.etAutogolesFavor,
             binding.etJornada,
@@ -191,7 +192,7 @@ class AddPartidoDialog : DialogFragment() {
                 isValid = false
             }
 
-            if (etTemporada.text.isNullOrBlank()) {
+            if (spinnerTemporada.text.isNullOrBlank()) {
                 tilTemporada.error = "La temporada es obligatoria"
                 isValid = false
             }
@@ -237,7 +238,7 @@ class AddPartidoDialog : DialogFragment() {
                 golesRival = etGolesRival.text.toString().toInt(),
                 competicionId = competicionId,
                 competicionNombre = competicionNombre,
-                temporada = etTemporada.text.toString(),
+                temporada = spinnerTemporada.text.toString(),
                 fase = etFase.text.toString().takeIf { it.isNotBlank() },
                 jornada = etJornada.text.toString().toIntOrNull(),
                 esLocal = switchLocal.isChecked,
@@ -279,7 +280,7 @@ class AddPartidoDialog : DialogFragment() {
                 etRival -> tilRival.error = null
                 etGolesEquipo -> tilGolesEquipo.error = null
                 etGolesRival -> tilGolesRival.error = null
-                etTemporada -> tilTemporada.error = null
+                spinnerTemporada -> tilTemporada.error = null
                 spinnerCompeticion -> tilCompeticion.error = null
                 etAutogolesFavor -> tilAutogolesFavor.error = null
                 etJornada -> tilJornada.error = null
@@ -307,5 +308,34 @@ class AddPartidoDialog : DialogFragment() {
                 }
             }
         }
+    }
+
+    private fun setupTemporadaSpinner() {
+        // Para que el AutoCompleteTextView filtre mientras escribe
+        binding.spinnerTemporada.threshold = 1
+
+        val temporadas = generateTemporadas()
+        val adapter = ArrayAdapter(
+            requireContext(),
+            R.layout.dropdown_item,
+            temporadas
+        )
+        binding.spinnerTemporada.setAdapter(adapter)
+
+        // Opcional: al hacer clic, desplegar el menú (ya lo haces en otros spinners)
+        binding.spinnerTemporada.setOnClickListener {
+            binding.spinnerTemporada.showDropDown()
+        }
+    }
+
+    private fun generateTemporadas(): List<String> {
+        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+        val startYear = currentYear - 20  // desde 20 años atrás
+        val endYear = currentYear + 10    // hasta 10 años adelante
+        return (startYear..endYear).map { year ->
+            val lastTwoDigits = year.toString().takeLast(2)
+            val nextLastTwoDigits = (year + 1).toString().takeLast(2)
+            "$lastTwoDigits-$nextLastTwoDigits"
+        }.reversed() // más reciente primero
     }
 }
